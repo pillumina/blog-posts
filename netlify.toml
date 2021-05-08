@@ -3,8 +3,6 @@
   command = "hugo --gc --minify"
 
 [build.environment]
-  HUGO_THEME = "even"
-  HUGO_THEMESDIR = "themes/even"
   HUGO_VERSION = "0.76.4"
 
 [context.production.environment]
