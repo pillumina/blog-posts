@@ -1,0 +1,2568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Golang TDD - CctoctoFX</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="CctoctoFX" /><meta name="description" content="Preface 本文整理golang编码的单元测试常用示例，以及TDD的简要流程。 单元测试基础 单元测试文件以_test.go结尾，需要记住以下原则： 文件名" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.4 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:2000/post/golang/go-testing/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.2e81bbed97b8b282c1aeb57488cc71c8d8c8ec559f3931531bd396bf31e0d4dd.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Golang TDD" />
+<meta property="og:description" content="Preface 本文整理golang编码的单元测试常用示例，以及TDD的简要流程。 单元测试基础 单元测试文件以_test.go结尾，需要记住以下原则： 文件名" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:2000/post/golang/go-testing/" />
+<meta property="article:published_time" content="2020-12-19T11:22:18+08:00" />
+<meta property="article:modified_time" content="2020-12-19T11:22:18+08:00" />
+<meta itemprop="name" content="Golang TDD">
+<meta itemprop="description" content="Preface 本文整理golang编码的单元测试常用示例，以及TDD的简要流程。 单元测试基础 单元测试文件以_test.go结尾，需要记住以下原则： 文件名">
+<meta itemprop="datePublished" content="2020-12-19T11:22:18+08:00" />
+<meta itemprop="dateModified" content="2020-12-19T11:22:18+08:00" />
+<meta itemprop="wordCount" content="14206">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Golang TDD"/>
+<meta name="twitter:description" content="Preface 本文整理golang编码的单元测试常用示例，以及TDD的简要流程。 单元测试基础 单元测试文件以_test.go结尾，需要记住以下原则： 文件名"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CctoctoFX</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CctoctoFX</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Golang TDD</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-12-19 </span>
+        
+          <span class="more-meta"> 14206 words </span>
+          <span class="more-meta"> 29 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#preface">Preface</a></li>
+        <li><a href="#单元测试基础">单元测试基础</a>
+          <ul>
+            <li><a href="#table-driven-testing">Table-Driven-Testing</a></li>
+            <li><a href="#t类型">T类型</a></li>
+            <li><a href="#报告方式">报告方式</a></li>
+            <li><a href="#parallel并行测试">Parallel并行测试</a></li>
+            <li><a href="#子测试与子基准测试run">子测试与子基准测试(Run)</a></li>
+            <li><a href="#test-coverage">Test Coverage</a></li>
+            <li><a href="#gotest变量参考">gotest变量(参考)</a></li>
+            <li><a href="#gotest结构体参考">gotest结构体(参考)</a></li>
+          </ul>
+        </li>
+        <li><a href="#压力测试基础">压力测试基础</a></li>
+        <li><a href="#性能测试进阶benchstat">性能测试进阶(benchstat)</a>
+          <ul>
+            <li><a href="#syncmap优化例子">sync.Map优化例子</a></li>
+            <li><a href="#编译器优化例子">编译器优化例子</a></li>
+            <li><a href="#假设性检验">假设性检验</a></li>
+            <li><a href="#局限和应对">局限和应对</a></li>
+          </ul>
+        </li>
+        <li><a href="#mocking">Mocking</a>
+          <ul>
+            <li><a href="#gomock">GoMock</a></li>
+            <li><a href="#sql-mockgorm">sql-mock(GORM)</a></li>
+          </ul>
+        </li>
+        <li><a href="#依赖注入">依赖注入</a></li>
+        <li><a href="#test-driven-development">Test Driven Development</a>
+          <ul>
+            <li><a href="#channel-tdd-过程">channel TDD 过程</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="preface">Preface</h2>
+<p>本文整理golang编码的单元测试常用示例，以及TDD的简要流程。</p>
+<h2 id="单元测试基础">单元测试基础</h2>
+<p>单元测试文件以<code>_test.go</code>结尾，需要记住以下原则：</p>
+<ul>
+<li>文件名必须是<code>_test.go</code>结尾的，这样在执行<code>go test</code>的时候才会执行到相应的代码</li>
+<li>你必须import <code>testing</code>这个包</li>
+<li>所有的测试用例函数必须是<code>Test</code>开头</li>
+<li>测试用例会按照源代码中写的顺序依次执行</li>
+<li>测试函数<code>TestXxx()</code>的参数是<code>testing.T</code>，我们可以使用该类型来记录错误或者是测试状态</li>
+<li>测试格式：<code>func TestXxx (t *testing.T)</code>,<code>Xxx</code>部分可以为任意的字母数字的组合，但是首字母不能是小写字母[a-z]，例如<code>Testintdiv</code>是错误的函数名。</li>
+<li>函数中通过调用<code>testing.T</code>的<code>Error</code>, <code>Errorf</code>, <code>FailNow</code>, <code>Fatal</code>, <code>FatalIf</code>方法，说明测试不通过，调用<code>Log</code>方法用来记录测试的信息。</li>
+</ul>
+<h3 id="table-driven-testing">Table-Driven-Testing</h3>
+<p>测试讲究 case 覆盖，当我们要覆盖更多 case 时，显然通过修改代码的方式很笨拙。这时我们可以采用 Table-Driven 的方式写测试，标准库中有很多测试是使用这种方式写的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">TestFib</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">fibTests</span> <span class="p">=</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span>
+        <span class="nx">in</span>       <span class="kt">int</span> <span class="c1">// input
+</span><span class="c1"></span>        <span class="nx">expected</span> <span class="kt">int</span> <span class="c1">// expected result
+</span><span class="c1"></span>    <span class="p">}{</span>
+        <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span>
+        <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span>
+        <span class="p">{</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">},</span>
+        <span class="p">{</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span>
+        <span class="p">{</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">},</span>
+        <span class="p">{</span><span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">},</span>
+        <span class="p">{</span><span class="mi">7</span><span class="p">,</span> <span class="mi">13</span><span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">tt</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">fibTests</span> <span class="p">{</span>
+        <span class="nx">actual</span> <span class="o">:=</span> <span class="nf">Fib</span><span class="p">(</span><span class="nx">tt</span><span class="p">.</span><span class="nx">in</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">actual</span> <span class="o">!=</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">expected</span> <span class="p">{</span>
+            <span class="nx">t</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Fib(%d) = %d; expected %d&#34;</span><span class="p">,</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">in</span><span class="p">,</span> <span class="nx">actual</span><span class="p">,</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">expected</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>由于我们使用的是 <code>t.Errorf</code>，即使其中某个 case 失败，也不会终止测试执行。</p>
+<h3 id="t类型">T类型</h3>
+<p>单元测试中，传递给测试函数的参数是 <code>*testing.T</code> 类型。它用于管理测试状态并支持格式化测试日志。测试日志会在执行测试的过程中不断累积，并在测试完成时转储至标准输出。</p>
+<p>当测试函数返回时，或者当测试函数调用 <code>FailNow</code>、 <code>Fatal</code>、<code>Fatalf</code>、<code>SkipNow</code>、<code>Skip</code>、<code>Skipf</code> 中的任意一个时，则宣告该测试函数结束。跟 <code>Parallel</code> 方法一样，以上提到的这些方法只能在运行测试函数的 goroutine 中调用。</p>
+<p>至于其他报告方法，比如 <code>Log</code> 以及 <code>Error</code> 的变种， 则可以在多个 goroutine 中同时进行调用。</p>
+<h3 id="报告方式">报告方式</h3>
+<p>上面提到的系列包括方法，带 <code>f</code> 的是格式化的，格式化语法参考 <code>fmt</code> 包。</p>
+<p>T 类型内嵌了 common 类型，common 提供这一系列方法，我们经常会用到的（注意，这里说的测试中断，都是指当前测试函数）：</p>
+<p>1）当我们遇到一个断言错误的时候，标识这个测试失败，会使用到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Fail : 测试失败，测试继续，也就是之后的代码依然会执行
+FailNow : 测试失败，测试中断
+</code></pre></td></tr></table>
+</div>
+</div><p>在 <code>FailNow</code> 方法实现的内部，是通过调用 <code>runtime.Goexit()</code> 来中断测试的。</p>
+<p>2）当我们遇到一个断言错误，只希望跳过这个错误，但是不希望标识测试失败，会使用到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">SkipNow : 跳过测试，测试中断
+</code></pre></td></tr></table>
+</div>
+</div><p>在 <code>SkipNow</code> 方法实现的内部，是通过调用 <code>runtime.Goexit()</code> 来中断测试的。</p>
+<p>3）当我们只希望打印信息，会用到 :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Log : 输出信息
+Logf : 输出格式化的信息
+</code></pre></td></tr></table>
+</div>
+</div><p>注意：默认情况下，单元测试成功时，它们打印的信息不会输出，可以通过加上 <code>-v</code> 选项，输出这些信息。但对于基准测试，它们总是会被输出。</p>
+<p>4）当我们希望跳过这个测试，并且打印出信息，会用到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Skip : 相当于 Log + SkipNow
+Skipf : 相当于 Logf + SkipNow
+</code></pre></td></tr></table>
+</div>
+</div><p>5）当我们希望断言失败的时候，标识测试失败，并打印出必要的信息，但是测试继续，会用到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Error : 相当于 Log + Fail
+Errorf : 相当于 Logf + Fail
+</code></pre></td></tr></table>
+</div>
+</div><p>6）当我们希望断言失败的时候，标识测试失败，打印出必要的信息，但中断测试，会用到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Fatal : 相当于 Log + FailNow
+Fatalf : 相当于 Logf + FailNow
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="parallel并行测试">Parallel并行测试</h3>
+<p>这里简单测试一个对Map的读写并行测试。<strong>注意：Parallel方法表示只与其他带有Parallel方法的测试并行进行测试。</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="p">(</span>
+    <span class="nx">data</span>   <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span>
+    <span class="nx">locker</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">WriteToMap</span><span class="p">(</span><span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">locker</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="nx">locker</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+    <span class="nx">data</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="p">=</span> <span class="nx">v</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">ReadFromMap</span><span class="p">(</span><span class="nx">k</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="nx">locker</span><span class="p">.</span><span class="nf">RLock</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="nx">locker</span><span class="p">.</span><span class="nf">RUnlock</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nx">data</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>测试用例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">pairs</span> <span class="p">=</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">k</span> <span class="kt">string</span>
+    <span class="nx">v</span> <span class="kt">string</span>
+<span class="p">}{</span>
+    <span class="p">{</span><span class="s">&#34;polaris&#34;</span><span class="p">,</span> <span class="s">&#34;calvin1&#34;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">&#34;studygolang&#34;</span><span class="p">,</span> <span class="s">&#34;oops1&#34;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">&#34;stdlib&#34;</span><span class="p">,</span> <span class="s">&#34;go demo1&#34;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">&#34;polaris1&#34;</span><span class="p">,</span> <span class="s">&#34;calvin2&#34;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">&#34;studygolang1&#34;</span><span class="p">,</span> <span class="s">&#34;oops2&#34;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">&#34;stdlib1&#34;</span><span class="p">,</span> <span class="s">&#34;go demo2&#34;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">&#34;polaris2&#34;</span><span class="p">,</span> <span class="s">&#34; calvin3&#34;</span><span class="p">},</span>
+<span class="p">}</span>
+
+<span class="c1">// 注意 TestWriteToMap 需要在 TestReadFromMap 之前
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">TestWriteToMap</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nf">Parallel</span><span class="p">()</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">tt</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">pairs</span> <span class="p">{</span>
+        <span class="nf">WriteToMap</span><span class="p">(</span><span class="nx">tt</span><span class="p">.</span><span class="nx">k</span><span class="p">,</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">v</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">TestReadFromMap</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nf">Parallel</span><span class="p">()</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">tt</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">pairs</span> <span class="p">{</span>
+        <span class="nx">actual</span> <span class="o">:=</span> <span class="nf">ReadFromMap</span><span class="p">(</span><span class="nx">tt</span><span class="p">.</span><span class="nx">k</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">actual</span> <span class="o">!=</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">v</span> <span class="p">{</span>
+            <span class="nx">t</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;the value of key(%s) is %s, expected: %s&#34;</span><span class="p">,</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">k</span><span class="p">,</span> <span class="nx">actual</span><span class="p">,</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">v</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>试验步骤：</p>
+<ol>
+<li>注释掉 WriteToMap 和 ReadFromMap 中 locker 保护的代码，同时注释掉测试代码中的 t.Parallel，执行测试，测试通过，即使加上 <code>-race</code>，测试依然通过；</li>
+<li>只注释掉 WriteToMap 和 ReadFromMap 中 locker 保护的代码，执行测试，测试失败（如果未失败，加上 <code>-race</code> 一定会失败）；</li>
+</ol>
+<p>如果代码能够进行并行测试，在写测试时，尽量加上 Parallel，这样可以测试出一些可能的问题。</p>
+<h3 id="子测试与子基准测试run">子测试与子基准测试(Run)</h3>
+<p>Go1.7开始引入的特性，即能够执行嵌套测试，对于过滤执行特性测试用例非常有用。</p>
+<p>T 和 B 的 <code>Run</code> 方法允许定义子单元测试和子基准测试，而不必为它们单独定义函数。这便于创建基于 Table-Driven 的基准测试和层级测试。它还提供了一种共享通用 <code>setup</code> 和 <code>tear-down</code> 代码的方法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">TestFoo</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// &lt;setup code&gt;
+</span><span class="c1"></span>    <span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;A=1&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span> <span class="o">...</span> <span class="p">})</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;A=2&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span> <span class="o">...</span> <span class="p">})</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;B=1&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span> <span class="o">...</span> <span class="p">})</span>
+    <span class="c1">// &lt;tear-down code&gt;
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>每个子测试和子基准测试都有一个唯一的名称：由顶层测试的名称与传递给 <code>Run</code> 的名称组成，以斜杠分隔，并具有可选的尾随序列号，用于消除歧义。</p>
+<p>命令行标志 <code>-run</code> 和 <code>-bench</code> 的参数是非固定的正则表达式，用于匹配测试名称。对于由斜杠分隔的测试名称，例如子测试的名称，它名称本身即可作为参数，依次匹配由斜杠分隔的每部分名称。因为参数是非固定的，一个空的表达式匹配任何字符串，所以下述例子中的 “匹配” 意味着 “顶层/子测试名称包含有”：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">go test -run &#39;&#39;      # 执行所有测试。
+go test -run Foo     # 执行匹配 &#34;Foo&#34; 的顶层测试，例如 &#34;TestFooBar&#34;。
+go test -run Foo/A=  # 对于匹配 &#34;Foo&#34; 的顶层测试，执行其匹配 &#34;A=&#34; 的子测试。
+go test -run /A=1    # 执行所有匹配 &#34;A=1&#34; 的子测试。
+</code></pre></td></tr></table>
+</div>
+</div><p>子测试也可用于程序<strong>并行控制</strong>。只有子测试全部执行完毕后，父测试才会完成。在下述例子中，所有子测试之间并行运行，此处的 “并行” 只限于这些子测试之间，并不影响定义在其他顶层测试中的子测试：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">TestGroupedParallel</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">tc</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">tests</span> <span class="p">{</span>
+        <span class="nx">tc</span> <span class="o">:=</span> <span class="nx">tc</span> <span class="c1">// capture range variable
+</span><span class="c1"></span>        <span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="nx">tc</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">t</span><span class="p">.</span><span class="nf">Parallel</span><span class="p">()</span>
+            <span class="o">...</span>
+        <span class="p">})</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在所有子测试并行运行完毕之前，<code>Run</code> 方法不会返回。下述例子提供了一种方法，用于在子测试并行运行完毕后清理资源：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">TestTeardownParallel</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// This Run will not return until the parallel tests finish.
+</span><span class="c1"></span>    <span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;group&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;Test1&#34;</span><span class="p">,</span> <span class="nx">parallelTest1</span><span class="p">)</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;Test2&#34;</span><span class="p">,</span> <span class="nx">parallelTest2</span><span class="p">)</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;Test3&#34;</span><span class="p">,</span> <span class="nx">parallelTest3</span><span class="p">)</span>
+    <span class="p">})</span>
+    <span class="c1">// &lt;tear-down code&gt;
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="test-coverage">Test Coverage</h3>
+<p>测试覆盖率，这里讨论的是基于代码的测试覆盖率。</p>
+<p>Go 从 1.2 开始，引入了对测试覆盖率的支持，使用的是与 cover 相关的工具（<code>go test -cover</code>、<code>go tool cover</code>）。虽然 <code>testing</code> 包提供了 cover 相关函数，不过它们是给 cover 的工具使用的。</p>
+<p>关于测试覆盖率的更多信息，可以参考官方的博文：<a href="https://blog.golang.org/cover">The cover story</a></p>
+<h3 id="gotest变量参考">gotest变量(参考)</h3>
+<p>gotest 的变量有这些：</p>
+<ul>
+<li>test.short : 一个快速测试的标记，在测试用例中可以使用 testing.Short() 来绕开一些测试</li>
+<li>test.outputdir : 输出目录</li>
+<li>test.coverprofile : 测试覆盖率参数，指定输出文件</li>
+<li>test.run : 指定正则来运行某个 / 某些测试用例</li>
+<li>test.memprofile : 内存分析参数，指定输出文件</li>
+<li>test.memprofilerate : 内存分析参数，内存分析的抽样率</li>
+<li>test.cpuprofile : cpu 分析输出参数，为空则不做 cpu 分析</li>
+<li>test.blockprofile : 阻塞事件的分析参数，指定输出文件</li>
+<li>test.blockprofilerate : 阻塞事件的分析参数，指定抽样频率</li>
+<li>test.timeout : 超时时间</li>
+<li>test.cpu : 指定 cpu 数量</li>
+<li>test.parallel : 指定运行测试用例的并行数</li>
+</ul>
+<h3 id="gotest结构体参考">gotest结构体(参考)</h3>
+<ul>
+<li>B : 压力测试</li>
+<li>BenchmarkResult : 压力测试结果</li>
+<li>Cover : 代码覆盖率相关结构体</li>
+<li>CoverBlock : 代码覆盖率相关结构体</li>
+<li>InternalBenchmark : 内部使用的结构体</li>
+<li>InternalExample : 内部使用的结构体</li>
+<li>InternalTest : 内部使用的结构体</li>
+<li>M : main 测试使用的结构体</li>
+<li>PB : Parallel benchmarks 并行测试使用的结构体</li>
+<li>T : 普通测试用例</li>
+<li>TB : 测试用例的接口</li>
+</ul>
+<h2 id="压力测试基础">压力测试基础</h2>
+<p>压测检测函数(方法)的性能，和编写UT类似，所以不再赘述，但需要注意以下几点：</p>
+<ul>
+<li>压力测试用例必须遵循如下格式，其中XXX可以是任意字母数字的组合，但是首字母不能是小写字母</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">	func BenchmarkXXX(b *testing.B) { ... }
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>go test</code>不会默认执行压力测试的函数，如果要执行压力测试需要带上参数<code>-test.bench</code>，语法:<code>-test.bench=&quot;test_name_regex&quot;</code>,例如<code>go test -test.bench=&quot;.*&quot;</code>表示测试全部的压力测试函数</li>
+<li>在压力测试用例中,请记得在循环体内使用<code>testing.B.N</code>,以使测试可以正常的运行</li>
+<li>文件名也必须以<code>_test.go</code>结尾</li>
+</ul>
+<p>下面是一个压测的例子，测试除法函数的性能：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">gotest</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;testing&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">Benchmark_Division</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span> <span class="c1">//use b.N for looping 
+</span><span class="c1"></span>		<span class="nf">Division</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">Benchmark_TimeConsumingFunction</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">b</span><span class="p">.</span><span class="nf">StopTimer</span><span class="p">()</span> <span class="c1">//调用该函数停止压力测试的时间计数
+</span><span class="c1"></span>
+	<span class="c1">//做一些初始化的工作,例如读取文件数据,数据库连接之类的,
+</span><span class="c1"></span>	<span class="c1">//这样这些时间不影响我们测试函数本身的性能
+</span><span class="c1"></span>
+	<span class="nx">b</span><span class="p">.</span><span class="nf">StartTimer</span><span class="p">()</span> <span class="c1">//重新开始时间
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="nf">Division</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>我们执行命令<code>go test webbench_test.go -test.bench=&quot;.*&quot;</code>，可以看到如下结果：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Benchmark_Division-4   	                     500000000	      7.76 ns/op	     456 B/op	      14 allocs/op
+Benchmark_TimeConsumingFunction-4            500000000	      7.80 ns/op	     224 B/op	       4 allocs/op
+PASS
+ok  	gotest	9.364s
+</code></pre></td></tr></table>
+</div>
+</div><p>上面的结果显示我们没有执行任何<code>TestXXX</code>的单元测试函数，显示的结果只执行了压力测试函数，第一条显示了<code>Benchmark_Division</code>执行了500000000次，每次的执行平均时间是7.76纳秒，第二条显示了<code>Benchmark_TimeConsumingFunction</code>执行了500000000，每次的平均执行时间是7.80纳秒。最后一条显示总共的执行时间。</p>
+<h2 id="性能测试进阶benchstat">性能测试进阶(benchstat)</h2>
+<h3 id="syncmap优化例子">sync.Map优化例子</h3>
+<p>在sync.Map中存储一个值，然后再并发删除该值:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">BenchmarkDeleteCollision</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">){</span>
+  <span class="nf">benchMap</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="nx">bench</span><span class="p">{</span>
+    <span class="nx">setup</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">_</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">,</span> <span class="nx">m</span> <span class="nx">mapInterface</span><span class="p">){</span><span class="nx">m</span><span class="p">,</span><span class="nf">LoadOrStore</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)},</span>
+    <span class="nx">perG</span><span class="p">:</span> <span class="kd">func</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">,</span> <span class="nx">pb</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">PB</span><span class="p">,</span> <span class="nx">i</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">m</span> <span class="nx">mapInterface</span><span class="p">){</span>
+      <span class="k">for</span><span class="p">;</span> <span class="nx">pb</span><span class="p">.</span><span class="nf">Next</span><span class="p">();</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="mi">0</span><span class="p">)}</span>
+    <span class="p">}</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">优化 src/sync/map.go
+275 -delete(m.dirty, key)
+275 +e, ok = m.dirty[key]
+276 +m.misslocked()
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ git stash
+$ git test -run=none -bench=BenchmarkDeleteCollision -count=20 | tee old.txt
+$ git stash pop
+$ git test -run=none -bench=BenchmarkDeleteCollision -count=20 | tee new.txt
+$ benchstat old.txt new.ext
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="编译器优化例子">编译器优化例子</h3>
+<p>查看编译器优化，测试函数被编译成了什么</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">compile</span>
+
+<span class="kd">func</span> <span class="nf">comp1</span><span class="p">(</span><span class="nx">s1</span><span class="p">,</span> <span class="nx">s2</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span><span class="kt">bool</span><span class="p">{</span>
+  <span class="k">return</span> <span class="nb">string</span><span class="p">(</span><span class="nx">s1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">string</span><span class="p">(</span><span class="nx">s2</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">comp2</span><span class="p">(</span><span class="nx">s1</span><span class="p">,</span> <span class="nx">s2</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span><span class="kt">bool</span><span class="p">{</span>
+  <span class="k">return</span> <span class="nf">conv</span><span class="p">(</span><span class="nx">s1</span><span class="p">)</span> <span class="o">==</span> <span class="nf">conv</span><span class="p">(</span><span class="nx">s2</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">conv</span><span class="p">(</span><span class="nx">s</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">string</span><span class="p">{</span>
+  <span class="k">return</span> <span class="nb">string</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$GOSSAFUNC=com1 go build 
+// 会生成ssa.html，open它即可看到comp1函数编译后的代码
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="假设性检验">假设性检验</h3>
+<ul>
+<li>统计是一套在总体分布函数完全未知或者只知道形式、不知道参数的情况下，为了由样本推断总体的某些未知特性，形成的一套方法论。</li>
+<li>多次抽样：对同一个性能基准测试运行多次，根据中心极限定理，如果理论均值存在，则抽样噪声服从正态分布。</li>
+<li>当重复执行完某个性能基准测试后，benchstat先帮我们剔除掉了一些异常值，我们得到了关于某段代码在可控的环境条件E下的性能分布的一组样本。</li>
+<li>T检验：参数检验，假设数据服从正态分布，且方差相同 (最严格)</li>
+<li>Welch T检验(ttest)： 参数检验，假设服从正态分布，但方差不一定相同</li>
+<li>Mann-Whitney U检验(utest， benchstat的default):  非参数检验，假设最少，最通用，值假设两组样本来自于同一个总体（例如两个性能测试是否在同一个机器跑的），只有均值的差异。当对数据的假设减少时，结论的不确定性增大，p值会因此增大，进而使得性能基准测试的条件更加严格。</li>
+</ul>
+<h3 id="局限和应对">局限和应对</h3>
+<p><code>perflock</code>降低系统噪音，作用是限制CPU时钟频率，从而一定程度上消除系统对性能测试程序的影响，仅支持Linux。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ go get github.com/aclements/perflock/cmd/perflock
+$ sudo install $GOPATH/bin/perflock /usr/bin/perflock
+$ sudo -b perflock -daemon
+$ perflock
+
+$ perflock -governer 70% go test -test=none -bench=.
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="mocking">Mocking</h2>
+<h3 id="gomock">GoMock</h3>
+<p>GoMock为很常用的测试mock框架，虽然我自己不常用:0（因为我自身并不非常喜欢mock), 并且对在生产开发环境使用mock有点意见，代码增长（和Injection类似），以及如果不单独部署一个mock server很多修改并不能很好得share。</p>
+<p>虽然如此，这里还是记录一下GoMock的quick start。</p>
+<h4 id="install">Install</h4>
+<p>首先就是安装<code>gomock</code>包，以及<code>mockgen</code>代码生成工具，后者其实并不是必要的，但是如果没有自己就要写一个容易出错并且繁琐的mock代码。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">go get github.com/golang/mock/gomock
+go get github.com/golang/mock/mockgen
+</code></pre></td></tr></table>
+</div>
+</div><p>检查一下有没有成功，会打印一些使用帮助信息:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$GOPATH/bin/mockgen
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="基本使用">基本使用</h4>
+<p>基本上使用<code>gomock</code>遵循以下几个步骤：</p>
+<ol>
+<li>使用<code>mockgen</code>去对你想要mock的interface生成mock对象</li>
+<li>在测试代码中，创建一个<code>gomock.Controller</code>实例，并且将其传入mock对象的constructor中获取一个mock对象</li>
+<li>在你的mock中调用<code>EXPECT()</code>去设置测试期望以及返回值</li>
+<li>在mock controller调用<code>FINISH()</code>去设置进行mock期望的assert（断言）</li>
+</ol>
+<p>下面记录一个小的demo展示上述的workflow，为了让展示简单，我们可以只是聚焦两个文件- 一个接口文件<code>doer.go</code>中的<code>Doer</code>接口（希望mock的），以及<code>user.go</code>文件中的结构体<code>User</code>，这个接口体用到了<code>Doer</code>接口。</p>
+<p><code>doer.go</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">doer</span>
+
+<span class="kd">type</span> <span class="nx">Doer</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nf">DoSomething</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>user.go</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">user</span>
+
+<span class="kn">import</span> <span class="s">&#34;github.com/sgreben/testing-with-gomock/doer&#34;</span>
+
+<span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Doer</span> <span class="nx">doer</span><span class="p">.</span><span class="nx">Doer</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">u</span> <span class="o">*</span><span class="nx">User</span><span class="p">)</span> <span class="nf">Use</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Doer</span><span class="p">.</span><span class="nf">DoSomething</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="s">&#34;Hello GoMock&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>下面是project的layout：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">&#39;-- doer
+    &#39;-- doer.go
+&#39;-- user
+    &#39;-- user.go
+</code></pre></td></tr></table>
+</div>
+</div><p>我们接下来要在mocks文件夹内添加<code>Doer</code>的mock，并且新增一个<code>user_test.go</code>文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="err">&#39;</span><span class="o">--</span> <span class="nx">doer</span>
+    <span class="err">&#39;</span><span class="o">--</span> <span class="nx">doer</span><span class="p">.</span><span class="k">go</span>
+<span class="err">&#39;</span><span class="o">--</span> <span class="nx">mocks</span>
+    <span class="err">&#39;</span><span class="o">--</span> <span class="nx">mock_doer</span><span class="p">.</span><span class="k">go</span>
+<span class="err">&#39;</span><span class="o">--</span> <span class="nx">user</span>
+    <span class="err">&#39;</span><span class="o">--</span> <span class="nx">user</span><span class="p">.</span><span class="k">go</span>
+    <span class="err">&#39;</span><span class="o">--</span> <span class="nx">user_test</span><span class="p">.</span><span class="k">go</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>为了生成这个<code>mock_doer.go</code>，我们创建mocks目录后调用：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">mockgen -destination=mocks/mock_doer.go -package=mocks github.com/sgreben/testing-with-gomock/doer Doer
+</code></pre></td></tr></table>
+</div>
+</div><p>这里的<code>mockgen</code>传入以下几个参数:</p>
+<ol>
+<li><code>-destination=mocks/mock_doer.go</code> 目标路径</li>
+<li><code>-package=mocks</code>：在<code>mocks</code>package内生成mocks</li>
+<li><code>github.com/sgreben/testing-with-gomock/doer</code>： 为这个package生成mocks (包名而已，根据实际情况定)</li>
+<li><code>Doer</code>: 为这个interface生成mocks，如果想要mock多个接口，可以传入以逗号分隔的列表<code>Doer1,Doer2</code>，对接口的声明必须清楚。</li>
+</ol>
+<p><em>注意如果<code>$GOPATH/bin</code>不在<code>$PATH</code>中，<code>mockgen</code>要改成<code>$GOPATH/bin/mockgen</code></em></p>
+<p>最终<code>mockgen</code>会生成<code>mock_doer.go</code>这个文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Code generated by MockGen. DO NOT EDIT.
+</span><span class="c1">// Source: github.com/sgreben/testing-with-gomock/doer (interfaces: Doer)
+</span><span class="c1"></span>
+<span class="kn">package</span> <span class="nx">mocks</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="nx">gomock</span> <span class="s">&#34;github.com/golang/mock/gomock&#34;</span>
+<span class="p">)</span>
+
+<span class="c1">// MockDoer is a mock of Doer interface
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">MockDoer</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">ctrl</span>     <span class="o">*</span><span class="nx">gomock</span><span class="p">.</span><span class="nx">Controller</span>
+	<span class="nx">recorder</span> <span class="o">*</span><span class="nx">MockDoerMockRecorder</span>
+<span class="p">}</span>
+
+<span class="c1">// MockDoerMockRecorder is the mock recorder for MockDoer
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">MockDoerMockRecorder</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">mock</span> <span class="o">*</span><span class="nx">MockDoer</span>
+<span class="p">}</span>
+
+<span class="c1">// NewMockDoer creates a new mock instance
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">NewMockDoer</span><span class="p">(</span><span class="nx">ctrl</span> <span class="o">*</span><span class="nx">gomock</span><span class="p">.</span><span class="nx">Controller</span><span class="p">)</span> <span class="o">*</span><span class="nx">MockDoer</span> <span class="p">{</span>
+	<span class="nx">mock</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">MockDoer</span><span class="p">{</span><span class="nx">ctrl</span><span class="p">:</span> <span class="nx">ctrl</span><span class="p">}</span>
+	<span class="nx">mock</span><span class="p">.</span><span class="nx">recorder</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">MockDoerMockRecorder</span><span class="p">{</span><span class="nx">mock</span><span class="p">}</span>
+	<span class="k">return</span> <span class="nx">mock</span>
+<span class="p">}</span>
+
+<span class="c1">// EXPECT returns an object that allows the caller to indicate expected use
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">_m</span> <span class="o">*</span><span class="nx">MockDoer</span><span class="p">)</span> <span class="nf">EXPECT</span><span class="p">()</span> <span class="o">*</span><span class="nx">MockDoerMockRecorder</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">_m</span><span class="p">.</span><span class="nx">recorder</span>
+<span class="p">}</span>
+
+<span class="c1">// DoSomething mocks base method
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">_m</span> <span class="o">*</span><span class="nx">MockDoer</span><span class="p">)</span> <span class="nf">DoSomething</span><span class="p">(</span><span class="nx">_param0</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">_param1</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="nx">ret</span> <span class="o">:=</span> <span class="nx">_m</span><span class="p">.</span><span class="nx">ctrl</span><span class="p">.</span><span class="nf">Call</span><span class="p">(</span><span class="nx">_m</span><span class="p">,</span> <span class="s">&#34;DoSomething&#34;</span><span class="p">,</span> <span class="nx">_param0</span><span class="p">,</span> <span class="nx">_param1</span><span class="p">)</span>
+	<span class="nx">ret0</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">].(</span><span class="kt">error</span><span class="p">)</span>
+	<span class="k">return</span> <span class="nx">ret0</span>
+<span class="p">}</span>
+
+<span class="c1">// DoSomething indicates an expected call of DoSomething
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">_mr</span> <span class="o">*</span><span class="nx">MockDoerMockRecorder</span><span class="p">)</span> <span class="nf">DoSomething</span><span class="p">(</span><span class="nx">arg0</span><span class="p">,</span> <span class="nx">arg1</span> <span class="kd">interface</span><span class="p">{})</span> <span class="o">*</span><span class="nx">gomock</span><span class="p">.</span><span class="nx">Call</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">_mr</span><span class="p">.</span><span class="nx">mock</span><span class="p">.</span><span class="nx">ctrl</span><span class="p">.</span><span class="nf">RecordCall</span><span class="p">(</span><span class="nx">_mr</span><span class="p">.</span><span class="nx">mock</span><span class="p">,</span> <span class="s">&#34;DoSomething&#34;</span><span class="p">,</span> <span class="nx">arg0</span><span class="p">,</span> <span class="nx">arg1</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>浏览一下代码，可以看到生成的<code>EXPECT()</code>方法和mock接口的方法在一个层级，这里是<code>DoSomething</code>，因为要避免名字冲突，所以这里把<code>EXPECT</code>定义成全大写。</p>
+<p>下面，我们在测试中创建一个<em>mock controller</em>。 mock controller的作用是跟踪以及对相关mocks对象的进行期望断言(asserting the expectations)。</p>
+<p>创建controller的方法就是，传入构建函数代表<code>*testing.T</code>的<code>t</code>，而后将其作为参数传入<code>Doer</code>mock对象的构建函数:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">mockCtrl</span> <span class="o">:=</span> <span class="nx">gomock</span><span class="p">.</span><span class="nf">NewController</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span>
+<span class="k">defer</span> <span class="nx">mockCtrl</span><span class="p">.</span><span class="nf">Finish</span><span class="p">()</span>
+
+<span class="nx">mockDoer</span> <span class="o">:=</span> <span class="nx">mocks</span><span class="p">.</span><span class="nf">NewMockDoer</span><span class="p">(</span><span class="nx">mockCtrl</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上述对<code>Finish</code>的defer后面再说。</p>
+<p>假设我们想要断言<code>mockerDoer</code>的<code>Do</code>方法将会被调用一次，传入<code>123</code>以及<code>Hello GoMock</code>作为参数并且返回<code>nil</code>。</p>
+<p>为了实现这个断言，我们在<code>mockDoer</code>对象上调用<code>EXPECT()</code>设置期望。<code>EXPECT()</code>其实返回的是一个<code>mock recorder</code>的对象，它包含了真实对象的所有同名方法。</p>
+<p>我们能够进行如下的链式调用:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span><span class="nf">DoSomething</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="s">&#34;Hello GoMock&#34;</span><span class="p">).</span><span class="nf">Return</span><span class="p">(</span><span class="kc">nil</span><span class="p">).</span><span class="nf">Times</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>从这个调用其实你也能理解每个的意义，如果要设置方法被调用的次数，除了上述的<code>Times(number)</code>，还有诸如<code>MaxTimes(number)</code>以及<code>MinTimes(numbers)</code>这种显性的限制。</p>
+<p>看上去差不多了，接下来写一个完整的user_test.go`:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">user_test</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+  <span class="s">&#34;github.com/sgreben/testing-with-gomock/mocks&#34;</span>
+  <span class="s">&#34;github.com/sgreben/testing-with-gomock/user&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">TestUse</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">mockCtrl</span> <span class="o">:=</span> <span class="nx">gomock</span><span class="p">.</span><span class="nf">NewController</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="nx">mockCtrl</span><span class="p">.</span><span class="nf">Finish</span><span class="p">()</span>
+
+    <span class="nx">mockDoer</span> <span class="o">:=</span> <span class="nx">mocks</span><span class="p">.</span><span class="nf">NewMockDoer</span><span class="p">(</span><span class="nx">mockCtrl</span><span class="p">)</span>
+    <span class="nx">testUser</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">user</span><span class="p">.</span><span class="nx">User</span><span class="p">{</span><span class="nx">Doer</span><span class="p">:</span><span class="nx">mockDoer</span><span class="p">}</span>
+
+    <span class="c1">// Expect Do to be called once with 123 and &#34;Hello GoMock&#34; as parameters, and return nil from the mocked call.
+</span><span class="c1"></span>    <span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span><span class="nf">DoSomething</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="s">&#34;Hello GoMock&#34;</span><span class="p">).</span><span class="nf">Return</span><span class="p">(</span><span class="kc">nil</span><span class="p">).</span><span class="nf">Times</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="nx">testUser</span><span class="p">.</span><span class="nf">Use</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可能这个代码里对mock期望的断言并不明显，断言发生在defer掉的<code>Finish()</code>。相当于对<code>Finish</code>的调用发生在mock controller的声明的时候 - 这样我们不会忘记在后面加上期望断言。</p>
+<p>最后跑一下测试:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ go test -v github.com/sgreben/testing-with-gomock/user
+=== RUN   TestUse
+--- PASS: TestUse (0.00s)
+PASS
+ok      github.com/sgreben/testing-with-gomock/user     0.007s
+</code></pre></td></tr></table>
+</div>
+</div><p>当然如果你想构建多个mock对象，你可以对mock controller进行复用，它的<code>Finish</code>相当于会发生在所有和controller关联的mock对象的期望断言被设置之后。</p>
+<p>我们也可以测试一下mock方法的返回值，这里改写一下测试返回一个<code>dummyError</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">TestUseReturnsErrorFromDo</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">mockCtrl</span> <span class="o">:=</span> <span class="nx">gomock</span><span class="p">.</span><span class="nf">NewController</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="nx">mockCtrl</span><span class="p">.</span><span class="nf">Finish</span><span class="p">()</span>
+
+    <span class="nx">dummyError</span> <span class="o">:=</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;dummy error&#34;</span><span class="p">)</span>
+    <span class="nx">mockDoer</span> <span class="o">:=</span> <span class="nx">mocks</span><span class="p">.</span><span class="nf">NewMockDoer</span><span class="p">(</span><span class="nx">mockCtrl</span><span class="p">)</span>
+    <span class="nx">testUser</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">user</span><span class="p">.</span><span class="nx">User</span><span class="p">{</span><span class="nx">Doer</span><span class="p">:</span><span class="nx">mockDoer</span><span class="p">}</span>
+
+    <span class="c1">// Expect Do to be called once with 123 and &#34;Hello GoMock&#34; as parameters, and return dummyError from the mocked call.
+</span><span class="c1"></span>    <span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span><span class="nf">DoSomething</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="s">&#34;Hello GoMock&#34;</span><span class="p">).</span><span class="nf">Return</span><span class="p">(</span><span class="nx">dummyError</span><span class="p">).</span><span class="nf">Times</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="nx">err</span> <span class="o">:=</span> <span class="nx">testUser</span><span class="p">.</span><span class="nf">Use</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="nx">dummyError</span> <span class="p">{</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nf">Fail</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="通过gogenerate使用gomock">通过<code>go:generate</code>使用<em>GoMock</em></h4>
+<p>有些人可能发现一个workflow的问题，如果对每个package以及interface都用mockgen肯定是非常繁琐的，特别是如果我们开发的项目有大量的接口和包定义。为了解决这个问题，<code>mockgen</code>命令行能够被特殊的<code>go:generate</code>注释去替代。</p>
+<p>比如，在我们的例子里，我们能够在<code>doer.go</code>的<code>package</code>声明下面添加注释:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">doer</span>
+
+<span class="c1">//go:generate mockgen -destination=../mocks/mock_doer.go -package=mocks github.com/sgreben/testing-with-gomock/doer Doer
+</span><span class="c1"></span>
+<span class="kd">type</span> <span class="nx">Doer</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nf">DoSomething</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>但是这种写法也有个问题，因为代码文件目录和mocks目录的不一致，导致我们需要添加<code>../mocks</code>类似的路径而不是简单的<code>mocks/</code>，我们可以在项目的根路径下生成所有mocks:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">go generate ./...
+</code></pre></td></tr></table>
+</div>
+</div><p>写法上注意代码里<code>//</code>和<code>go:generate</code>之间没有空格。</p>
+<p>对于添加<code>go:generate</code>注释的原则以及一些mock的构建命名原则如下:</p>
+<ol>
+<li>每个包含需要mock的interfaces的文件中添加一个<code>go:generate</code>注释</li>
+<li>如果要用<code>mockgen</code>要传入清晰的interface名</li>
+<li>把mock文件放在<code>mocks</code>包下，名称改写<code>X.go</code>到<code>mocks/mock_X.go</code></li>
+</ol>
+<h4 id="使用参数匹配器">使用参数匹配器</h4>
+<p>有些情况下，你对mock中的特定参数不太关心，当然我们可以清楚地固定参数，也可以用参数匹配器去匹配参数，我们称之为<code>Matcher</code>，熟悉Ginkgo框架的同学应该很清楚。</p>
+<p><code>GoMock</code>中预设了几个matchers：</p>
+<ol>
+<li><code>gomock.Any()</code>： 匹配所有类型、所有值</li>
+<li><code>gomock.Eq(x)</code>:  使用反射去匹配任何与<code>x</code>为<code>DeepEqual</code>的值</li>
+<li><code>gomock.Nil()</code>： 匹配<code>nil</code></li>
+<li><code>gomock.Not(m)</code>:  这里<code>m</code>是一个Matcher，也就是匹配所有没有被<code>m</code>匹配的值</li>
+<li><code>gomock.Not(x)</code>:  这里<code>x</code>不是一个Matcher，匹配所有与<code>x</code>不<code>DeepEqual</code>的值</li>
+</ol>
+<p>举个例子，如果我们不关心<code>Do</code>方法的第一个参数:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span><span class="nf">DoSomething</span><span class="p">(</span><span class="nx">gomock</span><span class="p">.</span><span class="nf">Any</span><span class="p">(),</span> <span class="s">&#34;Hello GoMock&#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>GoMock</code>会自动把非匹配类型的参数转化为<code>Eq</code>匹配器：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span><span class="nf">DoSomething</span><span class="p">(</span><span class="nx">gomock</span><span class="p">.</span><span class="nf">Any</span><span class="p">(),</span> <span class="nx">gomock</span><span class="p">.</span><span class="nf">Eq</span><span class="p">(</span><span class="s">&#34;Hello GoMock&#34;</span><span class="p">))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>当然我们也可以自定义Matchers，实现接口就行, <code>gomock/matchers.go</code> :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Matcher</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nf">Matches</span><span class="p">(</span><span class="nx">x</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">bool</span>
+    <span class="nf">String</span><span class="p">()</span> <span class="kt">string</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里的<code>Matches</code>方法是实例匹配发生的地方，<code>String</code>方法针对测试失败时生成human-readable的信息，我们可以自己写一个matcher去检查参数类型：</p>
+<p><code>match/oftype.go</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">match</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;reflect&#34;</span>
+    <span class="s">&#34;github.com/golang/mock/gomock&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">ofType</span> <span class="kd">struct</span><span class="p">{</span> <span class="nx">t</span> <span class="kt">string</span> <span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">OfType</span><span class="p">(</span><span class="nx">t</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">gomock</span><span class="p">.</span><span class="nx">Matcher</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">ofType</span><span class="p">{</span><span class="nx">t</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">o</span> <span class="o">*</span><span class="nx">ofType</span><span class="p">)</span> <span class="nf">Matches</span><span class="p">(</span><span class="nx">x</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">bool</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">x</span><span class="p">).</span><span class="nf">String</span><span class="p">()</span> <span class="o">==</span> <span class="nx">o</span><span class="p">.</span><span class="nx">t</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">o</span> <span class="o">*</span><span class="nx">ofType</span><span class="p">)</span> <span class="nf">String</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s">&#34;is of type &#34;</span> <span class="o">+</span> <span class="nx">o</span><span class="p">.</span><span class="nx">t</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后我们就可以使用我们的matcher:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Expect Do to be called once with 123 and any string as parameters, and return nil from the mocked call.
+</span><span class="c1"></span><span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span>
+    <span class="nf">DoSomething</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="nx">match</span><span class="p">.</span><span class="nf">OfType</span><span class="p">(</span><span class="s">&#34;string&#34;</span><span class="p">)).</span>
+    <span class="nf">Return</span><span class="p">(</span><span class="kc">nil</span><span class="p">).</span>
+    <span class="nf">Times</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>注意下上述我们分行写，要把<code>.</code>写在行末尾，不然编译器会报错。</p>
+<h4 id="断言调用顺序">断言调用顺序</h4>
+<p>对一个对象的调用顺序也是很重要的，<em>GoMock</em>提供了<code>.After</code>方法显式地定义一个方法必须在另一个方法后面被调用:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">callFirst</span> <span class="o">:=</span> <span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span><span class="nf">DoSomething</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;first this&#34;</span><span class="p">)</span>
+<span class="nx">callA</span> <span class="o">:=</span> <span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span><span class="nf">DoSomething</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;then this&#34;</span><span class="p">).</span><span class="nf">After</span><span class="p">(</span><span class="nx">callFirst</span><span class="p">)</span>
+<span class="nx">callB</span> <span class="o">:=</span> <span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span><span class="nf">DoSomething</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;or this&#34;</span><span class="p">).</span><span class="nf">After</span><span class="p">(</span><span class="nx">callFirst</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这个代码都能理解。</p>
+<p>此外还提供了一个更直观的手段去定义断言顺序，也就是<code>gomock.InOrder</code>，这种写法更容易阅读:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">gomock</span><span class="p">.</span><span class="nf">InOrder</span><span class="p">(</span>
+    <span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span><span class="nf">DoSomething</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;first this&#34;</span><span class="p">),</span>
+    <span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span><span class="nf">DoSomething</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;then this&#34;</span><span class="p">),</span>
+    <span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span><span class="nf">DoSomething</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#34;then this&#34;</span><span class="p">),</span>
+    <span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span><span class="nf">DoSomething</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s">&#34;finally this&#34;</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="定义mock的actions">定义mock的actions</h4>
+<p>本质上就是mock其实不会执行其他行为，我们可以人为使用<code>.Do</code>方法，并且传入调用的函数，意味着如果调用的参数匹配上了，就会执行<code>.Do</code>提供的函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span>
+    <span class="nf">DoSomething</span><span class="p">(</span><span class="nx">gomock</span><span class="p">.</span><span class="nf">Any</span><span class="p">(),</span> <span class="nx">gomock</span><span class="p">.</span><span class="nf">Any</span><span class="p">()).</span>
+    <span class="nf">Return</span><span class="p">(</span><span class="kc">nil</span><span class="p">).</span>
+    <span class="nf">Do</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">x</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">y</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Called with x =&#34;</span><span class="p">,</span><span class="nx">x</span><span class="p">,</span><span class="s">&#34;and y =&#34;</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span>
+    <span class="p">})</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>一些复杂的动作，比如下面这个例子，<code>DoSomething</code>方法的第一个<code>int</code>参数应该小于或者等于第二个<code>string</code>参数的长度:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">mockDoer</span><span class="p">.</span><span class="nf">EXPECT</span><span class="p">().</span>
+    <span class="nf">DoSomething</span><span class="p">(</span><span class="nx">gomock</span><span class="p">.</span><span class="nf">Any</span><span class="p">(),</span> <span class="nx">gomock</span><span class="p">.</span><span class="nf">Any</span><span class="p">()).</span>
+    <span class="nf">Return</span><span class="p">(</span><span class="kc">nil</span><span class="p">).</span>
+    <span class="nf">Do</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">x</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">y</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">x</span> <span class="p">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">t</span><span class="p">.</span><span class="nf">Fail</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">})</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>这种写法不能通过自定义matcher实现，因为我们关联了多个具体的值，而matcher每次只能访问一个参数。</strong></p>
+<h3 id="sql-mockgorm">sql-mock(GORM)</h3>
+<p>常规的<code>database/sql/driver</code>的接口mocking可以用GoMock，但是像<code>gorm</code>之类的ORM框架就很难用常规的mock方法，以为有其他很多额外的苦力活。sql-mock的介绍为<code>Sql mock driver for golang to test database interactions. </code>可以帮助解决这个问题。</p>
+<p>下面用BDD框架<code>Ginkgo</code>写测试用例，展示一个如何使用<code>Sqlmock</code>去测试一个简单blog应用的例子，这个例子的后端为<code>pg</code>并且使用了<code>gorm</code>。</p>
+<p><a href="https://github.com/dche423/dbtest">源码</a></p>
+<h4 id="定义gorm数据模型与repository">定义GORM数据模型与Repository</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// modle.go
+</span><span class="c1"></span><span class="kn">import</span> <span class="s">&#34;github.com/lib/pq&#34;</span>
+<span class="o">...</span>
+<span class="kd">type</span> <span class="nx">Blog</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">ID</span>        <span class="kt">uint</span>
+	<span class="nx">Title</span>     <span class="kt">string</span>
+	<span class="nx">Content</span>   <span class="kt">string</span>
+	<span class="nx">Tags</span>      <span class="nx">pq</span><span class="p">.</span><span class="nx">StringArray</span> <span class="c1">// string array for tags
+</span><span class="c1"></span>	<span class="nx">CreatedAt</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>
+<span class="p">}</span>
+
+
+<span class="c1">// repository.go
+</span><span class="c1"></span><span class="kn">import</span> <span class="s">&#34;github.com/jinzhu/gorm&#34;</span>
+<span class="o">...</span>
+
+<span class="kd">type</span> <span class="nx">Repository</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">db</span> <span class="o">*</span><span class="nx">gorm</span><span class="p">.</span><span class="nx">DB</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Repository</span><span class="p">)</span> <span class="nf">ListAll</span><span class="p">()</span> <span class="p">([]</span><span class="o">*</span><span class="nx">Blog</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">l</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Blog</span>
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nf">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">l</span><span class="p">).</span><span class="nx">Error</span>
+	<span class="k">return</span> <span class="nx">l</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Repository</span><span class="p">)</span> <span class="nf">Load</span><span class="p">(</span><span class="nx">id</span> <span class="kt">uint</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">Blog</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">blog</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Blog</span><span class="p">{}</span>
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="s">`id = ?`</span><span class="p">,</span> <span class="nx">id</span><span class="p">).</span><span class="nf">First</span><span class="p">(</span><span class="nx">blog</span><span class="p">).</span><span class="nx">Error</span>
+	<span class="k">return</span> <span class="nx">blog</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span>
+
+<span class="o">...</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>Repository</code>结构非常简单，有着<code>*gorm.DB</code>字段，所有的DB操作依赖于此。这里为了简洁把一些多余的代码省略了。除了<code>Load</code>、<code>ListAll</code>当然还有类似<code>Save</code>、<code>Delete</code>、<code>SearchByTitle</code>等方法。</p>
+<h4 id="单元测试">单元测试</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="p">(</span>
+	<span class="o">...</span>
+  
+	<span class="p">.</span> <span class="s">&#34;github.com/onsi/ginkgo&#34;</span>
+	<span class="p">.</span> <span class="s">&#34;github.com/onsi/gomega&#34;</span>
+	<span class="s">&#34;github.com/DATA-DOG/go-sqlmock&#34;</span>
+	<span class="s">&#34;github.com/jinzhu/gorm&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">var</span> <span class="nx">_</span> <span class="p">=</span> <span class="nf">Describe</span><span class="p">(</span><span class="s">&#34;Repository&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">repository</span> <span class="o">*</span><span class="nx">Repository</span>
+	<span class="kd">var</span> <span class="nx">mock</span> <span class="nx">sqlmock</span><span class="p">.</span><span class="nx">Sqlmock</span>
+
+	<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">db</span> <span class="o">*</span><span class="nx">sql</span><span class="p">.</span><span class="nx">DB</span>
+		<span class="kd">var</span> <span class="nx">err</span> <span class="kt">error</span>
+
+		<span class="nx">db</span><span class="p">,</span> <span class="nx">mock</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">sqlmock</span><span class="p">.</span><span class="nf">New</span><span class="p">()</span> <span class="c1">// mock sql.DB
+</span><span class="c1"></span>		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">ShouldNot</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+
+		<span class="nx">gdb</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">gorm</span><span class="p">.</span><span class="nf">Open</span><span class="p">(</span><span class="s">&#34;postgres&#34;</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="c1">// open gorm db
+</span><span class="c1"></span>		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">ShouldNot</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+
+		<span class="nx">repository</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">Repository</span><span class="p">{</span><span class="nx">db</span><span class="p">:</span> <span class="nx">gdb</span><span class="p">}</span>
+	<span class="p">})</span>
+	<span class="nf">AfterEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">mock</span><span class="p">.</span><span class="nf">ExpectationsWereMet</span><span class="p">()</span> <span class="c1">// make sure all expectations were met
+</span><span class="c1"></span>		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">ShouldNot</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+	<span class="p">})</span>
+  
+	<span class="nf">It</span><span class="p">(</span><span class="s">&#34;test something&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(){</span>
+	    <span class="o">...</span>
+	<span class="p">})</span>
+<span class="p">})</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果读者对<code>Ginkgo</code>的测试语法表示不熟悉的，可以去参阅posts里的<code>BDD</code>相关章节。在这里，<code>BeforeEach</code>中做一些测试初始化，例如<code>Repository</code>的实例化等。在<code>AfterEach</code>中加入各种断言。</p>
+<p><code>BeforeEach</code>中的初始化分为几个步骤：</p>
+<ol>
+<li>创建<code>*sql.DB</code>的mock实例，利用<code>sqlmock.New()</code>创建mock控制器。</li>
+<li><code>gorm.Open(&quot;postgres&quot;, db)</code>使用GORM。</li>
+<li>创建<code>Repository</code>实例。</li>
+</ol>
+<p>在<code>AfterEach</code>中，我们使用<code>mock.ExpectationsWereMet()</code>确保所有的期望都被满足。</p>
+<h4 id="测试listall方法">测试ListAll方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// repository.go
+</span><span class="c1"></span><span class="o">...</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Repository</span><span class="p">)</span> <span class="nf">ListAll</span><span class="p">()</span> <span class="p">([]</span><span class="o">*</span><span class="nx">Blog</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">l</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Blog</span>
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nf">Find</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">l</span><span class="p">).</span><span class="nx">Error</span>
+	<span class="k">return</span> <span class="nx">l</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span>
+<span class="o">...</span>
+
+
+
+<span class="c1">// repository_test.go
+</span><span class="c1"></span><span class="o">...</span>
+<span class="nf">Context</span><span class="p">(</span><span class="s">&#34;list all&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nf">It</span><span class="p">(</span><span class="s">&#34;empty&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		
+		<span class="kd">const</span> <span class="nx">sqlSelectAll</span> <span class="p">=</span> <span class="s">`SELECT * FROM &#34;blogs&#34;`</span>
+		
+		<span class="nx">mock</span><span class="p">.</span><span class="nf">ExpectQuery</span><span class="p">(</span><span class="nx">sqlSelectAll</span><span class="p">).</span>
+			<span class="nf">WillReturnRows</span><span class="p">(</span><span class="nx">sqlmock</span><span class="p">.</span><span class="nf">NewRows</span><span class="p">(</span><span class="kc">nil</span><span class="p">))</span>
+
+		<span class="nx">l</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">repository</span><span class="p">.</span><span class="nf">ListAll</span><span class="p">()</span>
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">ShouldNot</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+		<span class="nf">Expect</span><span class="p">(</span><span class="nx">l</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">BeEmpty</span><span class="p">())</span>
+	<span class="p">})</span>
+<span class="p">})</span>
+<span class="o">...</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上述snippet中，<code>ListAll</code>找到DB中的所有记录，并map到<code>*Blog</code>的切片中。测试语句非常直观，我们设置了该查询语句返回的是<code>nil</code>，也就是空集合。跑一下测试：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">➜ ginkgo     
+Running Suite: Pg Suite
+=======================
+Random Seed: 1585542357
+Will run 8 of 8 specs
+
+
+(/Users/dche423/dbtest/pg/repository.go:24) 
+[2020-03-30 12:26:01]  Query: could not match actual sql: &#34;SELECT * FROM &#34;blogs&#34;&#34; with expected regexp &#34;SELECT * FROM &#34;blogs&#34;&#34; 
+• Failure [0.001 seconds]
+Repository
+/Users/dche423/dbtest/pg/repository_test.go:16
+  list all
+  /Users/dche423/dbtest/pg/repository_test.go:37
+    empty [It]
+    /Users/dche423/dbtest/pg/repository_test.go:38
+
+...
+Test Suite Failed
+➜  
+</code></pre></td></tr></table>
+</div>
+</div><p>测试失败了&hellip;不过回显可以知道信息: <code>could not match actual sql with expected regexp.</code>。实际上Sqlmock使用<code>sqlmock.QueryMatcherRegex</code>为默认的SQL匹配器。在这个例子中，<code>sqlmock.ExpectQuery</code>输入一个正则表达式字符串而不是一个SQL的文本。所以我们有两种方式去解决这个问题:</p>
+<ol>
+<li>使用<code>regexp.QuoteMeta</code>， 也就是<code>mock.ExpectQuery(regexp.QuoteMeta(sqlSelectAll))</code></li>
+<li>更改默认的SQL匹配器，当我们在创建mock实例的时候可以配置: <code>sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))</code></li>
+</ol>
+<p>其实一般来说，正则表达式匹配器能更灵活一些。</p>
+<h4 id="测试load方法">测试Load方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// repository.go
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Repository</span><span class="p">)</span> <span class="nf">Load</span><span class="p">(</span><span class="nx">id</span> <span class="kt">uint</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">Blog</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">blog</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Blog</span><span class="p">{}</span>
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="s">`id = ?`</span><span class="p">,</span> <span class="nx">id</span><span class="p">).</span><span class="nf">First</span><span class="p">(</span><span class="nx">blog</span><span class="p">).</span><span class="nx">Error</span>
+	<span class="k">return</span> <span class="nx">blog</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span>
+<span class="o">...</span>
+
+
+<span class="c1">// repository_test.go
+</span><span class="c1"></span><span class="nf">Context</span><span class="p">(</span><span class="s">&#34;load&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">It</span><span class="p">(</span><span class="s">&#34;found&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+                <span class="nx">blog</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Blog</span><span class="p">{</span>
+                        <span class="nx">ID</span><span class="p">:</span>        <span class="mi">1</span><span class="p">,</span>
+                        <span class="nx">Title</span><span class="p">:</span>     <span class="s">&#34;post&#34;</span><span class="p">,</span>
+                        <span class="o">...</span>
+                <span class="p">}</span>
+
+                <span class="nx">rows</span> <span class="o">:=</span> <span class="nx">sqlmock</span><span class="p">.</span>
+                        <span class="nf">NewRows</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;id&#34;</span><span class="p">,</span> <span class="s">&#34;title&#34;</span><span class="p">,</span> <span class="s">&#34;content&#34;</span><span class="p">,</span> <span class="s">&#34;tags&#34;</span><span class="p">,</span> <span class="s">&#34;created_at&#34;</span><span class="p">}).</span>
+                        <span class="nf">AddRow</span><span class="p">(</span><span class="nx">blog</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">blog</span><span class="p">.</span><span class="nx">Title</span><span class="p">,</span> <span class="nx">blog</span><span class="p">.</span><span class="nx">Content</span><span class="p">,</span> <span class="nx">blog</span><span class="p">.</span><span class="nx">Tags</span><span class="p">,</span> <span class="nx">blog</span><span class="p">.</span><span class="nx">CreatedAt</span><span class="p">)</span>
+
+                <span class="kd">const</span> <span class="nx">sqlSelectOne</span> <span class="p">=</span> <span class="s">`SELECT * FROM &#34;blogs&#34; WHERE (id = $1) ORDER BY &#34;blogs&#34;.&#34;id&#34; ASC LIMIT 1`</span>
+
+                <span class="nx">mock</span><span class="p">.</span><span class="nf">ExpectQuery</span><span class="p">(</span><span class="nx">regexp</span><span class="p">.</span><span class="nf">QuoteMeta</span><span class="p">(</span><span class="nx">sqlSelectOne</span><span class="p">)).</span><span class="nf">WithArgs</span><span class="p">(</span><span class="nx">blog</span><span class="p">.</span><span class="nx">ID</span><span class="p">).</span><span class="nf">WillReturnRows</span><span class="p">(</span><span class="nx">rows</span><span class="p">)</span>
+
+                <span class="nx">dbBlog</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">repository</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="nx">blog</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+                <span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">ShouldNot</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+                <span class="nf">Expect</span><span class="p">(</span><span class="nx">dbBlog</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">blog</span><span class="p">))</span>
+        <span class="p">})</span>
+
+        <span class="nf">It</span><span class="p">(</span><span class="s">&#34;not found&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+                <span class="c1">// ignore sql match
+</span><span class="c1"></span>                <span class="nx">mock</span><span class="p">.</span><span class="nf">ExpectQuery</span><span class="p">(</span><span class="s">`.+`</span><span class="p">).</span><span class="nf">WillReturnRows</span><span class="p">(</span><span class="nx">sqlmock</span><span class="p">.</span><span class="nf">NewRows</span><span class="p">(</span><span class="kc">nil</span><span class="p">))</span>
+                <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">repository</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">gorm</span><span class="p">.</span><span class="nx">ErrRecordNotFound</span><span class="p">))</span>
+        <span class="p">})</span>
+<span class="p">})</span>
+<span class="o">...</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>Load</code>方法输入一个blog id作为参数，找到这个id对应的第一条记录。</p>
+<p>我们测试两种场景:</p>
+<ul>
+<li>名为<code>found</code>的场景，我们创建blog实例并将其转换为<code>sql.Row</code>。随后调用<code>ExpectQuery</code>定义期望，在语句的最后，我们断言loaded blog实例和原来的一样。  <strong>注意：如果你不清楚GORM使用的是什么SQL，可以打开debug flag &ndash; gorm.DB的Debug()</strong></li>
+<li>名为<code>not found</code>的场景，这里使用正则匹配来简化，表示不管什么sql都返回空。这里我们期望的是当找不到对应的blog时候，<code>gorm.ErrRecordNotFound</code>会被抛出。</li>
+</ul>
+<h4 id="测试save方法">测试Save方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// repository.go
+</span><span class="c1"></span><span class="o">...</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Repository</span><span class="p">)</span> <span class="nf">Save</span><span class="p">(</span><span class="nx">blog</span> <span class="o">*</span><span class="nx">Blog</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nf">Save</span><span class="p">(</span><span class="nx">blog</span><span class="p">).</span><span class="nx">Error</span>
+<span class="p">}</span>
+
+
+<span class="c1">// repository_test.go
+</span><span class="c1"></span><span class="o">...</span>
+<span class="nf">Context</span><span class="p">(</span><span class="s">&#34;save&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">blog</span> <span class="o">*</span><span class="nx">Blog</span>
+      <span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+              <span class="nx">blog</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">Blog</span><span class="p">{</span>
+                      <span class="nx">Title</span><span class="p">:</span>     <span class="s">&#34;post&#34;</span><span class="p">,</span>
+                      <span class="nx">Content</span><span class="p">:</span>   <span class="s">&#34;hello&#34;</span><span class="p">,</span>
+                      <span class="nx">Tags</span><span class="p">:</span>      <span class="nx">pq</span><span class="p">.</span><span class="nx">StringArray</span><span class="p">{</span><span class="s">&#34;a&#34;</span><span class="p">,</span> <span class="s">&#34;b&#34;</span><span class="p">},</span>
+                      <span class="nx">CreatedAt</span><span class="p">:</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">(),</span>
+              <span class="p">}</span>
+      <span class="p">})</span>
+
+      <span class="nf">It</span><span class="p">(</span><span class="s">&#34;insert&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+              <span class="c1">// gorm use query instead of exec
+</span><span class="c1"></span>              <span class="c1">// https://github.com/DATA-DOG/go-sqlmock/issues/118
+</span><span class="c1"></span>              <span class="kd">const</span> <span class="nx">sqlInsert</span> <span class="p">=</span> <span class="s">`
+</span><span class="s">                              INSERT INTO &#34;blogs&#34; (&#34;title&#34;,&#34;content&#34;,&#34;tags&#34;,&#34;created_at&#34;) 
+</span><span class="s">                                      VALUES ($1,$2,$3,$4) RETURNING &#34;blogs&#34;.&#34;id&#34;`</span>
+              <span class="kd">const</span> <span class="nx">newId</span> <span class="p">=</span> <span class="mi">1</span>
+              <span class="nx">mock</span><span class="p">.</span><span class="nf">ExpectBegin</span><span class="p">()</span> <span class="c1">// begin transaction
+</span><span class="c1"></span>              <span class="nx">mock</span><span class="p">.</span><span class="nf">ExpectQuery</span><span class="p">(</span><span class="nx">regexp</span><span class="p">.</span><span class="nf">QuoteMeta</span><span class="p">(</span><span class="nx">sqlInsert</span><span class="p">)).</span>
+                      <span class="nf">WithArgs</span><span class="p">(</span><span class="nx">blog</span><span class="p">.</span><span class="nx">Title</span><span class="p">,</span> <span class="nx">blog</span><span class="p">.</span><span class="nx">Content</span><span class="p">,</span> <span class="nx">blog</span><span class="p">.</span><span class="nx">Tags</span><span class="p">,</span> <span class="nx">blog</span><span class="p">.</span><span class="nx">CreatedAt</span><span class="p">).</span>
+                      <span class="nf">WillReturnRows</span><span class="p">(</span><span class="nx">sqlmock</span><span class="p">.</span><span class="nf">NewRows</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;id&#34;</span><span class="p">}).</span><span class="nf">AddRow</span><span class="p">(</span><span class="nx">newId</span><span class="p">))</span>
+              <span class="nx">mock</span><span class="p">.</span><span class="nf">ExpectCommit</span><span class="p">()</span> <span class="c1">// commit transaction
+</span><span class="c1"></span>
+              <span class="nf">Expect</span><span class="p">(</span><span class="nx">blog</span><span class="p">.</span><span class="nx">ID</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">BeZero</span><span class="p">())</span>
+
+              <span class="nx">err</span> <span class="o">:=</span> <span class="nx">repository</span><span class="p">.</span><span class="nf">Save</span><span class="p">(</span><span class="nx">blog</span><span class="p">)</span>
+              <span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">ShouldNot</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+
+              <span class="nf">Expect</span><span class="p">(</span><span class="nx">blog</span><span class="p">.</span><span class="nx">ID</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">BeEquivalentTo</span><span class="p">(</span><span class="nx">newId</span><span class="p">))</span>
+      <span class="p">})</span>
+  
+  <span class="nf">It</span><span class="p">(</span><span class="s">&#34;update&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+      <span class="o">...</span>		
+  <span class="p">})</span>
+      
+
+<span class="p">})</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>当data模型有已有的主键，<code>Save</code>方法能够更新DB记录；反之则插入一条新的记录。上面的snippet表现的插入的测试。</p>
+<p>创建一个新的blog实例，并且不给其设置主键。而后定义<code>mock.ExpectQuery</code>。在Query开始前begin一个事务，在之后commit。<em>一般情况下，非查询语句(<code>Insert/Update</code>)应该被<code>mock.ExepectExec</code>定义，但是这个是个特殊场景。因为某些原因，对于pg的语法，GORM使用<code>QueryRow</code>而非<code>Exec</code>。</em></p>
+<p>最后，使用<code>Expect(blog.ID).Should(BeEquivalentTo(newId))</code> 来断言<code>blog.ID</code>在<code>Save</code>方法调用之后被设置了。其实一般来说，不太需要去对简单的<code>Insert/Update</code>语句进行单元测试，但是这里只是对一些GORM会进行的一些特殊场景进行说明，像其他的后端场景不用太多关注。</p>
+<h2 id="依赖注入">依赖注入</h2>
+<h2 id="test-driven-development">Test Driven Development</h2>
+<p><a href="https://studygolang.gitbook.io/learn-go-with-tests/go-ji-chu/maps">TDD Reference</a></p>
+<h3 id="channel-tdd-过程">channel TDD 过程</h3>
+<h4 id="目标">目标</h4>
+<p>目标： 写一个 <code>CheckWebsites</code> 的函数检查 URL 列表的状态。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">concurrency</span>
+
+<span class="kd">type</span> <span class="nx">WebsiteChecker</span> <span class="kd">func</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="kt">bool</span>
+
+<span class="kd">func</span> <span class="nf">CheckWebsites</span><span class="p">(</span><span class="nx">wc</span> <span class="nx">WebsiteChecker</span><span class="p">,</span> <span class="nx">urls</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">bool</span> <span class="p">{</span>
+    <span class="nx">results</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">bool</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">url</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">urls</span> <span class="p">{</span>
+        <span class="nx">results</span><span class="p">[</span><span class="nx">url</span><span class="p">]</span> <span class="p">=</span> <span class="nf">wc</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">results</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>它返回一个 map，由每个 url 检查后的得到的布尔值组成，成功响应的值为 <code>true</code>，错误响应的值为 <code>false</code>。</p>
+<p>你还必须传入一个 <code>WebsiteChecker</code> 处理单个 URL 并返回一个布尔值。它会被函数调用以检查所有的网站。</p>
+<p>使用 <a href="https://github.com/studygolang/learn-go-with-tests/tree/d8b18269a68c1cf4b8e8b0900f2815dc9d66d87e/zh-CN/zh-CN/dependency-injection.md">依赖注入</a>，允许在不发起真实 HTTP 请求的情况下测试函数，这使测试变得可靠和快速。</p>
+<p>下面是简单的测试：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">concurrency</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;reflect&#34;</span>
+    <span class="s">&#34;testing&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">mockWebsiteChecker</span><span class="p">(</span><span class="nx">url</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">url</span> <span class="o">==</span> <span class="s">&#34;waat://furhurterwe.geds&#34;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">true</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">TestCheckWebsites</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">websites</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span>
+        <span class="s">&#34;http://google.com&#34;</span><span class="p">,</span>
+        <span class="s">&#34;http://blog.gypsydave5.com&#34;</span><span class="p">,</span>
+        <span class="s">&#34;waat://furhurterwe.geds&#34;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="nx">actualResults</span> <span class="o">:=</span> <span class="nf">CheckWebsites</span><span class="p">(</span><span class="nx">mockWebsiteChecker</span><span class="p">,</span> <span class="nx">websites</span><span class="p">)</span>
+
+    <span class="nx">want</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">websites</span><span class="p">)</span>
+    <span class="nx">got</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">actualResults</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">want</span> <span class="o">!=</span> <span class="nx">got</span> <span class="p">{</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nf">Fatalf</span><span class="p">(</span><span class="s">&#34;Wanted %v, got %v&#34;</span><span class="p">,</span> <span class="nx">want</span><span class="p">,</span> <span class="nx">got</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="nx">expectedResults</span> <span class="o">:=</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">bool</span><span class="p">{</span>
+        <span class="s">&#34;http://google.com&#34;</span><span class="p">:</span>          <span class="kc">true</span><span class="p">,</span>
+        <span class="s">&#34;http://blog.gypsydave5.com&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="s">&#34;waat://furhurterwe.geds&#34;</span><span class="p">:</span>    <span class="kc">false</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">!</span><span class="nx">reflect</span><span class="p">.</span><span class="nf">DeepEqual</span><span class="p">(</span><span class="nx">expectedResults</span><span class="p">,</span> <span class="nx">actualResults</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nf">Fatalf</span><span class="p">(</span><span class="s">&#34;Wanted %v, got %v&#34;</span><span class="p">,</span> <span class="nx">expectedResults</span><span class="p">,</span> <span class="nx">actualResults</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>该功能在生产环境中被用于检查数百个网站。但是它速度很慢，所以需要为程序提速。</p>
+<h4 id="写一个测试">写一个测试</h4>
+<p>首先我们对 <code>CheckWebsites</code> 做一个基准测试，这样就能看到我们修改的影响。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">concurrency</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;testing&#34;</span>
+    <span class="s">&#34;time&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">slowStubWebsiteChecker</span><span class="p">(</span><span class="nx">_</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+    <span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">true</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">BenchmarkCheckWebsites</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">urls</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">string</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">urls</span><span class="p">);</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">urls</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="s">&#34;a url&#34;</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nf">CheckWebsites</span><span class="p">(</span><span class="nx">slowStubWebsiteChecker</span><span class="p">,</span> <span class="nx">urls</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>基准测试使用一百个网址的 slice 对 <code>CheckWebsites</code> 进行测试，并使用 <code>WebsiteChecker</code> 的伪造实现。<code>slowStubWebsiteChecker</code> 故意放慢速度。它使用 <code>time.Sleep</code> 明确等待 20 毫秒，然后返回 true。</p>
+<p>当我们运行基准测试时使用 <code>go test -bench=.</code> 命令 (如果在 Windows Powershell 环境下使用 <code>go test -bench=&quot;.&quot;</code>)：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">pkg: github.com/gypsydave5/learn-go-with-tests/concurrency/v0
+BenchmarkCheckWebsites-4               1        2249228637 ns/op
+PASS
+ok      github.com/gypsydave5/learn-go-with-tests/concurrency/v0        2.268s
+</code></pre></td></tr></table>
+</div>
+</div><p><code>CheckWebsite</code> 经过基准测试的时间为 2249228637 纳秒，大约 2.25 秒。</p>
+<p>让我们尝试去让它运行得更快。</p>
+<h4 id="编写足够的代码让它通过">编写足够的代码让它通过</h4>
+<p>现在我们终于可以谈论并发了，以下内容是为了说明「不止一件事情正在进行中」。这是我们每天很自然在做的事情。</p>
+<p>比如，今天早上我泡了一杯茶。我放上水壶，然后在等待它煮沸时，从冰箱里取出了牛奶，把茶从柜子里拿出来，找到我最喜欢的杯子，把茶袋放进杯子里，然后等水壶沸了，把水倒进杯子里。</p>
+<p>我 <em>没有</em> 做的事情是放上水壶，然后呆呆地盯着水壶等水煮沸，然后在煮沸后再做其他事情。</p>
+<p>如果你能理解为什么第一种方式泡茶更快，那你就可以理解我们如何让 <code>CheckWebsites</code> 变得更快。与其等待网站响应之后再发送下一个网站的请求，不如告诉计算机在等待时就发起下一个请求。</p>
+<p>通常在 Go 中，当调用函数 <code>doSomething()</code> 时，我们等待它返回（即使它没有值返回，我们仍然等待它完成）。我们说这个操作是 <em>阻塞</em> 的 —— 它让我们等待它完成。Go 中不会阻塞的操作将在称为 <em>goroutine</em> 的单独 <em>进程</em> 中运行。将程序想象成从上到下读 Go 的 代码，当函数被调用执行读取操作时，进入每个函数「内部」。当一个单独的进程开始时，就像开启另一个 reader（阅读程序）在函数内部执行读取操作，原来的 reader 继续向下读取 Go 代码。</p>
+<p>要告诉 Go 开始一个新的 goroutine，我们把一个函数调用变成 <code>go</code> 声明，通过把关键字 <code>go</code> 放在它前面：<code>go doSomething()</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">concurrency</span>
+
+<span class="kd">type</span> <span class="nx">WebsiteChecker</span> <span class="kd">func</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="kt">bool</span>
+
+<span class="kd">func</span> <span class="nf">CheckWebsites</span><span class="p">(</span><span class="nx">wc</span> <span class="nx">WebsiteChecker</span><span class="p">,</span> <span class="nx">urls</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">bool</span> <span class="p">{</span>
+    <span class="nx">results</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">bool</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">url</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">urls</span> <span class="p">{</span>
+        <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">results</span><span class="p">[</span><span class="nx">url</span><span class="p">]</span> <span class="p">=</span> <span class="nf">wc</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+        <span class="p">}()</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">results</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>因为开启 goroutine 的唯一方法就是将 <code>go</code> 放在函数调用前面，所以当我们想要启动 goroutine 时，我们经常使用 <em>匿名函数（anonymous functions）</em>。一个匿名函数文字看起来和正常函数声明一样，但没有名字（意料之中）。你可以在 上面的 <code>for</code> 循环体中看到一个。</p>
+<p>匿名函数有许多有用的特性，其中两个上面正在使用。首先，它们可以在声明的同时执行 —— 这就是匿名函数末尾的 <code>()</code> 实现的。其次，它们维护对其所定义的词汇作用域的访问权 —— 在声明匿名函数时所有可用的变量也可在函数体内使用。</p>
+<p>上面匿名函数的主体和之前循环体中的完全一样。唯一的区别是循环的每次迭代都会启动一个新的 goroutine，与当前进程（<code>WebsiteChecker</code> 函数）同时发生，每个循环都会将结果添加到 <code>results</code> map 中。</p>
+<p>但是当我们执行 <code>go test</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">-------- FAIL: TestCheckWebsites (0.00s)
+        CheckWebsites_test.go:31: Wanted map[http://google.com:true http://blog.gypsydave5.com:true waat://furhurterwe.geds:false], got map[]
+FAIL
+exit status 1
+FAIL    github.com/gypsydave5/learn-go-with-tests/concurrency/v1        0.010s
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="不可预知的问题">不可预知的问题</h4>
+<p>你可能不会得到这个结果。你可能会得到一个 panic 信息，这个稍后再谈。如果你得到的是那些结果，不要担心，只要继续运行测试，直到你得到上述结果。或假装你得到了，这取决于你。欢迎来到并发编程的世界：如果处理不正确，很难预测会发生什么。别担心 —— 这就是我们编写测试的原因，当处理并发时，测试帮助我们预测可能发生的情况。</p>
+<p>让我们困惑的是，原来的测试 <code>WebsiteChecker</code> 现在返回空的 map。哪里出问题了？</p>
+<p>我们 <code>for</code> 循环开始的 <code>goroutines</code> 没有足够的时间将结果添加结果到 <code>results</code> map 中；<code>WebsiteChecker</code> 函数对于它们来说太快了，以至于它返回时仍为空的 map。</p>
+<p>为了解决这个问题，我们可以等待所有的 goroutine 完成他们的工作，然后返回。两秒钟应该能完成了，对吧？</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">concurrency</span>
+
+<span class="kn">import</span> <span class="s">&#34;time&#34;</span>
+
+<span class="kd">type</span> <span class="nx">WebsiteChecker</span> <span class="kd">func</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="kt">bool</span>
+
+<span class="kd">func</span> <span class="nf">CheckWebsites</span><span class="p">(</span><span class="nx">wc</span> <span class="nx">WebsiteChecker</span><span class="p">,</span> <span class="nx">urls</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">bool</span> <span class="p">{</span>
+    <span class="nx">results</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">bool</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">url</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">urls</span> <span class="p">{</span>
+        <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">results</span><span class="p">[</span><span class="nx">url</span><span class="p">]</span> <span class="p">=</span> <span class="nf">wc</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+        <span class="p">}()</span>
+    <span class="p">}</span>
+
+    <span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nx">results</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>现在当我们运行测试时获得的结果（如果没有得到 —— 参考上面的做法）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">-------- FAIL: TestCheckWebsites (0.00s)
+        CheckWebsites_test.go:31: Wanted map[http://google.com:true http://blog.gypsydave5.com:true waat://furhurterwe.geds:false], got map[waat://furhurterwe.geds:false]
+FAIL
+exit status 1
+FAIL    github.com/gypsydave5/learn-go-with-tests/concurrency/v1        0.010s
+</code></pre></td></tr></table>
+</div>
+</div><p>这不是很好 - 为什么只有一个结果？我们可以尝试通过增加等待的时间来解决这个问题 —— 如果你愿意，可以试试。但没什么作用。这里的问题是变量 <code>url</code> 被重复用于 <code>for</code> 循环的每次迭代 —— 每次都会从 <code>urls</code> 获取新值。但是我们的每个 goroutine 都是 <code>url</code> 变量的引用 —— 它们没有自己的独立副本。所以他们 <em>都</em> 会写入在迭代结束时的 <code>url</code> —— 最后一个 url。这就是为什么我们得到的结果是最后一个 url &mdash;- <strong>注意：闭包情况下的引用关系一直是需要注意的</strong></p>
+<p>解决这个问题:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;time&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">WebsiteChecker</span> <span class="kd">func</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="kt">bool</span>
+
+<span class="kd">func</span> <span class="nf">CheckWebsites</span><span class="p">(</span><span class="nx">wc</span> <span class="nx">WebsiteChecker</span><span class="p">,</span> <span class="nx">urls</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">bool</span> <span class="p">{</span>
+    <span class="nx">results</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">bool</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">url</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">urls</span> <span class="p">{</span>
+        <span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">u</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">results</span><span class="p">[</span><span class="nx">u</span><span class="p">]</span> <span class="p">=</span> <span class="nf">wc</span><span class="p">(</span><span class="nx">u</span><span class="p">)</span>
+        <span class="p">}(</span><span class="nx">url</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nx">results</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过给每个匿名函数一个参数 url(<code>u</code>)，然后用 <code>url</code> 作为参数调用匿名函数，我们确保 <code>u</code> 的值固定为循环迭代的 <code>url</code> 值，重新启动 <code>goroutine</code>。<code>u</code> 是 <code>url</code> 值的副本，因此无法更改。</p>
+<p>现在，如果你幸运的话，你会得到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">PASS
+ok      github.com/gypsydave5/learn-go-with-tests/concurrency/v1        2.012s
+</code></pre></td></tr></table>
+</div>
+</div><p>但是，如果你不走运（如果你运行基准测试，这很可能会发生，因为你将发起多次的尝试）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">fatal error: concurrent map writes
+
+goroutine 8 [running]:
+runtime.throw(0x12c5895, 0x15)
+        /usr/local/Cellar/go/1.9.3/libexec/src/runtime/panic.go:605 +0x95 fp=0xc420037700 sp=0xc4200376e0 pc=0x102d395
+runtime.mapassign_faststr(0x1271d80, 0xc42007acf0, 0x12c6634, 0x17, 0x0)
+        /usr/local/Cellar/go/1.9.3/libexec/src/runtime/hashmap_fast.go:783 +0x4f5 fp=0xc420037780 sp=0xc420037700 pc=0x100eb65
+github.com/gypsydave5/learn-go-with-tests/concurrency/v3.WebsiteChecker.func1(0xc42007acf0, 0x12d3938, 0x12c6634, 0x17)
+        /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:12 +0x71 fp=0xc4200377c0 sp=0xc420037780 pc=0x12308f1
+runtime.goexit()
+        /usr/local/Cellar/go/1.9.3/libexec/src/runtime/asm_amd64.s:2337 +0x1 fp=0xc4200377c8 sp=0xc4200377c0 pc=0x105cf01
+created by github.com/gypsydave5/learn-go-with-tests/concurrency/v3.WebsiteChecker
+        /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:11 +0xa1
+
+        ... many more scary lines of text ...
+</code></pre></td></tr></table>
+</div>
+</div><p>这看上去冗长、可怕，我们需要深呼吸并阅读错误：<code>fatal error: concurrent map writes</code>。有时候，当我们运行我们的测试时，两个 goroutines 完全同时写入 <code>results</code> map。Go 的 Maps 不喜欢多个事物试图一次性写入，所以就导致了 <code>fatal error</code>。</p>
+<p>这是一种 <em>race condition（竞争条件）</em>，当软件的输出取决于事件发生的时间和顺序时，因为我们无法控制，bug 就会出现。因为我们无法准确控制每个 goroutine 写入结果 map 的时间，两个 goroutines 同一时间写入时程序将非常脆弱。</p>
+<p>Go 可以帮助我们通过其内置的 <a href="https://blog.golang.org/race-detector">race detector</a> 来发现竞争条件。要启用此功能，请使用 <code>race</code> 标志运行测试：<code>go test -race</code>。</p>
+<p>你应该得到一些如下所示的输出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">==================
+WARNING: DATA RACE
+Write at 0x00c420084d20 by goroutine 8:
+  runtime.mapassign_faststr()
+      /usr/local/Cellar/go/1.9.3/libexec/src/runtime/hashmap_fast.go:774 +0x0
+  github.com/gypsydave5/learn-go-with-tests/concurrency/v3.WebsiteChecker.func1()
+      /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:12 +0x82
+
+Previous write at 0x00c420084d20 by goroutine 7:
+  runtime.mapassign_faststr()
+      /usr/local/Cellar/go/1.9.3/libexec/src/runtime/hashmap_fast.go:774 +0x0
+  github.com/gypsydave5/learn-go-with-tests/concurrency/v3.WebsiteChecker.func1()
+      /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:12 +0x82
+
+Goroutine 8 (running) created at:
+  github.com/gypsydave5/learn-go-with-tests/concurrency/v3.WebsiteChecker()
+      /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:11 +0xc4
+  github.com/gypsydave5/learn-go-with-tests/concurrency/v3.TestWebsiteChecker()
+      /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker_test.go:27 +0xad
+  testing.tRunner()
+      /usr/local/Cellar/go/1.9.3/libexec/src/testing/testing.go:746 +0x16c
+
+Goroutine 7 (finished) created at:
+  github.com/gypsydave5/learn-go-with-tests/concurrency/v3.WebsiteChecker()
+      /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:11 +0xc4
+  github.com/gypsydave5/learn-go-with-tests/concurrency/v3.TestWebsiteChecker()
+      /Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker_test.go:27 +0xad
+  testing.tRunner()
+      /usr/local/Cellar/go/1.9.3/libexec/src/testing/testing.go:746 +0x16c
+==================
+</code></pre></td></tr></table>
+</div>
+</div><p>细节还是难以阅读 - 但 <code>WARNING: DATA RACE</code> 相当明确。阅读错误的内容，我们可以看到两个不同的 goroutines 在 map 上执行写入操作：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Write at 0x00c420084d20 by goroutine 8:
+</code></pre></td></tr></table>
+</div>
+</div><p>正在写入相同的内存块</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Previous write at 0x00c420084d20 by goroutine 7:
+</code></pre></td></tr></table>
+</div>
+</div><p>最重要的是，我们可以看到发生写入的代码行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">/Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:12
+</code></pre></td></tr></table>
+</div>
+</div><p>和 goroutines 7 和 8 开始的代码行号：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">/Users/gypsydave5/go/src/github.com/gypsydave5/learn-go-with-tests/concurrency/v3/websiteChecker.go:11
+</code></pre></td></tr></table>
+</div>
+</div><p>你需要知道的所有内容都会打印到你的终端上 - 你只需耐心阅读就可以了。</p>
+<h4 id="使用channels处理race-condition">使用channels处理race condition</h4>
+<p>我们可以通过使用 <em>channels</em> 协调我们的 goroutines 来解决这个数据竞争。channels 是一个 Go 数据结构，可以同时接收和发送值。这些操作以及细节允许不同进程之间的通信。</p>
+<p>在这种情况下，我们想要考虑父进程和每个 goroutine 之间的通信，goroutine 使用 url 来执行 <code>WebsiteChecker</code> 函数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">concurrency</span>
+
+<span class="kd">type</span> <span class="nx">WebsiteChecker</span> <span class="kd">func</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="kt">bool</span>
+<span class="kd">type</span> <span class="nx">result</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="kt">string</span>
+    <span class="kt">bool</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">CheckWebsites</span><span class="p">(</span><span class="nx">wc</span> <span class="nx">WebsiteChecker</span><span class="p">,</span> <span class="nx">urls</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">bool</span> <span class="p">{</span>
+    <span class="nx">results</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">bool</span><span class="p">)</span>
+    <span class="nx">resultChannel</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="nx">result</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">url</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">urls</span> <span class="p">{</span>
+        <span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">u</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">resultChannel</span> <span class="o">&lt;-</span> <span class="nx">result</span><span class="p">{</span><span class="nx">u</span><span class="p">,</span> <span class="nf">wc</span><span class="p">(</span><span class="nx">u</span><span class="p">)}</span>
+        <span class="p">}(</span><span class="nx">url</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">urls</span><span class="p">);</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">result</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">resultChannel</span>
+        <span class="nx">results</span><span class="p">[</span><span class="nx">result</span><span class="p">.</span><span class="kt">string</span><span class="p">]</span> <span class="p">=</span> <span class="nx">result</span><span class="p">.</span><span class="kt">bool</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">results</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>除了 <code>results</code> map 之外，我们现在还有一个 <code>resultChannel</code> 的变量，同样使用 <code>make</code> 方法创建。<code>chan result</code> 是 channel 类型的 —— <code>result</code> 的 channel。新类型的 <code>result</code> 是将 <code>WebsiteChecker</code> 的返回值与正在检查的 url 相关联 —— 它是一个 <code>string</code> 和 <code>bool</code> 的结构。因为我们不需要任何一个要命名的值，它们中的每一个在结构中都是匿名的；这在很难知道用什么命名值的时候可能很有用。</p>
+<p>现在，当我们迭代 urls 时，不是直接写入 <code>map</code>，而是使用 <em>send statement</em> 将每个调用 <code>wc</code> 的 <code>result</code> 结构体发送到 <code>resultChannel</code>。这使用 <code>&lt;-</code> 操作符，channel 放在左边，值放在右边：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// send statement
+</span><span class="c1"></span><span class="nx">resultChannel</span> <span class="o">&lt;-</span> <span class="nx">result</span><span class="p">{</span><span class="nx">u</span><span class="p">,</span> <span class="nf">wc</span><span class="p">(</span><span class="nx">u</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>下一个 <code>for</code> 循环为每个 url 迭代一次。 我们在内部使用 <em>receive expression</em>，它将从通道接收到的值分配给变量。这也使用 <code>&lt;-</code> 操作符，但现在两个操作数颠倒过来：现在 channel 在右边，我们指定的变量在左边：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// receive expression
+</span><span class="c1"></span><span class="nx">result</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">resultChannel</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后我们使用接收到的 <code>result</code> 更新 map。</p>
+<p>通过将结果发送到通道，我们可以控制每次写入 <code>results</code> map 的时间，确保每次写入一个结果。虽然 <code>wc</code> 的每个调用都发送给结果通道，但是它们在其自己的进程内并行发生，因为我们将结果通道中的值与接收表达式一起逐个处理一个结果。</p>
+<p>我们已经将想要加快速度的那部分代码并行化，同时确保不能并发的部分仍然是线性处理。我们使用 channel 在多个进程间通信。</p>
+<p>当我们运行基准时：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">pkg: github.com/gypsydave5/learn-go-with-tests/concurrency/v2
+BenchmarkCheckWebsites-8             100          23406615 ns/op
+PASS
+ok      github.com/gypsydave5/learn-go-with-tests/concurrency/v2        2.377s
+</code></pre></td></tr></table>
+</div>
+</div><p>23406615 纳秒 —— 0.023 秒，速度大约是最初函数的一百倍，这是非常成功的。</p>
+<h4 id="总结">总结</h4>
+<p>某种程度说，我们已经参与了 <code>CheckWebsites</code> 函数的一个长期重构；输入和输出从未改变，它只是变得更快了。但是我们所做的测试以及我们编写的基准测试允许我们重构 <code>CheckWebsites</code>，让我们有信心保证软件仍然可以工作，同时也证明它确实变得更快了。</p>
+<p>在使它更快的过程中，我们明白了</p>
+<ul>
+<li><em>goroutines</em> 是 Go 的基本并发单元，它让我们可以同时检查多个网站。</li>
+<li><em>anonymous functions（匿名函数）</em>，我们用它来启动每个检查网站的并发进程。</li>
+<li><em>channels</em>，用来组织和控制不同进程之间的交流，使我们能够避免 <em>race condition（竞争条件）</em> 的问题。</li>
+<li><em>the race detector（竞争探测器）</em> 帮助我们调试并发代码的问题。</li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">CctoctoFX</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-12-19
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/golang/channels/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Channels Concurrency Work-Around</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/golang/schedualing/">
+            <span class="next-text nav-default">Golang并发调度</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="derios1230@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/pillumina" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/fang-xian-20" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:2000/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>CctoctoFX</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

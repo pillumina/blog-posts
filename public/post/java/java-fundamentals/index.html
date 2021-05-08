@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Java Fundamentals - CctoctoFX</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="CctoctoFX" /><meta name="description" content="JAVA对象的equals方法和hashCode方法是这样规定的 相等（相同）的对象必须有相等的哈希码 如果两个对象的哈希吗相同，它们不一定相同" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.4 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:2000/post/java/java-fundamentals/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.2e81bbed97b8b282c1aeb57488cc71c8d8c8ec559f3931531bd396bf31e0d4dd.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Java Fundamentals" />
+<meta property="og:description" content="JAVA对象的equals方法和hashCode方法是这样规定的 相等（相同）的对象必须有相等的哈希码 如果两个对象的哈希吗相同，它们不一定相同" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:2000/post/java/java-fundamentals/" />
+<meta property="article:published_time" content="2020-10-26T12:40:29+08:00" />
+<meta property="article:modified_time" content="2020-10-26T12:40:29+08:00" />
+<meta itemprop="name" content="Java Fundamentals">
+<meta itemprop="description" content="JAVA对象的equals方法和hashCode方法是这样规定的 相等（相同）的对象必须有相等的哈希码 如果两个对象的哈希吗相同，它们不一定相同">
+<meta itemprop="datePublished" content="2020-10-26T12:40:29+08:00" />
+<meta itemprop="dateModified" content="2020-10-26T12:40:29+08:00" />
+<meta itemprop="wordCount" content="8038">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java Fundamentals"/>
+<meta name="twitter:description" content="JAVA对象的equals方法和hashCode方法是这样规定的 相等（相同）的对象必须有相等的哈希码 如果两个对象的哈希吗相同，它们不一定相同"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CctoctoFX</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CctoctoFX</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Java Fundamentals</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-10-26 </span>
+        
+          <span class="more-meta"> 8038 words </span>
+          <span class="more-meta"> 17 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#java对象的equals方法和hashcode方法是这样规定的">JAVA对象的equals方法和hashCode方法是这样规定的</a></li>
+            <li><a href="#java集合判断两个对象是否相等的规则">Java集合判断两个对象是否相等的规则：</a></li>
+            <li><a href="#由于gc的自动回收机制并不能保证finalize方法被及时的执行因为对象的回收时机具有不确定性或者要么没有触发垃圾回收这个方法被禁止调用应该用显式的close方法">由于GC的自动回收机制，并不能保证finalize方法被及时的执行，因为对象的回收时机具有不确定性，或者要么没有触发垃圾回收。这个方法被禁止调用，应该用显式的close()方法。</a></li>
+            <li><a href="#collection类的选择">Collection类的选择</a></li>
+            <li><a href="#map常用子类hashmap-hashtable-treemap-concurrenthashmap">Map常用子类：HashMap, HashTable, TreeMap, ConcurrentHashMap</a></li>
+            <li><a href="#linkedhashmap">LinkedHashMap</a></li>
+            <li><a href="#集合初始化大小和扩容">集合初始化、大小和扩容</a></li>
+            <li><a href="#weakreference弱引用">WeakReference弱引用</a></li>
+            <li><a href="#for-each循环优于传统for循环">for-each循环优于传统for循环</a></li>
+            <li><a href="#异常处理">异常处理</a></li>
+            <li><a href="#反射">反射</a></li>
+            <li><a href="#类私有变量的反射访问">类私有变量的反射访问</a></li>
+            <li><a href="#输入输出流">输入输出流</a></li>
+            <li><a href="#线程">线程</a></li>
+            <li><a href="#jdbc">JDBC</a></li>
+            <li><a href="#java8">JAVA8</a></li>
+            <li><a href="#泛型">泛型</a></li>
+            <li><a href="#类的初始化过程">类的初始化过程</a></li>
+            <li><a href="#gc">GC</a></li>
+            <li><a href="#jdk工具">JDK工具</a></li>
+            <li><a href="#正则表达式">正则表达式</a></li>
+            <li><a href="#java安全">JAVA安全</a></li>
+          </ul>
+        </li>
+        <li><a href="#分散的知识">分散的知识</a>
+          <ul>
+            <li><a href="#switch支持的6种数据类型">switch支持的6种数据类型</a></li>
+            <li><a href="#java整数缓存">Java整数缓存</a></li>
+            <li><a href="#threadsleep和wait的区别">Thread.Sleep()和wait()的区别</a></li>
+            <li><a href="#join方法让调用这个方法的线程执行完">Join方法让调用这个方法的线程执行完</a></li>
+            <li><a href="#jvm-吞吐量和暂停时间trade-off">JVM 吞吐量和暂停时间trade-off</a></li>
+            <li><a href="#java接口成员变量和方法默认修饰符">JAVA接口成员变量和方法默认修饰符</a></li>
+            <li><a href="#并发原子类">并发原子类</a></li>
+            <li><a href="#java-countdownlatch方法并发编程">Java CountDownLatch方法并发编程</a></li>
+            <li><a href="#java-类执行顺序">Java 类执行顺序</a></li>
+            <li><a href="#线程安全的数据结构">线程安全的数据结构</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h3 id="java对象的equals方法和hashcode方法是这样规定的">JAVA对象的equals方法和hashCode方法是这样规定的</h3>
+<ol>
+<li>
+<p>相等（相同）的对象必须有相等的哈希码</p>
+</li>
+<li>
+<p>如果两个对象的哈希吗相同，它们不一定相同</p>
+</li>
+</ol>
+<h3 id="java集合判断两个对象是否相等的规则">Java集合判断两个对象是否相等的规则：</h3>
+<ol>
+<li>
+<p>判断两个对象的哈希码是否相等</p>
+</li>
+<li>
+<p>判断两个对象用equals是否相等</p>
+</li>
+</ol>
+<p>所以重写其中一个方法，必须重写另一个方法</p>
+<p>让对象可拷贝：</p>
+<ol>
+<li>实现java.lang.Cloneable 2. 重写Object的clone()方法</li>
+</ol>
+<h3 id="由于gc的自动回收机制并不能保证finalize方法被及时的执行因为对象的回收时机具有不确定性或者要么没有触发垃圾回收这个方法被禁止调用应该用显式的close方法">由于GC的自动回收机制，并不能保证finalize方法被及时的执行，因为对象的回收时机具有不确定性，或者要么没有触发垃圾回收。这个方法被禁止调用，应该用显式的close()方法。</h3>
+<h3 id="collection类的选择">Collection类的选择</h3>
+<p>Set:</p>
+<p>排序吗？</p>
+<p>是： TreeSet / LinkedHashSet</p>
+<p>否： HashSet</p>
+<p>List</p>
+<p>要安全吗？</p>
+<p>是： Vector</p>
+<p>否： ArrayList或者LinkedList &mdash; 查询多ArrayList，增删多LinkedList</p>
+<h3 id="map常用子类hashmap-hashtable-treemap-concurrenthashmap">Map常用子类：HashMap, HashTable, TreeMap, ConcurrentHashMap</h3>
+<p>HashMap: 非线程安全，性能高，基于数组和链表实现。</p>
+<p>TreeMap：有序键值对，按key排序</p>
+<p>HashTable: 线程安全, 性能低</p>
+<p>ConcurrentHashMap: 线程安全且性能较好。Java1.7采取分段锁，1.8采用CAS+synchronized保证并发安全。</p>
+<h3 id="linkedhashmap">LinkedHashMap</h3>
+<p>为HashMap的子类，内部还有一个双向链表维护键值对的顺序。支持插入顺序、访问顺序</p>
+<ul>
+<li>
+<p>插入顺序：先添加在前，后添加在后</p>
+</li>
+<li>
+<p>访问顺序：即get/put操作，对一个键执行get/put操作后，对应的键值被移动到链表的末尾，所以最末尾的是最近访问的，最开始的是最久没有被访问的。</p>
+</li>
+<li>
+<p>有5种构造方法，4个是插入顺序，只有一个按照指定访问顺序，可以用于实现LRUCache</p>
+</li>
+</ul>
+<h3 id="集合初始化大小和扩容">集合初始化、大小和扩容</h3>
+<h4 id="建议在集合初始化时指定集合容量大小">建议在集合初始化时指定集合容量大小</h4>
+<p>如果没有设置，元素增加，resize表会重建hash，影响性能</p>
+<p>InitialCapacity = （count / loader_factor (0.75)）+ 1 ，暂时无法确定初始值，可以设置为16</p>
+<h4 id="java集合的默认大小和扩容">Java集合的默认大小和扩容</h4>
+<p>ArrayList、Vector: 初始为10</p>
+<p>HashSet、HashMap: 初始为16</p>
+<p>Vector：加载因子为1，扩容增量为原来容量的1倍</p>
+<p>ArrayList: 扩容增量为原容量的0.5倍+1</p>
+<p>HashSet：加载因子为0.75，扩容增量为原来容量的一倍</p>
+<p>HashMap: 加载因子为0.75，扩容增量为原来容量的一倍</p>
+<h4 id="初始化方法">初始化方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// asList得到的是长度和内容都固定的列表，无法修改
+</span><span class="c1"></span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">&#34;1&#34;</span><span class="o">,</span> <span class="s">&#34;2&#34;</span><span class="o">,</span> <span class="s">&#34;3&#34;</span><span class="o">));</span>
+<span class="c1">// 一维数组
+</span><span class="c1"></span><span class="kt">int</span><span class="o">[]</span> <span class="n">a2</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]{</span><span class="n">1</span><span class="o">,</span> <span class="n">2</span><span class="o">,</span> <span class="n">3</span><span class="o">}</span>
+<span class="c1">// 二维数组
+</span><span class="c1"></span><span class="kt">int</span><span class="o">[][]</span> <span class="n">a4</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">4</span><span class="o">][</span><span class="n">4</span><span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="weakreference弱引用">WeakReference弱引用</h3>
+<h3 id="for-each循环优于传统for循环">for-each循环优于传统for循环</h3>
+<p>for-each更简洁，也没有性能损失，在数组和list上均可使用（实现iterable的对象）</p>
+<p>有三种情况不能用：</p>
+<ul>
+<li>过滤删除指定元素</li>
+<li>修改指定元素值</li>
+<li>并行遍历多个集合</li>
+</ul>
+<h3 id="异常处理">异常处理</h3>
+<p>Throwable、Error、Exception</p>
+<p>Exception分为 Runtime Exception以及Checked Exception</p>
+<ul>
+<li>
+<p>运行时异常：编译能通过，程序不会处理运行时异常，程序会中止。 ArithmaticException, IllegalArgumentException，NullPointerException， IndexOutOfBoundsException&hellip;</p>
+</li>
+<li>
+<p>受检查的异常：要么用try catch捕获，要么用throws声明抛出，交给父类处理，否则编译不会通过。 IOException，SQLException&hellip;</p>
+</li>
+</ul>
+<h4 id="try-catch-finally-中的return">try catch finally 中的return</h4>
+<ul>
+<li>不管有没有异常，finally都会执行</li>
+<li>try catch有return时，finally仍然会执行</li>
+<li>finally是在return后面的表达式运算后执行的，没有返回运算的值，而是先把要返回的值保存起来，不管finally中的代码怎么样，返回的值都不会改变、所以函数的return值是在finally执行前确定的。</li>
+<li>finally中最好不要包含return，否则程序会提前退出，返回值不是try活着catch中保存的返回值。</li>
+</ul>
+<ul>
+<li>核心: finally语句在try catch中的控制转移语句执行前执行(return, break, continue, throw)。不过也有点区别，return和throw把程序控制权转交给调用者，break和continue是在当前方法内转移。</li>
+<li>由上述可知，finally语句如果里面有控制转移语句，有可能把try-catch里的return或者异常捕获给&quot;吃了&quot;，那么一些未处理的异常可能无法被抛出！</li>
+</ul>
+<h4 id="try-with-resources语句">try-with-resources语句</h4>
+<p>任何实现java.lang.AutoCloseable接口的对象，和实现java.io.Closeable接口的对象，都可以当做资源使用。</p>
+<p>在此语句中，也可以加catch和finally，但是任何catch和finally代码块都在所有被声明的资源被关闭后才会执行。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="k">try</span> <span class="o">(</span><span class="n">Statement</span> <span class="n">stmt</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="na">createStatement</span><span class="o">())</span> <span class="o">{</span>
+  <span class="o">.....</span>
+<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">){</span>
+  <span class="n">JDBCTutorialUtilities</span><span class="o">.</span><span class="na">printSQLExcepion</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="线程和线程池的异常处理">线程和线程池的异常处理</h4>
+<p>并发情况下，如果在父线程中启动了子线程，那么try catch finally不好捕获。</p>
+<h5 id="线程的异常处理">线程的异常处理</h5>
+<ul>
+<li>子线程中try catch</li>
+<li>为线程设置UncaughtExceptionHandler，具体可以用Thread.setUncaughtExceptionHandler设置当前线程的异常处理器（默认没有），Thread.setDefaultUncaughtExceptionHandler为整个程序设置默认的异常处理器。 <strong>注意</strong>：子线程中发生了异常，如果没有任何类来接手处理的话，是会直接退出的，不会记录任何日志。</li>
+</ul>
+<h5 id="线程池的异常处理">线程池的异常处理</h5>
+<ul>
+<li>通过Future的get方法捕获异常（推荐）</li>
+<li>通过execute提交的任务，才能把它抛出的异常给UncaughtExceptionHandler</li>
+<li>通过submit提交的任务，无论是抛出的未检测异常还是已经检查异常，都将被认为是任务返回状态的一部分，这个异常被Future.get封装在ExecutionException中重新抛出。</li>
+</ul>
+<h4 id="异常泄漏敏感信息">异常泄漏敏感信息</h4>
+<p>敏感异常包装在非敏感异常抛出，不能防止敏感信息泄漏。比如FileNotFoundException被IOException包装，并没什么用。</p>
+<h3 id="反射">反射</h3>
+<h4 id="如何获得class对象">如何获得Class对象</h4>
+<ul>
+<li>Class.forName(&ldquo;类的全限定名&rdquo;)</li>
+<li>实例对象.getClass()</li>
+<li>类名.class (类字面常量) &ndash; 此方法创建对Class对象的引用时，不会自动地初始化该Class对象，和forName方法不同</li>
+<li>如果一个字段被static final修饰，称为编译时常量，所以不会对类进行初始化，在编译器把结果放入常量池。</li>
+<li>一旦类被加载到了内存里，那么无论哪种方式获取该类的Class对象，返回的都是指向同一个java堆地址的引用。JVM不会创建两个相同类型的Class对象。</li>
+<li>对于任意一个Class对象，都需要它的类加载器和这个类本身一同确定其在JVM中的唯一性。所以即使两个Class对象来源于同一个Class文件，只要类加载器不同，两个Class对象就不同</li>
+</ul>
+<h4 id="基本数据类型的class对象和包装类的class对象不一样">基本数据类型的Class对象和包装类的Class对象不一样</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="n">Class</span> <span class="n">c1</span> <span class="o">=</span> <span class="n">Integer</span><span class="o">.</span><span class="na">class</span><span class="o">;</span>
+<span class="n">Class</span> <span class="n">c2</span> <span class="o">=</span> <span class="kt">int</span><span class="o">.</span><span class="na">class</span><span class="o">;</span>
+<span class="c1">// not equals!
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="类私有变量的反射访问">类私有变量的反射访问</h3>
+<p>需要注意的是，需要设置属性可达，否则会抛出IllegalAccessException</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="n">Field</span><span class="o">[]</span> <span class="n">fs</span> <span class="o">=</span> <span class="n">clazz</span><span class="o">.</span><span class="na">getDeclaredFields</span><span class="o">();</span>
+<span class="k">for</span> <span class="o">(</span><span class="n">Field</span> <span class="n">field</span><span class="o">:</span> <span class="n">fs</span><span class="o">){</span>
+  <span class="c1">// 设置属性可达
+</span><span class="c1"></span>  <span class="n">field</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+  <span class="c1">// ...后续的打印访问
+</span><span class="c1"></span><span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="输入输出流">输入输出流</h3>
+<h4 id="字节流">字节流</h4>
+<ul>
+<li>InputStream
+<ul>
+<li>FileInputStream 文件流，能处理二进制文件也能处理文本</li>
+<li>BufferedInputStream 缓冲流，能处理二进制也能处理文本</li>
+</ul>
+</li>
+<li>OutputStream
+<ul>
+<li>FileOutputStream 文件流， 能处理二进制文件也能处理文本</li>
+<li>&hellip;..</li>
+</ul>
+</li>
+</ul>
+<h4 id="字符流">字符流</h4>
+<ul>
+<li>Reader
+<ul>
+<li>FileReader 文件流，只能出来文本文件</li>
+<li>BufferedReader 缓冲流，只能处理文本文件</li>
+</ul>
+</li>
+<li>Writer
+<ul>
+<li>FileWriter</li>
+<li>BufferedWriter</li>
+</ul>
+</li>
+</ul>
+<h4 id="nio">NIO</h4>
+<p>核心是Channel、Buffer、Selectors</p>
+<ul>
+<li>Channel，Java NIO数据的源头，Buffer的唯一接口，向缓冲区提供数据或者读取数据，双向读写，异步读写，FileChannel, DataChannel, SocketChannel, ServerSocketChannel等根据数据来源分类。比如文件IO，UDP，TCP网络的IO</li>
+<li>Buffer，Java NIO数据读写中转，数据缓存，适用于除了bool类型的所有数据类型，因为bool类型不能通过IO发送</li>
+<li>Selectors, 异步IO核心类，实现异步非阻塞IO操作，允许1个Selector线程管理&amp;处理多个通道 Channel。不需要为每个channel去分配一个线程，也就是事件驱动而不是同步监视事件。</li>
+</ul>
+<p>注意：Java普通的IO写操作不是线程安全的，java.nio.channels.FileChannel提供线程安全的写操作。</p>
+<p>用NIO多线程往同一文件写入数据：</p>
+<ul>
+<li>利用RandomAccessFile访问文件部分内容</li>
+<li>利用FileChannel 对线程独占的文件块需要加锁</li>
+<li>利用MappedByteBuffer对文件进行并发写入</li>
+</ul>
+<h3 id="线程">线程</h3>
+<p>线程状态：New, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED</p>
+<h4 id="thread类方法">Thread类方法</h4>
+<p>run()中放逻辑，start()开始线程，直接吊run只会在本进程中执行</p>
+<p>sleep()和wait()最大区别：</p>
+<ul>
+<li>Sleep()睡眠时，保持对象锁，仍然占有该锁</li>
+<li>wait()睡眠时，会释放对象锁，wait必须放在synchronized block中，否则会抛出IllegalMonitorStateException异常</li>
+</ul>
+<p>interrupted()方法，本质只是设置该线程的中断标志，设置为true，并根据线程状态决定是否抛出异常，比如线程阻塞时就是抛出中断阻塞异常，标志位同时被清除。</p>
+<p>join()等待该方法的线程执行完毕后再继续执行</p>
+<p>调用一个线程的interrupt方法，分具体情况</p>
+<ul>
+<li>如果线程处于被阻塞(sleep, wait, join)，那么线程立即退出被阻塞状态，抛出InterruptedException</li>
+<li>如果线程处于正常活动状态，那么将这个线程的中断标志设置为true，仅此而已。被设置的线程依然继续正常运行。所以这个方法并不能真正中断线程。</li>
+</ul>
+<p>wait(), notify(), notifyAll()都要在synchronized代码块中使用，因为会对对象的锁标志进行操作。</p>
+<h4 id="线程的创建方式">线程的创建方式</h4>
+<ol>
+<li>继承Thread，实现run方法，start调用</li>
+<li>实现Runnable接口， Thread(Runnable target, String name)</li>
+<li>实现Callable接口，和FutureTask共用</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="n">Callable</span> <span class="n">callable</span>  <span class="o">=</span> <span class="k">new</span> <span class="n">MyCallable</span><span class="o">();</span>
+<span class="n">FutureTask</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">task</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FutureTask</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;(</span><span class="n">callable</span><span class="o">);</span>
+<span class="n">Thread</span> <span class="n">thread1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="n">task</span><span class="o">,</span> <span class="err">&#39;</span><span class="n">thread1</span><span class="err">&#39;</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="runnable和callable的区别">Runnable和Callable的区别</h4>
+<ol>
+<li>Callable的任务执行后可以返回值，而Runnable为void</li>
+<li>call方法可以抛出异常而run不可以</li>
+<li>call任务可以拿到future对象，表示异步计算的结果。</li>
+<li>加入线程池运行，run使用ExecutorService的execute方法，call使用submit方法</li>
+</ol>
+<h4 id="线程退出方式">线程退出方式</h4>
+<ol>
+<li>执行完run</li>
+<li>用interrupt中断</li>
+</ol>
+<h4 id="共享数据和synchronized">共享数据和synchronized</h4>
+<p>Runnable中默认是共享数据，需要增加synchronized关键字来设置互斥区，保护共享数据：</p>
+<h4 id="atomicinteger">AtomicInteger</h4>
+<p>AtomicInteger，AtomicLong，AtomicLongArray，AtomicReference等原子类的类，主要用于高并发环境下的高效程序处理，帮助简化同步处理。++i和i++不是线程安全的，使用的时候不可避免要用synchronized，而AtomicInteger为线程安全的加减操作。</p>
+<h4 id="线程同步机制">线程同步机制</h4>
+<ul>
+<li>
+<p>共享内存</p>
+<p>Java的实例域，静态域，和数组元素都是放在堆内存中的，是线程都可以访问到的，即共享。局部变量，方法定义参数，异常处理参数线程间不共享。出现线程安全问题的都是前者。Java内存模型（JMM）决定了一个线程对共享变量的写入何时对其他线程是可见的。</p>
+</li>
+<li>
+<p>消息传递</p>
+<p>Exchanger可以在两个线程内交换数据，也只能是2个线程。A线程调用exchange方法，会进入阻塞，知道B线程也调用了exchange方法，而后以线程安全的方式交换数据，之后两个线程继续运行。Semaphore，可以控制同时访问的线程个数，用acquire获取许可，release释放许可。</p>
+</li>
+</ul>
+<h4 id="java线程池体系结构">Java线程池体系结构</h4>
+<h3 id="jdbc">JDBC</h3>
+<h4 id="dbcp连接池配置">DBCP连接池配置</h4>
+<ol>
+<li>
+<p>手动配置</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="n">BasicDataSource</span> <span class="n">dataSource</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BasicDataSource</span><span class="o">();</span>
+<span class="c1">// 调用配置
+</span><span class="c1"></span><span class="n">dataSource</span><span class="o">.</span><span class="na">setDriverClassName</span><span class="o">(</span><span class="s">&#34;com.mysql.jdbc.Driver&#34;</span><span class="o">);</span>
+<span class="c1">// 得到连接
+</span><span class="c1"></span><span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>读取配置文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="n">BasicDataSourceFactory</span> <span class="n">factory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BasicDataSourceFactory</span><span class="o">;</span>
+<span class="c1">// 读取配置
+</span><span class="c1"></span><span class="n">DataSource</span> <span class="n">dataSource</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">createDataSource</span><span class="o">(</span><span class="n">properties</span><span class="o">);</span>
+<span class="c1">// 得到连接
+</span><span class="c1"></span><span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h4 id="fetchsize设置每次缓存读取大小">FetchSize设置每次缓存读取大小</h4>
+<p>oracle中每次默认读取10行，mysql驱动则是把整个结果全部读取到内存中才开始允许应用读取结果，所以mysql可能有OOM问题。 &mdash;&ndash;&gt; 在每次执行SQL语句之前，设置ps.executeQuery()之前使用setFetchSize()函数设置大小。</p>
+<h3 id="java8">JAVA8</h3>
+<h4 id="lambda">lambda</h4>
+<p>lambda表达式对值封闭，不对变量封闭。也就是局部变量在lambda表达式中如果要使用，必须声明final类型或者是隐式的final</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">num</span> <span class="o">=</span> <span class="n">123</span><span class="o">;</span>
+<span class="n">Consumer</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">print</span> <span class="o">=</span> <span class="o">(</span><span class="n">s</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">num</span><span class="o">);</span>
+<span class="c1">// 上述是可以的，因为num虽然没声明final，但是和final的变量表现一致
+</span><span class="c1">// 但是如果中间加个num ++;就不行了
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id="stream">Stream</h4>
+<p>处理集合的操作，可以执行非常复杂的查找，过滤和映射数据等操作。</p>
+<ol>
+<li>不是数据结构，不会保存数据</li>
+<li>不会修改原来数据源，只会把操作后的数据保存到另外一个对象（peek方法？）</li>
+<li>惰性求值，流在中间处理过程中，只是对操作进行了记录，不会立刻执行，等到执行终止操作的时候才会进行实际的计算。</li>
+</ol>
+<ul>
+<li>中间操作
+<ul>
+<li>无状态：元素的处理不受之前元素的影响  &ndash; filter, map, peek, parallel</li>
+<li>有状态：该操作只有拿到所有元素之后才能进行下去 &ndash; distinct, sorted, limit, skip, unordered</li>
+</ul>
+</li>
+<li>结束操作
+<ul>
+<li>非短路操作： 必须处理所有元素才能得到最终结果 &ndash; forEach, reduce, collect, max, min, coint，iterator</li>
+<li>短路操作：遇到某些符合条件的元素就可以得到最终结果，比如A or B &ndash; anyMatch, allMatch, findAny, noneMatch</li>
+</ul>
+</li>
+</ul>
+<h4 id="optional">Optional</h4>
+<p>主要解决空指针异常</p>
+<h4 id="metaspace">MetaSpace</h4>
+<h3 id="泛型">泛型</h3>
+<h4 id="泛型类接口方法">泛型类，接口，方法</h4>
+<p>泛型的类型参数只能是类类型，不能是简单类型</p>
+<p>不能对确切的泛型类型使用instanceof操作, 下面是非法的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="k">if</span><span class="o">(</span><span class="n">ex_num</span> <span class="k">instanceof</span> <span class="n">Generic</span><span class="o">&lt;</span><span class="n">Number</span><span class="o">&gt;){}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="只在编译期有效">只在编译期有效</h4>
+<h4 id="泛型容器之间没有继承关系">泛型容器之间没有继承关系</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="n">Plate</span><span class="o">&lt;</span><span class="n">Fruit</span><span class="o">&gt;</span> <span class="n">p</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Plate</span><span class="o">&lt;</span><span class="n">Apple</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">Apple</span><span class="o">());</span>
+<span class="c1">// Type mismatch: cannot convert from Plate&lt;Apple&gt; to Plate&lt;Fruit&gt;
+</span><span class="c1">// apple is-a fruit
+</span><span class="c1">// plate with apple not-is-a plate with fruit
+</span></code></pre></td></tr></table>
+</div>
+</div><p>就算容器装的东西有继承关系，容器之间没有继承关系，需要泛型通配符</p>
+<h4 id="泛型通配符">泛型通配符</h4>
+<ul>
+<li>
+<p>上界通配符 Plate&lt;? extends Fruit&gt;</p>
+<p>为泛型添加上边界，传入的类型实参必须是指定类型的子类型</p>
+<p>这个会使得往盘子里放东西的set()失效，get()还是有效的</p>
+</li>
+<li>
+<p>下界通配符 Plate&lt;? super Fruit&gt;</p>
+<p>传入的类型实参必须是指定类型的父类型</p>
+<p>会使得get()方法部分失效，只能存放到Object对象里，而set()方法正常</p>
+</li>
+<li>
+<p>?与T的区别</p>
+<ul>
+<li>
+<p>对于编译器来说所有的T都代表同一个类型 比如</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">fill</span><span class="o">(</span><span class="n">T</span><span class="o">...</span> <span class="n">t</span><span class="o">)</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>代表要么是String要么是Integer</p>
+</li>
+<li>
+<p>通配符只能用于填充泛型变量T，不能用于定义变量</p>
+</li>
+</ul>
+</li>
+<li>
+<p>频繁往外读取的，用上界extends，经常往里面插入的，用下界super</p>
+</li>
+</ul>
+<h3 id="类的初始化过程">类的初始化过程</h3>
+<p>继承的子类： 静态 &ndash; 父类 &ndash; 子类</p>
+<p>interface中可以有静态方法，不能有普通方法，普通方法需要用defult加默认实现</p>
+<p>interface中的变量必须实例化</p>
+<h3 id="gc">GC</h3>
+<p>GC roots:</p>
+<ul>
+<li>本地变量表中引用的对象</li>
+<li>方法区中静态变量引用的对象</li>
+<li>方法去中常量引用的对象</li>
+<li>Native方法引用的对象</li>
+</ul>
+<p>年轻代的GC是必须的，但老年代和永久代的GC并不是必须的，可以通过设置参数决定是否对类进行回收。</p>
+<h3 id="jdk工具">JDK工具</h3>
+<h3 id="正则表达式">正则表达式</h3>
+<h3 id="java安全">JAVA安全</h3>
+<h4 id="java沙箱">java沙箱</h4>
+<p>java沙箱负责保护一些系统资源，保护的级别不同</p>
+<ul>
+<li>内部资源，如本地内存</li>
+<li>外部资源，如访问文件系统或者同一个局域网的其他机器</li>
+<li>对于运行的组件applet，可以访问其web服务器</li>
+<li>主机通过网络传输到磁盘的数据流</li>
+</ul>
+<p>当前最新的安全机制实现，引入了domain概念，理解为将沙箱细分为对个具体的小沙箱。jvm把所有代码加载到不同的系统域和应用域。jvm中不同的受保护域，对应不一样的权限。存在于不同域中的类文件就具有当前域的全部权限。</p>
+<p>沙箱的实现取决于三个方面：</p>
+<ul>
+<li>SecurityManager</li>
+<li>AccessController</li>
+<li>ClassLoader</li>
+</ul>
+<h4 id="securitymanager">SecurityManager</h4>
+<p>SecurityManager类是java API中的关键类，为其他java api提供相应的接口，是之可以检查某项操作能否执行。比如对文件访问的校验，SecurityManager最终是由AccessController实现的，如果权限检查不通过，则抛出AccessControlException，其继承于SecurityException，又向上继承于RuntimeException，所以这个异常是运行时异常。</p>
+<p>对于不可信类，需要有一些方法避免它们绕过SecurityManger和Java API：</p>
+<ul>
+<li>checkCreateClassLoader</li>
+<li>checkExec</li>
+<li>checkLink</li>
+<li>checkExit</li>
+<li>checkPermission</li>
+</ul>
+<h4 id="accesscontroller">AccessController</h4>
+<p>核心Java API由SecurityManager提供安全策略，但是大多数SecurityManager是基于AccessController。</p>
+<p>AccessController类构造器是私有的，因此不能进行实例化。它向外部提供了一些静态方法，最关键的是checkPermission(Permission p)，该方法基于当前安装的Policy对象，判定当前保护域是否拥有指定权限。SecurityManger提供的额一系列checkxxxxx方法，最后基本通过这个checkPermission完成。</p>
+<h2 id="分散的知识">分散的知识</h2>
+<h3 id="switch支持的6种数据类型">switch支持的6种数据类型</h3>
+<p>只能是byte, short, char, int四种整形类型，enum和String类型。不能是boolean类型！</p>
+<p>注意： 后面能能Integer只是因为JDK1.5以后的auto-unboxing</p>
+<h3 id="java整数缓存">Java整数缓存</h3>
+<p>Integer类为内部整数维护了IntgerCache, 范围是-128~127</p>
+<h3 id="threadsleep和wait的区别">Thread.Sleep()和wait()的区别</h3>
+<ul>
+<li>sleep方法执行时，线程主动让出cpu，后续指定时间以后cpu再回来执行。所以这里sleep只是让出了cpu，而并不会释放同步资源锁；wait方法指的是当前线程让自己暂时退让出同步资源锁，以便其他正在等待该资源的线程得到该资源从而运行，只有调用notify方法，调用了wait的线程才会解除wait状态，去竞争同步资源锁。</li>
+<li>因此，sleep可以在任何地方使用，而wait只能在同步方法或者同步块中使用</li>
+<li>sleep是线程的方法，调用只会暂停该线程指定的时间，但是监控依然保持，不会释放对象锁，到时间自动回复。wait是对象的方法，调用会放弃对象锁，进入waitqueue，只有notify/notifyAll让唤醒指定的线程，进入锁池，再次获得对象锁才会进入运行态。</li>
+</ul>
+<h3 id="join方法让调用这个方法的线程执行完">Join方法让调用这个方法的线程执行完</h3>
+<p>A调用B的join，A会让出资源锁，B执行完了才会继续执行A</p>
+<h3 id="jvm-吞吐量和暂停时间trade-off">JVM 吞吐量和暂停时间trade-off</h3>
+<p>吞吐量指的是应用程序线程用时占用程序用时的比例；暂停时间指的是一段时间内，应用程序线程让与GC线程执行而完全暂停，比如GC期间100ms的暂停时间意味着这个时间内没有应用程序线程是活动的。</p>
+<p>这两者是矛盾的，如果要追求高吞吐量，就不能频繁调用GC，意味着GC启动的时候有很多事情要做，因为在此期间积累需要GC的对象比较多，所以应用程序暂停时间肯定长。</p>
+<h3 id="java接口成员变量和方法默认修饰符">JAVA接口成员变量和方法默认修饰符</h3>
+<p>成员变量的默认修饰符：public status final</p>
+<ul>
+<li>也就是外面访问的时候不能修改这个变量的值，所以接口中定义成员变量的，一般都是常量</li>
+</ul>
+<p>方法的默认修饰符：public abstract</p>
+<ul>
+<li>公共抽象的，用来被实现这个接口的类去实现该方法</li>
+</ul>
+<p>接口对修改关闭，对扩展开放，符合开闭原则。</p>
+<p><strong>java8的接口方法可以被如下修饰</strong></p>
+<ul>
+<li>public, abstract, default, static, strictfp(只能修饰接口而不能修饰接口中的方法)</li>
+</ul>
+<h3 id="并发原子类">并发原子类</h3>
+<p>AtomicInteger类的常用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// 获取当前值
+</span><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">getCurrentValue</span><span class="o">(){}</span>
+<span class="c1">// 设置value值
+</span><span class="c1"></span><span class="o">...</span> <span class="n">setValue</span><span class="o">(){}</span>
+<span class="c1">// 先获取旧值，再设置新值
+</span><span class="c1"></span><span class="o">...</span> <span class="n">getAndSet</span><span class="o">(){}</span>
+<span class="c1">// 先获取旧值，再进行自增
+</span><span class="c1"></span><span class="o">...</span> <span class="n">getAndIncrement</span><span class="o">(){}</span>
+<span class="c1">// 同理
+</span><span class="c1"></span><span class="o">...</span> <span class="n">getAndDecrement</span><span class="o">(){}</span>
+<span class="c1">// 先获取旧值，再加10
+</span><span class="c1"></span><span class="o">...</span> <span class="n">getAndAdd</span><span class="o">(){}</span>
+<span class="c1">// 先加1，再获取新值
+</span><span class="c1"></span><span class="o">...</span> <span class="n">incrementAmdGet</span><span class="o">(){}</span>
+<span class="c1">// 先减1，再获取新值
+</span><span class="c1"></span><span class="o">...</span> <span class="n">decrementAndGet</span><span class="o">(){}</span>
+<span class="c1">// 先增加，再获取新值
+</span><span class="c1"></span><span class="o">...</span> <span class="n">addAndGet</span><span class="o">(){}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>concurrent包还有其他:</p>
+<ul>
+<li>AtomicBoolean</li>
+<li>AtomicInteger</li>
+<li>AtomicIntegerArray</li>
+<li>AtomicIntegerFieldUpdater</li>
+<li>AtomicLong</li>
+<li>AtomicLongArray</li>
+<li>AtomicIongFieldUpdater</li>
+<li>AtomicReference</li>
+<li>AtomicReferenceArray</li>
+<li>AtomicReferenceFieldUpdater</li>
+</ul>
+<p>&hellip;.</p>
+<h3 id="java-countdownlatch方法并发编程">Java CountDownLatch方法并发编程</h3>
+<h3 id="java-类执行顺序">Java 类执行顺序</h3>
+<ul>
+<li>执行static代码块</li>
+<li>执行构造代码块</li>
+<li>执行构造函数</li>
+</ul>
+<p>静态变量、初始化块 &gt; 变量、初始化块 &gt; 构造器</p>
+<p>涉及到继承的时候：</p>
+<ul>
+<li>执行父类的静态代码块，初始化父类静态成员变量</li>
+<li>执行子类静态代码块，初始化子类静态成员变量</li>
+<li>执行父类的构造代码块，执行父类的构造函数，并初始化父类普通成员变量</li>
+<li>执行子类的构造代码块，执行子类构造函数，初始化子类普通成员变量</li>
+</ul>
+<p>总结：涉及到继承，静态的优先，其他的先父类执行完了再子类</p>
+<h3 id="线程安全的数据结构">线程安全的数据结构</h3>
+<ul>
+<li>V （Vector）</li>
+<li>S   (Stack)</li>
+<li>H   (HashTable)</li>
+<li>E   (Enumeration)</li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">CctoctoFX</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-10-26
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="derios1230@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/pillumina" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/fang-xian-20" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:2000/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>CctoctoFX</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

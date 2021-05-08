@@ -1,0 +1,2192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Channels Concurrency Work-Around - CctoctoFX</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="CctoctoFX" /><meta name="description" content="记录了一些channels常见的场景，以及自己的一些感受： 使用通道进行异步和并发编程是简单和惬意的； 通道同步技术比被很多其它语言采用的其它同" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.4 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:2000/post/golang/channels/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.2e81bbed97b8b282c1aeb57488cc71c8d8c8ec559f3931531bd396bf31e0d4dd.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Channels Concurrency Work-Around" />
+<meta property="og:description" content="记录了一些channels常见的场景，以及自己的一些感受： 使用通道进行异步和并发编程是简单和惬意的； 通道同步技术比被很多其它语言采用的其它同" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:2000/post/golang/channels/" />
+<meta property="article:published_time" content="2020-12-22T11:22:18+08:00" />
+<meta property="article:modified_time" content="2020-12-22T11:22:18+08:00" />
+<meta itemprop="name" content="Channels Concurrency Work-Around">
+<meta itemprop="description" content="记录了一些channels常见的场景，以及自己的一些感受： 使用通道进行异步和并发编程是简单和惬意的； 通道同步技术比被很多其它语言采用的其它同">
+<meta itemprop="datePublished" content="2020-12-22T11:22:18+08:00" />
+<meta itemprop="dateModified" content="2020-12-22T11:22:18+08:00" />
+<meta itemprop="wordCount" content="10598">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Channels Concurrency Work-Around"/>
+<meta name="twitter:description" content="记录了一些channels常见的场景，以及自己的一些感受： 使用通道进行异步和并发编程是简单和惬意的； 通道同步技术比被很多其它语言采用的其它同"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CctoctoFX</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CctoctoFX</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Channels Concurrency Work-Around</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-12-22 </span>
+        
+          <span class="more-meta"> 10598 words </span>
+          <span class="more-meta"> 22 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#将通道用做futurepromise">将通道用做future/promise</a></li>
+            <li><a href="#使用通道实现通知">使用通道实现通知</a></li>
+            <li><a href="#将通道用做互斥锁mutex">将通道用做互斥锁（mutex）</a></li>
+            <li><a href="#将通道用做计数信号量counting-semaphore">将通道用做计数信号量（counting semaphore）</a></li>
+            <li><a href="#使用通道传送传输通道special-case">使用通道传送传输通道(special case)</a></li>
+            <li><a href="#检查通道的长度和容量">检查通道的长度和容量</a></li>
+            <li><a href="#尝试发送和尝试接收无阻塞selectdefault">尝试发送和尝试接收(无阻塞select/default)</a></li>
+            <li><a href="#数据流操纵data-flow">数据流操纵（Data Flow）</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>记录了一些channels常见的场景，以及自己的一些感受：</p>
+<ul>
+<li>
+<p>使用通道进行异步和并发编程是简单和惬意的；</p>
+</li>
+<li>
+<p>通道同步技术比被很多其它语言采用的其它同步方案（比如<a href="https://en.wikipedia.org/wiki/Actor_model">角色模型</a>和<a href="https://en.wikipedia.org/wiki/Async/await">async/await模式</a>）有着更多的应用场景和更多的使用变种。</p>
+<p>通道作为同步手段，并非在任何情况下都是最佳的同步技术，本文也会补充原子操作和sync包内其他的技术作为参考。</p>
+</li>
+</ul>
+<h3 id="将通道用做futurepromise">将通道用做future/promise</h3>
+<p>很多其它流行语言支持future/promise来实现异步（并发）编程。 Future/promise常常用在请求/回应场合。</p>
+<h4 id="返回单向接收通道做为函数返回结果">返回单向接收通道做为函数返回结果</h4>
+<p>在下面这个例子中，<code>sumSquares</code>函数调用的两个实参请求并发进行。 每个通道读取操作将阻塞到请求返回结果为止。 两个实参总共需要大约3秒钟（而不是6秒钟）准备完毕（以较慢的一个为准）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;time&#34;</span>
+	<span class="s">&#34;math/rand&#34;</span>
+	<span class="s">&#34;fmt&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">longTimeRequest</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">int32</span> <span class="p">{</span>
+	<span class="nx">r</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int32</span><span class="p">)</span>
+
+	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="c1">// 模拟一个工作负载
+</span><span class="c1"></span>		<span class="nx">r</span> <span class="o">&lt;-</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Int31n</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+	<span class="p">}()</span>
+
+	<span class="k">return</span> <span class="nx">r</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">sumSquares</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int32</span><span class="p">)</span> <span class="kt">int32</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">a</span><span class="o">*</span><span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="o">*</span><span class="nx">b</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
+
+	<span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="o">:=</span> <span class="nf">longTimeRequest</span><span class="p">(),</span> <span class="nf">longTimeRequest</span><span class="p">()</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nf">sumSquares</span><span class="p">(</span><span class="o">&lt;-</span><span class="nx">a</span><span class="p">,</span> <span class="o">&lt;-</span><span class="nx">b</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="将单向发送通道类型用做函数实参">将单向发送通道类型用做函数实参</h4>
+<p>和上例一样，在下面这个例子中，<code>sumSquares</code>函数调用的两个实参的请求也是并发进行的。 和上例不同的是<code>longTimeRequest</code>函数接收一个单向发送通道类型参数而不是返回一个单向接收通道结果。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;time&#34;</span>
+	<span class="s">&#34;math/rand&#34;</span>
+	<span class="s">&#34;fmt&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">longTimeRequest</span><span class="p">(</span><span class="nx">r</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="kt">int32</span><span class="p">)</span>  <span class="p">{</span>
+	<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="c1">// 模拟一个工作负载
+</span><span class="c1"></span>	<span class="nx">r</span> <span class="o">&lt;-</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Int31n</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">sumSquares</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int32</span><span class="p">)</span> <span class="kt">int32</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">a</span><span class="o">*</span><span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="o">*</span><span class="nx">b</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
+
+	<span class="nx">ra</span><span class="p">,</span> <span class="nx">rb</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int32</span><span class="p">),</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int32</span><span class="p">)</span>
+	<span class="k">go</span> <span class="nf">longTimeRequest</span><span class="p">(</span><span class="nx">ra</span><span class="p">)</span>
+	<span class="k">go</span> <span class="nf">longTimeRequest</span><span class="p">(</span><span class="nx">rb</span><span class="p">)</span>
+
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nf">sumSquares</span><span class="p">(</span><span class="o">&lt;-</span><span class="nx">ra</span><span class="p">,</span> <span class="o">&lt;-</span><span class="nx">rb</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对于上面这个特定的例子，我们可以只使用一个通道来接收回应结果，因为两个参数的作用是对等的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="o">...</span>
+
+	<span class="nx">results</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int32</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c1">// 缓冲与否不重要
+</span><span class="c1"></span>	<span class="k">go</span> <span class="nf">longTimeRequest</span><span class="p">(</span><span class="nx">results</span><span class="p">)</span>
+	<span class="k">go</span> <span class="nf">longTimeRequest</span><span class="p">(</span><span class="nx">results</span><span class="p">)</span>
+
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nf">sumSquares</span><span class="p">(</span><span class="o">&lt;-</span><span class="nx">results</span><span class="p">,</span> <span class="o">&lt;-</span><span class="nx">results</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这可以看作是后面将要提到的数据聚合的一个应用。</p>
+<h4 id="采用最快回应">采用最快回应</h4>
+<p>本用例可以看作是上例中只使用一个通道变种的增强。</p>
+<p>有时候，一份数据可能同时从多个数据源获取。这些数据源将返回相同的数据。 因为各种因素，这些数据源的回应速度参差不一，甚至某个特定数据源的多次回应速度之间也可能相差很大。 同时从多个数据源获取一份相同的数据可以有效保障低延迟。我们只需采用最快的回应并舍弃其它较慢回应。</p>
+<p>注意：如果有<em>N</em>个数据源，为了防止被舍弃的回应对应的协程永久阻塞，则传输数据用的通道必须为一个容量至少为<em>N-1</em>的缓冲通道。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;fmt&#34;</span>
+	<span class="s">&#34;time&#34;</span>
+	<span class="s">&#34;math/rand&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">source</span><span class="p">(</span><span class="nx">c</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="kt">int32</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">ra</span><span class="p">,</span> <span class="nx">rb</span> <span class="o">:=</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Int31</span><span class="p">(),</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Intn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+	<span class="c1">// 睡眠1秒/2秒/3秒
+</span><span class="c1"></span>	<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Duration</span><span class="p">(</span><span class="nx">rb</span><span class="p">)</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+	<span class="nx">c</span> <span class="o">&lt;-</span> <span class="nx">ra</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
+
+	<span class="nx">startTime</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
+	<span class="nx">c</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int32</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="c1">// 必须用一个缓冲通道
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">c</span><span class="p">);</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">go</span> <span class="nf">source</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">rnd</span> <span class="o">:=</span> <span class="o">&lt;-</span> <span class="nx">c</span> <span class="c1">// 只有第一个回应被使用了
+</span><span class="c1"></span>	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">startTime</span><span class="p">))</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">rnd</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>“采用最快回应”用例还有一些其它实现方式，本文后面将会谈及。</p>
+<h4 id="更多请求回应用例变种">更多“请求/回应”用例变种</h4>
+<p>做为函数参数和返回结果使用的通道可以是缓冲的，从而使得请求协程不需阻塞到它所发送的数据被接收为止。</p>
+<p>有时，一个请求可能并不保证返回一份有效的数据。对于这种情形，我们可以使用一个形如<code>struct{v T; err error}</code>的结构体类型或者一个空接口类型做为通道的元素类型以用来区分回应的值是否有效。</p>
+<p>有时，一个请求可能需要比预期更长的用时才能回应，甚至永远都得不到回应。 我们可以使用本文后面将要介绍的超时机制来应对这样的情况。</p>
+<p>有时，回应方可能会不断地返回一系列值，这也同时属于后面将要介绍的数据流的一个用例。</p>
+<h3 id="使用通道实现通知">使用通道实现通知</h3>
+<p>通知可以被看作是特殊的请求/回应用例。在一个通知用例中，我们并不关心回应的值，我们只关心回应是否已发生。 所以我们常常使用空结构体类型<code>struct{}</code>来做为通道的元素类型，因为空结构体类型的尺寸为零，能够节省一些内存（虽然常常很少量）。</p>
+<h4 id="向一个通道发送一个值来实现单对单通知">向一个通道发送一个值来实现单对单通知</h4>
+<p>我们已知道，如果一个通道中无值可接收，则此通道上的下一个接收操作将阻塞到另一个协程发送一个值到此通道为止。 所以一个协程可以向此通道发送一个值来通知另一个等待着从此通道接收数据的协程。</p>
+<p>在下面这个例子中，通道<code>done</code>被用来做为一个信号通道来实现单对单通知。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;crypto/rand&#34;</span>
+	<span class="s">&#34;fmt&#34;</span>
+	<span class="s">&#34;os&#34;</span>
+	<span class="s">&#34;sort&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">values</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">32</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Read</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">done</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span> <span class="c1">// 也可以是缓冲的
+</span><span class="c1"></span>
+	<span class="c1">// 排序协程
+</span><span class="c1"></span>	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">sort</span><span class="p">.</span><span class="nf">Slice</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">values</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">&lt;</span> <span class="nx">values</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span>
+		<span class="p">})</span>
+		<span class="nx">done</span> <span class="o">&lt;-</span> <span class="kd">struct</span><span class="p">{}{}</span> <span class="c1">// 通知排序已完成
+</span><span class="c1"></span>	<span class="p">}()</span>
+
+	<span class="c1">// 并发地做一些其它事情...
+</span><span class="c1"></span>
+	<span class="o">&lt;-</span> <span class="nx">done</span> <span class="c1">// 等待通知
+</span><span class="c1"></span>	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">values</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nx">values</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="从一个通道接收一个值来实现单对单通知">从一个通道接收一个值来实现单对单通知</h4>
+<p>如果一个通道的数据缓冲队列已满（非缓冲的通道的数据缓冲队列总是满的）但它的发送协程队列为空，则向此通道发送一个值将阻塞，直到另外一个协程从此通道接收一个值为止。 所以我们可以通过从一个通道接收数据来实现单对单通知。一般我们使用非缓冲通道来实现这样的通知。</p>
+<p><strong>这种通知方式不如上例中介绍的方式使用得广泛，基本很少用</strong>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;fmt&#34;</span>
+	<span class="s">&#34;time&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">done</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+		<span class="c1">// 此信号通道也可以缓冲为1。如果这样，则在下面
+</span><span class="c1"></span>		<span class="c1">// 这个协程创建之前，我们必须向其中写入一个值。
+</span><span class="c1"></span>
+	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;Hello&#34;</span><span class="p">)</span>
+		<span class="c1">// 模拟一个工作负载。
+</span><span class="c1"></span>		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+
+		<span class="c1">// 使用一个接收操作来通知主协程。
+</span><span class="c1"></span>		<span class="o">&lt;-</span> <span class="nx">done</span>
+	<span class="p">}()</span>
+
+	<span class="nx">done</span> <span class="o">&lt;-</span> <span class="kd">struct</span><span class="p">{}{}</span> <span class="c1">// 阻塞在此，等待通知
+</span><span class="c1"></span>	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34; world!&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>另一个事实是，上面的两种单对单通知方式其实并没有本质的区别。 它们都可以被概括为较快者等待较慢者发出通知。</p>
+<h4 id="多对单和单对多通知">多对单和单对多通知</h4>
+<p>略微扩展一下上面两个用例，我们可以很轻松地实现多对单和单对多通知。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&#34;log&#34;</span>
+<span class="kn">import</span> <span class="s">&#34;time&#34;</span>
+
+<span class="kd">type</span> <span class="nx">T</span> <span class="p">=</span> <span class="kd">struct</span><span class="p">{}</span>
+
+<span class="kd">func</span> <span class="nf">worker</span><span class="p">(</span><span class="nx">id</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">ready</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="nx">T</span><span class="p">,</span> <span class="nx">done</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="o">&lt;-</span><span class="nx">ready</span> <span class="c1">// 阻塞在此，等待通知
+</span><span class="c1"></span>	<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;Worker#&#34;</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="s">&#34;开始工作&#34;</span><span class="p">)</span>
+	<span class="c1">// 模拟一个工作负载。
+</span><span class="c1"></span>	<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Duration</span><span class="p">(</span><span class="nx">id</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;Worker#&#34;</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="s">&#34;工作完成&#34;</span><span class="p">)</span>
+	<span class="nx">done</span> <span class="o">&lt;-</span> <span class="nx">T</span><span class="p">{}</span> <span class="c1">// 通知主协程（N-to-1）
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nf">SetFlags</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+	<span class="nx">ready</span><span class="p">,</span> <span class="nx">done</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="nx">T</span><span class="p">),</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="nx">T</span><span class="p">)</span>
+	<span class="k">go</span> <span class="nf">worker</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">ready</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span>
+	<span class="k">go</span> <span class="nf">worker</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">ready</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span>
+	<span class="k">go</span> <span class="nf">worker</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nx">ready</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span>
+
+	<span class="c1">// 模拟一个初始化过程
+</span><span class="c1"></span>	<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+	<span class="c1">// 单对多通知
+</span><span class="c1"></span>	<span class="nx">ready</span> <span class="o">&lt;-</span> <span class="nx">T</span><span class="p">{};</span> <span class="nx">ready</span> <span class="o">&lt;-</span> <span class="nx">T</span><span class="p">{};</span> <span class="nx">ready</span> <span class="o">&lt;-</span> <span class="nx">T</span><span class="p">{}</span>
+	<span class="c1">// 等待被多对单通知
+</span><span class="c1"></span>	<span class="o">&lt;-</span><span class="nx">done</span><span class="p">;</span> <span class="o">&lt;-</span><span class="nx">done</span><span class="p">;</span> <span class="o">&lt;-</span><span class="nx">done</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这种写法是比较少见的，因为not clean enough，一般用<code>sync.WaitGroup</code>实现多对单的通知，使用关闭一个通道方式实现单对多。</p>
+<h4 id="通过关闭一个通道来实现群发通知单对多模式优化">通过关闭一个通道来实现群发通知（单对多模式优化）</h4>
+<p>关闭一个通道进行对多通知更简单。用到的特性是<code>能够从一个已经关闭的通道接受到无穷多的值</code>。</p>
+<p>我们可以把上一个例子中的三个数据发送操作<code>ready &lt;- struct{}{}</code>替换为一个通道关闭操作<code>close(ready)</code>来达到同样的单对多通知效果。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="o">...</span>
+	<span class="nb">close</span><span class="p">(</span><span class="nx">ready</span><span class="p">)</span> <span class="c1">// 群发通知Let&#39;s go!
+</span><span class="c1"></span><span class="o">...</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其实，单对单通知一般也是用关闭通道的方式，这也是实践中用到最多的通知实现方式。<code>context</code>库中用这种特性实现了传达<code>操作取消</code>消息，后续会介绍具体的cases。</p>
+<h4 id="定时通知timer">定时通知（timer）</h4>
+<p>标准库里的time.After的实现，也就是函数返回一个channel（容量为1的缓冲通道），起一个gorountine等待一段时间后往这个channel里送一个空结构体，类似的逻辑。</p>
+<h3 id="将通道用做互斥锁mutex">将通道用做互斥锁（mutex）</h3>
+<p>运用容量为1的缓冲通道作为多次性二元semaphore，也就是mutex，这种mutex不如sync标准包里的高效。</p>
+<p>有两种方式将一个容量为1的缓冲通道用做互斥锁：</p>
+<ol>
+<li>通过发送操作来加锁，通过接收操作来解锁；</li>
+<li>通过接收操作来加锁，通过发送操作来解锁。</li>
+</ol>
+<p>写一个发送操作加锁的例子，第二种反一下就行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">mutex</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{},</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">// 容量必须为1
+</span><span class="c1"></span>
+	<span class="nx">counter</span> <span class="o">:=</span> <span class="mi">0</span>
+	<span class="nx">increase</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">mutex</span> <span class="o">&lt;-</span> <span class="kd">struct</span><span class="p">{}{}</span> <span class="c1">// 加锁
+</span><span class="c1"></span>		<span class="nx">counter</span><span class="o">++</span>
+		<span class="o">&lt;-</span><span class="nx">mutex</span> <span class="c1">// 解锁
+</span><span class="c1"></span>	<span class="p">}</span>
+
+	<span class="nx">increase1000</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">done</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="kd">struct</span><span class="p">{})</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">1000</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+			<span class="nf">increase</span><span class="p">()</span>
+		<span class="p">}</span>
+		<span class="nx">done</span> <span class="o">&lt;-</span> <span class="kd">struct</span><span class="p">{}{}</span>
+	<span class="p">}</span>
+
+	<span class="nx">done</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+	<span class="k">go</span> <span class="nf">increase1000</span><span class="p">(</span><span class="nx">done</span><span class="p">)</span>
+	<span class="k">go</span> <span class="nf">increase1000</span><span class="p">(</span><span class="nx">done</span><span class="p">)</span>
+	<span class="o">&lt;-</span><span class="nx">done</span><span class="p">;</span> <span class="o">&lt;-</span><span class="nx">done</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">counter</span><span class="p">)</span> <span class="c1">// 2000
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="将通道用做计数信号量counting-semaphore">将通道用做计数信号量（counting semaphore）</h3>
+<p>缓冲通道可以用于作为counting semaphore，也就是多主锁 &ndash; 如果一个缓冲通道的容量为<code>N</code>，那么它可以被看作是一个在任何时刻最多可有<code>N</code>个主人的锁。 上面提到的二元信号量是特殊的计数信号量，每个二元信号量在任一时刻最多只能有一个主人。</p>
+<p><strong>计数信号量经常被使用于限制最大并发数。</strong></p>
+<p>和将通道用做互斥锁一样，也有两种方式用来获取一个用做计数信号量的通道的一份所有权。</p>
+<ol>
+<li>通过发送操作来获取所有权，通过接收操作来释放所有权；</li>
+<li>通过接收操作来获取所有权，通过发送操作来释放所有权。</li>
+</ol>
+<p>下面是一个酒吧在座位数一定的前提下服务客人的例子，以接受操作获取所有权，先来一个简化版:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;log&#34;</span>
+	<span class="s">&#34;time&#34;</span>
+	<span class="s">&#34;math/rand&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Seat</span> <span class="kt">int</span>
+<span class="kd">type</span> <span class="nx">Bar</span> <span class="kd">chan</span> <span class="nx">Seat</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">bar</span> <span class="nx">Bar</span><span class="p">)</span> <span class="nf">ServeCustomer</span><span class="p">(</span><span class="nx">c</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;顾客#&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="s">&#34;进入酒吧&#34;</span><span class="p">)</span>
+	<span class="nx">seat</span> <span class="o">:=</span> <span class="o">&lt;-</span> <span class="nx">bar</span> <span class="c1">// 需要一个位子来喝酒
+</span><span class="c1"></span>	<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;++ customer#&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="s">&#34; drinks at seat#&#34;</span><span class="p">,</span> <span class="nx">seat</span><span class="p">)</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;++ 顾客#&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="s">&#34;在第&#34;</span><span class="p">,</span> <span class="nx">seat</span><span class="p">,</span> <span class="s">&#34;个座位开始饮酒&#34;</span><span class="p">)</span>
+	<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Duration</span><span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Intn</span><span class="p">(</span><span class="mi">6</span><span class="p">)))</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;-- 顾客#&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="s">&#34;离开了第&#34;</span><span class="p">,</span> <span class="nx">seat</span><span class="p">,</span> <span class="s">&#34;个座位&#34;</span><span class="p">)</span>
+	<span class="nx">bar</span> <span class="o">&lt;-</span> <span class="nx">seat</span> <span class="c1">// 释放座位，离开酒吧
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
+
+	<span class="nx">bar24x7</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="nx">Bar</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="c1">// 此酒吧有10个座位
+</span><span class="c1"></span>	<span class="c1">// 摆放10个座位。
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">seatId</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">seatId</span> <span class="p">&lt;</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">bar24x7</span><span class="p">);</span> <span class="nx">seatId</span><span class="o">++</span> <span class="p">{</span>
+		<span class="nx">bar24x7</span> <span class="o">&lt;-</span> <span class="nf">Seat</span><span class="p">(</span><span class="nx">seatId</span><span class="p">)</span> <span class="c1">// 均不会阻塞
+</span><span class="c1"></span>	<span class="p">}</span>
+
+	<span class="k">for</span> <span class="nx">customerId</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="p">;</span> <span class="nx">customerId</span><span class="o">++</span> <span class="p">{</span>
+		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+		<span class="k">go</span> <span class="nx">bar24x7</span><span class="p">.</span><span class="nf">ServeCustomer</span><span class="p">(</span><span class="nx">customerId</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="p">{</span><span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)}</span> <span class="c1">// 睡眠不属于阻塞状态
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在上例中，只有获得一个座位的顾客才能开始饮酒。 所以在任一时刻同时在喝酒的顾客数不会超过座位数10。最后的for循环其实不太好，用<code>select{}</code>阻塞比较好。</p>
+<p>这个例子不好的地方，在于尽管在任一时刻同时在喝酒的顾客数不会超过座位数10，但是在某一时刻可能有多于10个顾客进入了酒吧，因为某些顾客在排队等位子。 在上例中，每个顾客对应着一个协程。虽然协程的开销比系统线程小得多，但是如果协程的数量很多，则它们的总体开销还是不能忽略不计的。 所以，最好当有空位的时候才创建顾客协程。我们可以做个小的优化：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="o">...</span> <span class="c1">// 省略了和上例相同的代码
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">bar</span> <span class="nx">Bar</span><span class="p">)</span> <span class="nf">ServeCustomerAtSeat</span><span class="p">(</span><span class="nx">c</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">seat</span> <span class="nx">Seat</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;++ 顾客#&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="s">&#34;在第&#34;</span><span class="p">,</span> <span class="nx">seat</span><span class="p">,</span> <span class="s">&#34;个座位开始饮酒&#34;</span><span class="p">)</span>
+	<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Duration</span><span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Intn</span><span class="p">(</span><span class="mi">6</span><span class="p">)))</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;-- 顾客#&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="s">&#34;离开了第&#34;</span><span class="p">,</span> <span class="nx">seat</span><span class="p">,</span> <span class="s">&#34;个座位&#34;</span><span class="p">)</span>
+	<span class="nx">bar</span> <span class="o">&lt;-</span> <span class="nx">seat</span> <span class="c1">// 释放座位，离开酒吧
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
+
+	<span class="nx">bar24x7</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="nx">Bar</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+	<span class="k">for</span> <span class="nx">seatId</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">seatId</span> <span class="p">&lt;</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">bar24x7</span><span class="p">);</span> <span class="nx">seatId</span><span class="o">++</span> <span class="p">{</span>
+		<span class="nx">bar24x7</span> <span class="o">&lt;-</span> <span class="nf">Seat</span><span class="p">(</span><span class="nx">seatId</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c1">// 这个for循环和上例不一样。
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">customerId</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="p">;</span> <span class="nx">customerId</span><span class="o">++</span> <span class="p">{</span>
+		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+		<span class="nx">seat</span> <span class="o">:=</span> <span class="o">&lt;-</span> <span class="nx">bar24x7</span> <span class="c1">// 需要一个空位招待顾客
+</span><span class="c1"></span>		<span class="k">go</span> <span class="nx">bar24x7</span><span class="p">.</span><span class="nf">ServeCustomerAtSeat</span><span class="p">(</span><span class="nx">customerId</span><span class="p">,</span> <span class="nx">seat</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="p">{</span><span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在上面这个修改后的例子中，在任一时刻最多只有10个顾客协程在运行（但是在程序的生命期内，仍旧会有大量的顾客协程不断被创建和销毁）。</p>
+<p>所以考虑每个gorountine作为消费者，不断从customers的通道去获取客人，这样消费者的数量是一定的。在下面这个更加高效的实现中，在程序的生命期内最多只会有10个顾客协程被创建出来:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="o">...</span> <span class="c1">// 省略了和上例相同的代码
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">bar</span> <span class="nx">Bar</span><span class="p">)</span> <span class="nf">ServeCustomerAtSeat</span><span class="p">(</span><span class="nx">consumers</span> <span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="nx">c</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">consumers</span> <span class="p">{</span>
+		<span class="nx">seatId</span> <span class="o">:=</span> <span class="o">&lt;-</span> <span class="nx">bar</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;++ 顾客#&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="s">&#34;在第&#34;</span><span class="p">,</span> <span class="nx">seatId</span><span class="p">,</span> <span class="s">&#34;个座位开始饮酒&#34;</span><span class="p">)</span>
+		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Duration</span><span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Intn</span><span class="p">(</span><span class="mi">6</span><span class="p">)))</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;-- 顾客#&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="s">&#34;离开了第&#34;</span><span class="p">,</span> <span class="nx">seatId</span><span class="p">,</span> <span class="s">&#34;个座位&#34;</span><span class="p">)</span>
+		<span class="nx">bar</span> <span class="o">&lt;-</span> <span class="nx">seatId</span> <span class="c1">// 释放座位，离开酒吧
+</span><span class="c1"></span>	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
+
+	<span class="nx">bar24x7</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="nx">Bar</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+	<span class="k">for</span> <span class="nx">seatId</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">seatId</span> <span class="p">&lt;</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">bar24x7</span><span class="p">);</span> <span class="nx">seatId</span><span class="o">++</span> <span class="p">{</span>
+		<span class="nx">bar24x7</span> <span class="o">&lt;-</span> <span class="nf">Seat</span><span class="p">(</span><span class="nx">seatId</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">consumers</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span>
+	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">bar24x7</span><span class="p">);</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">go</span> <span class="nx">bar24x7</span><span class="p">.</span><span class="nf">ServeCustomerAtSeat</span><span class="p">(</span><span class="nx">consumers</span><span class="p">)</span>
+	<span class="p">}</span>
+	
+	<span class="k">for</span> <span class="nx">customerId</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="p">;</span> <span class="nx">customerId</span><span class="o">++</span> <span class="p">{</span>
+		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+		<span class="nx">consumers</span> <span class="o">&lt;-</span> <span class="nx">customerId</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过发送操作来获取所有权的实现相对简单一些，省去了摆放座位的步骤：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;log&#34;</span>
+	<span class="s">&#34;time&#34;</span>
+	<span class="s">&#34;math/rand&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Customer</span> <span class="kd">struct</span><span class="p">{</span><span class="nx">id</span> <span class="kt">int</span><span class="p">}</span>
+<span class="kd">type</span> <span class="nx">Bar</span> <span class="kd">chan</span> <span class="nx">Customer</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">bar</span> <span class="nx">Bar</span><span class="p">)</span> <span class="nf">ServeCustomer</span><span class="p">(</span><span class="nx">c</span> <span class="nx">Customer</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;++ 顾客#&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="s">&#34;开始饮酒&#34;</span><span class="p">)</span>
+	<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Duration</span><span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Intn</span><span class="p">(</span><span class="mi">16</span><span class="p">)))</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;-- 顾客#&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="s">&#34;离开酒吧&#34;</span><span class="p">)</span>
+	<span class="o">&lt;-</span> <span class="nx">bar</span> <span class="c1">// 离开酒吧，腾出位子
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
+
+	<span class="nx">bar24x7</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="nx">Bar</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="c1">// 最多同时服务10位顾客
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">customerId</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="p">;</span> <span class="nx">customerId</span><span class="o">++</span> <span class="p">{</span>
+		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+		<span class="nx">customer</span> <span class="o">:=</span> <span class="nx">Customer</span><span class="p">{</span><span class="nx">customerId</span><span class="p">}</span>
+		<span class="nx">bar24x7</span> <span class="o">&lt;-</span> <span class="nx">customer</span> <span class="c1">// 等待进入酒吧
+</span><span class="c1"></span>		<span class="k">go</span> <span class="nx">bar24x7</span><span class="p">.</span><span class="nf">ServeCustomer</span><span class="p">(</span><span class="nx">customer</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="p">{</span><span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="使用通道传送传输通道special-case">使用通道传送传输通道(special case)</h3>
+<p>一个通道类型的元素类型可以是另一个通道类型。 在下面这个例子中， 单向发送通道类型<code>chan&lt;- int</code>是另一个通道类型<code>chan chan&lt;- int</code>的元素类型。</p>
+<p>下面的例子在这个场景其实不是最好的方案，还在关注类似的场景。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+
+<span class="kd">var</span> <span class="nx">counter</span> <span class="p">=</span> <span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="kt">int</span> <span class="p">{</span>
+   <span class="nx">requests</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="kt">int</span><span class="p">)</span>
+   <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+       <span class="k">for</span> <span class="nx">request</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">requests</span> <span class="p">{</span>
+           <span class="k">if</span> <span class="nx">request</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+               <span class="nx">n</span><span class="o">++</span> <span class="c1">// 递增计数
+</span><span class="c1"></span>           <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+               <span class="nx">request</span> <span class="o">&lt;-</span> <span class="nx">n</span> <span class="c1">// 返回当前计数
+</span><span class="c1"></span>           <span class="p">}</span>
+       <span class="p">}</span>
+   <span class="p">}()</span>
+   <span class="k">return</span> <span class="nx">requests</span> <span class="c1">// 隐式转换到类型chan&lt;- (chan&lt;- int)
+</span><span class="c1"></span><span class="p">}(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+   <span class="nx">increase1000</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">done</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="kd">struct</span><span class="p">{})</span> <span class="p">{</span>
+       <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">1000</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+           <span class="nx">counter</span> <span class="o">&lt;-</span> <span class="kc">nil</span>
+       <span class="p">}</span>
+       <span class="nx">done</span> <span class="o">&lt;-</span> <span class="kd">struct</span><span class="p">{}{}</span>
+   <span class="p">}</span>
+
+   <span class="nx">done</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+   <span class="k">go</span> <span class="nf">increase1000</span><span class="p">(</span><span class="nx">done</span><span class="p">)</span>
+   <span class="k">go</span> <span class="nf">increase1000</span><span class="p">(</span><span class="nx">done</span><span class="p">)</span>
+   <span class="o">&lt;-</span><span class="nx">done</span><span class="p">;</span> <span class="o">&lt;-</span><span class="nx">done</span>
+
+   <span class="nx">request</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+   <span class="nx">counter</span> <span class="o">&lt;-</span> <span class="nx">request</span>
+   <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="o">&lt;-</span><span class="nx">request</span><span class="p">)</span> <span class="c1">// 2000
+</span><span class="c1"></span><span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="检查通道的长度和容量">检查通道的长度和容量</h3>
+<p>我们可以使用内置函数<code>cap</code>和<code>len</code>来查看一个通道的容量和当前长度。 但是在实践中我们很少这样做。我们很少使用内置函数<code>cap</code>的原因是一个通道的容量常常是已知的或者不重要的。 我们很少使用内置函数<code>len</code>的原因是一个**<code>len</code>调用的结果并不能总能准确地反映出的一个通道的当前长度。**</p>
+<p>但有时确实有一些场景需要调用这两个函数。比如，有时一个协程欲将一个未关闭的并且不会再向其中发送数据的缓冲通道中的所有数据接收出来，在确保只有此一个协程从此通道接收数据的情况下，我们可以用下面的代码来实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">for</span> <span class="nb">len</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+	<span class="nx">value</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">c</span>
+	<span class="c1">// 使用value ...
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>不过这种场景可以用尝试接收机制来实现，这两种方式的运行效率差距不大，但尝试接收机制的优点是多个协程可以并发地进行读取操作。</p>
+<p>有时一个协程欲将一个缓冲通道写满而又不阻塞，在确保只有此一个协程向此通道发送数据的情况下，我们可以用下面的代码实现这一目的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">for</span> <span class="nb">len</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">&lt;</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">c</span> <span class="o">&lt;-</span> <span class="nx">aValue</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>当然，尝试发送机制也能cover。</p>
+<h3 id="尝试发送和尝试接收无阻塞selectdefault">尝试发送和尝试接收(无阻塞select/default)</h3>
+<p>含有一个<code>default</code>分支和一个<code>case</code>分支的<code>select</code>代码块可以被用做一个尝试发送或者尝试接收操作，取决于<code>case</code>关键字后跟随的是一个发送操作还是一个接收操作。</p>
+<ul>
+<li>如果<code>case</code>关键字后跟随的是一个发送操作，则此<code>select</code>代码块为一个尝试发送操作。 如果<code>case</code>分支的发送操作是阻塞的，则<code>default</code>分支将被执行，发送失败；否则发送成功，<code>case</code>分支得到执行。</li>
+<li>如果<code>case</code>关键字后跟随的是一个接收操作，则此<code>select</code>代码块为一个尝试接收操作。 如果<code>case</code>分支的接收操作是阻塞的，则<code>default</code>分支将被执行，接收失败；否则接收成功，<code>case</code>分支得到执行。</li>
+</ul>
+<p><em><strong>尝试发送和尝试接收代码块永不阻塞。</strong></em></p>
+<p>标准编译器对尝试发送和尝试接收代码块做了特别的优化，使得它们的执行效率比多<code>case</code>分支的普通<code>select</code>代码块执行效率高得多。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">type</span> <span class="nx">Book</span> <span class="kd">struct</span><span class="p">{</span><span class="nx">id</span> <span class="kt">int</span><span class="p">}</span>
+	<span class="nx">bookshelf</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="nx">Book</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">bookshelf</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">select</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="nx">bookshelf</span> <span class="o">&lt;-</span> <span class="nx">Book</span><span class="p">{</span><span class="nx">id</span><span class="p">:</span> <span class="nx">i</span><span class="p">}:</span>
+			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;成功将书放在书架上&#34;</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span>
+		<span class="k">default</span><span class="p">:</span>
+			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;书架已经被占满了&#34;</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">bookshelf</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">select</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="nx">book</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">bookshelf</span><span class="p">:</span>
+			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;成功从书架上取下一本书&#34;</span><span class="p">,</span> <span class="nx">book</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+		<span class="k">default</span><span class="p">:</span>
+			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;书架上已经没有书了&#34;</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>输出结果很简单:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">成功将书放在书架上 0
+成功将书放在书架上 1
+成功将书放在书架上 2
+书架已经被占满了
+书架已经被占满了
+书架已经被占满了
+成功从书架上取下一本书 0
+成功从书架上取下一本书 1
+成功从书架上取下一本书 2
+书架上已经没有书了
+书架上已经没有书了
+书架上已经没有书了
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="无阻塞地检查一个通道是否已经关闭">无阻塞地检查一个通道是否已经关闭</h4>
+<p>假设我们可以保证没有任何协程会向一个通道发送数据，则我们可以使用下面的代码来（并发安全地）检查此通道是否已经关闭，此检查不会阻塞当前协程。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">IsClosed</span><span class="p">(</span><span class="nx">c</span> <span class="kd">chan</span> <span class="nx">T</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+	<span class="k">select</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">c</span><span class="p">:</span>
+		<span class="k">return</span> <span class="kc">true</span>
+	<span class="k">default</span><span class="p">:</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>常用场景：此方法常用来查看某个期待中的通知是否已经来临。此通知将由另一个协程通过<strong>关闭一个通道</strong>来发送。</p>
+<h4 id="峰值限制peakburst-limiting">峰值限制（peak/burst limiting）</h4>
+<p>通道用作counting semaphore + 通道尝试(发送/接收)可实现峰值限制。<strong>目的是防止过大的并发请求数。</strong></p>
+<p>还是那个酒吧招待客户的例子，现在做一些修改能让顾客不再等待而是离去或者寻找其它酒吧。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="o">...</span>
+	<span class="nx">bar24x7</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="nx">Bar</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="c1">// 此酒吧只能同时招待10个顾客
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">customerId</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="p">;</span> <span class="nx">customerId</span><span class="o">++</span> <span class="p">{</span>
+		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+		<span class="nx">consumer</span> <span class="o">:=</span> <span class="nx">Consumer</span><span class="p">{</span><span class="nx">customerId</span><span class="p">}</span>
+		<span class="k">select</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="nx">bar24x7</span> <span class="o">&lt;-</span> <span class="nx">consumer</span><span class="p">:</span> <span class="c1">// 试图进入此酒吧
+</span><span class="c1"></span>			<span class="k">go</span> <span class="nx">bar24x7</span><span class="p">.</span><span class="nf">ServeConsumer</span><span class="p">(</span><span class="nx">consumer</span><span class="p">)</span>
+		<span class="k">default</span><span class="p">:</span>
+			<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;顾客#&#34;</span><span class="p">,</span> <span class="nx">customerId</span><span class="p">,</span> <span class="s">&#34;不愿等待而离去&#34;</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="o">...</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="另一种采用最快回应的实现方式复杂场景用">另一种“采用最快回应”的实现方式(复杂场景用)</h4>
+<p>在上面的“采用最快回应”用例一节已经提到，我们也可以使用选择机制来实现“采用最快回应”用例。 每个数据源协程只需使用一个<strong>缓冲为1的通道</strong>并向其尝试发送回应数据即可。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+  <span class="s">&#34;fmt&#34;</span>
+  <span class="s">&#34;math/rand&#34;</span>
+  <span class="s">&#34;time&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">source</span><span class="p">(</span><span class="nx">c</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="kt">int32</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">ra</span><span class="p">,</span> <span class="nx">rb</span> <span class="o">:=</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Int31</span><span class="p">(),</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Intn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+  <span class="c1">// 休眠1秒/2秒/3秒
+</span><span class="c1"></span>  <span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Duration</span><span class="p">(</span><span class="nx">rb</span><span class="p">)</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+  <span class="k">select</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="nx">c</span> <span class="o">&lt;-</span> <span class="nx">ra</span><span class="p">:</span>
+  <span class="k">default</span><span class="p">:</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
+
+  <span class="nx">c</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int32</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">// 此通道容量必须至少为1
+</span><span class="c1"></span>  <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+      <span class="k">go</span> <span class="nf">source</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="nx">rnd</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">c</span> <span class="c1">// 只采用第一个成功发送的回应数据
+</span><span class="c1"></span>  <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">rnd</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>注意，使用选择机制来实现“采用最快回应”的代码中使用的通道的容量必须至少为1，以保证最快回应总能够发送成功。 否则，如果数据请求者因为种种原因未及时准备好接收，则所有回应者的尝试发送都将失败，从而所有回应的数据都将被错过。</strong></p>
+<h4 id="少量数据源采用最快回应的实现方式">少量数据源“采用最快回应”的实现方式</h4>
+<p>如果一个“采用最快回应”用例中的数据源的数量很少，比如两个或三个，我们可以让每个数据源使用一个单独的缓冲通道来回应数据，然后使用一个<code>select</code>代码块来同时接收这三个通道。 示例代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;fmt&#34;</span>
+	<span class="s">&#34;math/rand&#34;</span>
+	<span class="s">&#34;time&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">source</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">int32</span> <span class="p">{</span>
+	<span class="nx">c</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int32</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">// 必须为一个缓冲通道
+</span><span class="c1"></span>	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">ra</span><span class="p">,</span> <span class="nx">rb</span> <span class="o">:=</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Int31</span><span class="p">(),</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Intn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Duration</span><span class="p">(</span><span class="nx">rb</span><span class="p">)</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+		<span class="nx">c</span> <span class="o">&lt;-</span> <span class="nx">ra</span>
+	<span class="p">}()</span>
+	<span class="k">return</span> <span class="nx">c</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
+
+	<span class="kd">var</span> <span class="nx">rnd</span> <span class="kt">int32</span>
+	<span class="c1">// 阻塞在此直到某个数据源率先回应。
+</span><span class="c1"></span>	<span class="k">select</span><span class="p">{</span>
+	<span class="k">case</span> <span class="nx">rnd</span> <span class="p">=</span> <span class="o">&lt;-</span><span class="nf">source</span><span class="p">():</span>
+	<span class="k">case</span> <span class="nx">rnd</span> <span class="p">=</span> <span class="o">&lt;-</span><span class="nf">source</span><span class="p">():</span>
+	<span class="k">case</span> <span class="nx">rnd</span> <span class="p">=</span> <span class="o">&lt;-</span><span class="nf">source</span><span class="p">():</span>
+	<span class="p">}</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">rnd</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>注意：如果上例中使用的通道是非缓冲的，未被选中的<code>case</code>分支对应的两个<code>source</code>函数调用中开辟的协程将处于永久阻塞状态，从而造成内存泄露。</strong></p>
+<h4 id="超时机制timeout">超时机制（timeout）</h4>
+<p>在一些请求/回应用例中，一个请求可能因为种种原因导致需要超出预期的时长才能得到回应，有时甚至永远得不到回应。 对于这样的情形，我们可以使用一个超时方案给请求者返回一个错误信息。 使用选择机制可以很轻松地实现这样的一个超时方案。</p>
+<p>下面这个例子展示了如何实现一个支持超时设置的请求：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">requestWithTimeout</span><span class="p">(</span><span class="nx">timeout</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">c</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span>
+	<span class="k">go</span> <span class="nf">doRequest</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="c1">// 可能需要超出预期的时长回应
+</span><span class="c1"></span>
+	<span class="k">select</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="nx">data</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">c</span><span class="p">:</span>
+		<span class="k">return</span> <span class="nx">data</span><span class="p">,</span> <span class="kc">nil</span>
+	<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">time</span><span class="p">.</span><span class="nf">After</span><span class="p">(</span><span class="nx">timeout</span><span class="p">):</span>
+		<span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;超时了！&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="脉搏器ticker">脉搏器（ticker）</h4>
+<p>我们可以使用尝试发送操作来实现一个每隔一定时间发送一个信号的脉搏器。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+<span class="kn">import</span> <span class="s">&#34;time&#34;</span>
+
+<span class="kd">func</span> <span class="nf">Tick</span><span class="p">(</span><span class="nx">d</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span><span class="p">)</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span> <span class="p">{</span>
+	<span class="nx">c</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{},</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">// 容量最好为1
+</span><span class="c1"></span>	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">{</span>
+			<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span>
+			<span class="k">select</span> <span class="p">{</span>
+			<span class="k">case</span> <span class="nx">c</span> <span class="o">&lt;-</span> <span class="kd">struct</span><span class="p">{}{}:</span>
+			<span class="k">default</span><span class="p">:</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">return</span> <span class="nx">c</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">t</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
+	<span class="k">for</span> <span class="k">range</span> <span class="nf">Tick</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">t</span><span class="p">))</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>事实上，<code>time</code>标准库包中的<code>Tick</code>函数提供了同样的功能，但效率更高。 我们应该尽量使用标准库包中的实现。</p>
+<h4 id="速率限制rate-limiting">速率限制（rate limiting）</h4>
+<p>前面实现了峰值限制，同样地我们可以使用尝试机制实现速率限制，但是这里要和定时器配合实现。速率限制常用来限制吞吐和确保在一段时间内的资源使用不会超标。</p>
+<p>下面的例子借鉴了<a href="https://github.com/golang/go/wiki/RateLimiting">官方Go维基中的例子</a>。 在此例中，任何一分钟时段内处理的请求数不会超过200</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+<span class="kn">import</span> <span class="s">&#34;time&#34;</span>
+
+<span class="kd">type</span> <span class="nx">Request</span> <span class="kd">interface</span><span class="p">{}</span>
+<span class="kd">func</span> <span class="nf">handle</span><span class="p">(</span><span class="nx">r</span> <span class="nx">Request</span><span class="p">)</span> <span class="p">{</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">r</span><span class="p">.(</span><span class="kt">int</span><span class="p">))}</span>
+
+<span class="kd">const</span> <span class="nx">RateLimitPeriod</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Minute</span>
+<span class="kd">const</span> <span class="nx">RateLimit</span> <span class="p">=</span> <span class="mi">200</span> <span class="c1">// 任何一分钟内最多处理200个请求
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nf">handleRequests</span><span class="p">(</span><span class="nx">requests</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">quotas</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span> <span class="nx">RateLimit</span><span class="p">)</span>
+
+	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">tick</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">NewTicker</span><span class="p">(</span><span class="nx">RateLimitPeriod</span> <span class="o">/</span> <span class="nx">RateLimit</span><span class="p">)</span>
+		<span class="k">defer</span> <span class="nx">tick</span><span class="p">.</span><span class="nf">Stop</span><span class="p">()</span>
+		<span class="k">for</span> <span class="nx">t</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">tick</span><span class="p">.</span><span class="nx">C</span> <span class="p">{</span>
+			<span class="k">select</span> <span class="p">{</span>
+			<span class="k">case</span> <span class="nx">quotas</span> <span class="o">&lt;-</span> <span class="nx">t</span><span class="p">:</span>
+			<span class="k">default</span><span class="p">:</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+
+	<span class="k">for</span> <span class="nx">r</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">requests</span> <span class="p">{</span>
+		<span class="o">&lt;-</span><span class="nx">quotas</span>
+		<span class="k">go</span> <span class="nf">handle</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">requests</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="nx">Request</span><span class="p">)</span>
+	<span class="k">go</span> <span class="nf">handleRequests</span><span class="p">(</span><span class="nx">requests</span><span class="p">)</span>
+	<span class="c1">// time.Sleep(time.Minute)
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span><span class="nx">requests</span> <span class="o">&lt;-</span> <span class="nx">i</span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上例的代码虽然可以保证任何一分钟时段内处理的请求数不会超过200，但是如果在开始的一分钟内没有任何请求，则接下来的某个瞬时时间点可能会同时处理最多200个请求（试着将<code>time.Sleep</code>行的注释去掉), 这可能会造成卡顿情况。我们可以将<strong>速率限制和峰值限制</strong>一并使用来避免出现这样的情况。</p>
+<h4 id="开关">开关</h4>
+<p>向一个nil通道发送数据或者从中接收数据都属于阻塞操作。 利用这一事实，我们可以将一个<code>select</code>流程控制中的<code>case</code>操作中涉及的通道设置为不同的值，以使此<code>select</code>流程控制选择执行不同的分支。</p>
+<h4 id="控制代码被执行的几率少用">控制代码被执行的几率（少用）</h4>
+<p>我们可以通过在一个<code>select</code>流程控制中使用重复的<code>case</code>操作来增加对应分支中的代码的执行几率。这种操作比较少见，下面这个例子， 函数<code>f</code>的调用执行几率大致为函数<code>g</code>的两倍:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">foo</span><span class="p">,</span> <span class="nx">bar</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}),</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+	<span class="nb">close</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span> <span class="nb">close</span><span class="p">(</span><span class="nx">bar</span><span class="p">)</span> <span class="c1">// 仅为演示目的
+</span><span class="c1"></span>	<span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="o">:=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+	<span class="nx">f</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(){</span><span class="nx">x</span><span class="o">++</span><span class="p">}</span>
+	<span class="nx">g</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(){</span><span class="nx">y</span><span class="o">++</span><span class="p">}</span>
+	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">100000</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">select</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">foo</span><span class="p">:</span> <span class="nf">f</span><span class="p">()</span>
+		<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">foo</span><span class="p">:</span> <span class="nf">f</span><span class="p">()</span>
+		<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">bar</span><span class="p">:</span> <span class="nf">g</span><span class="p">()</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">x</span><span class="o">/</span><span class="nx">y</span><span class="p">)</span> <span class="c1">// 大致为2
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="从动态数量的分支中选择少用">从动态数量的分支中选择（少用）</h4>
+<p><em>reflection ain&rsquo;t good</em></p>
+<p>每个<code>select</code>控制流程中的分支数量在运行中是固定的，但是我们可以使用<code>reflect</code>标准库包中提供的功能在运行时刻来构建动态分支数量的<code>select</code>控制流程。 但是请注意：一个<code>select</code>控制流程中的分支越多，此<code>select</code>控制流程的执行效率就越低（这是我们常常只使用不多于三个分支的<code>select</code>控制流程的原因）。 <code>reflect</code>标准库包中也提供了模拟尝试发送和尝试接收代码块的<code>TrySend</code>和<code>TryRecv</code>函数。涉及到反射的，肯定有更好的解决方案:-)。</p>
+<h3 id="数据流操纵data-flow">数据流操纵（Data Flow）</h3>
+<p>下面把数据流处理程序大致分成了常见的几类，概念上来说是不同模块由一个或者多个并行处理的协程组成：</p>
+<ul>
+<li>
+<p>数据生成/搜集/加载；</p>
+</li>
+<li>
+<p>数据服务/存盘；</p>
+</li>
+<li>
+<p>数据计算/处理；</p>
+</li>
+<li>
+<p>数据验证/过滤；</p>
+</li>
+<li>
+<p>数据聚合/分流；</p>
+</li>
+<li>
+<p>数据组合/拆分；</p>
+</li>
+<li>
+<p>数据复制/增殖；</p>
+<p>一个模块中的工作协程从一些其它模块接收数据做为输入，并向另一些模块发送输出数据。 换句话数，一个模块可能同时兼任数据消费者和数据产生者的角色。多个模块一起组成了一个数据流处理系统。后续的一些实现可能并不高效，只是为了描述这些分类模块的实现，比较简单。</p>
+</li>
+</ul>
+<h4 id="数据生成搜集加载">数据生成/搜集/加载</h4>
+<p>一个数据产生者可能通过以下途径生成数据：</p>
+<ul>
+<li>
+<p>加载一个文件、或者读取一个数据库、或者用爬虫抓取网页数据；</p>
+</li>
+<li>
+<p>从一个软件或者硬件系统搜集各种数据；</p>
+</li>
+<li>
+<p>产生一系列随机数；</p>
+</li>
+<li>
+<p>etc.</p>
+<p>这里的例子是一个随机数生成器作为数据生产者，生产者只有数据输出，所以返回只读通道。实际上此随机数产生器是一个多返回值的future/promise，<strong>一个数据产生者可以在任何时刻关闭返回的通道以结束数据生成</strong>。</p>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;crypto/rand&#34;</span>
+	<span class="s">&#34;encoding/binary&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">RandomGenerator</span><span class="p">()</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span> <span class="p">{</span>
+	<span class="nx">c</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span>
+	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">rnds</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+		<span class="k">for</span> <span class="p">{</span>
+			<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Read</span><span class="p">(</span><span class="nx">rnds</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+				<span class="nb">close</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>  <span class="c1">// 若读取错误则关闭通道结束数据生成
+</span><span class="c1"></span>				<span class="k">break</span>
+			<span class="p">}</span>
+			<span class="nx">c</span> <span class="o">&lt;-</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">Uint64</span><span class="p">(</span><span class="nx">rnds</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">return</span> <span class="nx">c</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="数据聚合">数据聚合</h4>
+<p>例如把多个数据流合为一个数据流，下面这个函数把任意数量的数据流合为一个：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Aggregator</span><span class="p">(</span><span class="nx">inputs</span> <span class="o">...&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span> <span class="p">{</span>
+	<span class="nx">out</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">in</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">inputs</span> <span class="p">{</span>
+		<span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">in</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">for</span> <span class="p">{</span>
+				<span class="nx">out</span> <span class="o">&lt;-</span> <span class="o">&lt;-</span><span class="nx">in</span> <span class="c1">// &lt;=&gt; out &lt;- (&lt;-in)
+</span><span class="c1"></span>			<span class="p">}</span>
+		<span class="p">}(</span><span class="nx">in</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">out</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://miro.medium.com/max/1400/0*oNO9-NZHuTerKDym.png" alt="merge cahnnels"></p>
+<p>但是这个例子，最好需要考虑一个输入数据流是否已经关闭：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="s">&#34;sync&#34;</span>
+
+<span class="kd">func</span> <span class="nf">Aggregator</span><span class="p">(</span><span class="nx">inputs</span> <span class="o">...&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span> <span class="p">{</span>
+	<span class="nx">output</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span>
+	<span class="kd">var</span> <span class="nx">wg</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">in</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">inputs</span> <span class="p">{</span>
+		<span class="nx">wg</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="kt">int</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">defer</span> <span class="nx">wg</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
+			<span class="c1">// 如果通道in被关闭，此循环将最终结束。
+</span><span class="c1"></span>			<span class="k">for</span> <span class="nx">x</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">in</span> <span class="p">{</span>
+				<span class="nx">output</span> <span class="o">&lt;-</span> <span class="nx">x</span>
+			<span class="p">}</span>
+		<span class="p">}(</span><span class="nx">in</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">wg</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>
+		<span class="nb">close</span><span class="p">(</span><span class="nx">output</span><span class="p">)</span>
+	<span class="p">}()</span>
+	<span class="k">return</span> <span class="nx">output</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果被聚合的数据流的数量很小，我们也可以使用一个<code>select</code>控制流程代码块来聚合这些数据流。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 假设数据流的数量为2。
+</span><span class="c1"></span><span class="o">...</span>
+	<span class="nx">output</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span>
+	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">inA</span><span class="p">,</span> <span class="nx">inB</span> <span class="o">:=</span> <span class="nx">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+		<span class="k">for</span> <span class="p">{</span>
+			<span class="k">select</span> <span class="p">{</span>
+			<span class="k">case</span> <span class="nx">v</span> <span class="o">:=</span> <span class="o">&lt;-</span> <span class="nx">inA</span><span class="p">:</span> <span class="nx">output</span> <span class="o">&lt;-</span> <span class="nx">v</span>
+			<span class="k">case</span> <span class="nx">v</span> <span class="o">:=</span> <span class="o">&lt;-</span> <span class="nx">inB</span><span class="p">:</span> <span class="nx">output</span> <span class="o">&lt;-</span> <span class="nx">v</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="o">...</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="数据分流">数据分流</h4>
+<p>数据分流是数据聚合的逆过程。数据分流的实现很简单，但在实践中用的并不多。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Divisor</span><span class="p">(</span><span class="nx">input</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">,</span> <span class="nx">outputs</span> <span class="o">...</span><span class="kd">chan</span><span class="o">&lt;-</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">out</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">outputs</span> <span class="p">{</span>
+		<span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">o</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">for</span> <span class="p">{</span>
+				<span class="nx">o</span> <span class="o">&lt;-</span> <span class="o">&lt;-</span><span class="nx">input</span> <span class="c1">// &lt;=&gt; o &lt;- (&lt;-input)
+</span><span class="c1"></span>			<span class="p">}</span>
+		<span class="p">}(</span><span class="nx">out</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="数据合成">数据合成</h4>
+<p>数据合成将多个数据流中读取的数据合成一个。</p>
+<p>下面是一个数据合成工作函数的实现中，从两个不同数据流读取的两个<code>uint64</code>值组成了一个新的<code>uint64</code>值。 当然，在实践中，数据的组合比这复杂得多。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Composor</span><span class="p">(</span><span class="nx">inA</span><span class="p">,</span> <span class="nx">inB</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span> <span class="p">{</span>
+	<span class="nx">output</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span>
+	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">{</span>
+			<span class="nx">a1</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a2</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">inA</span><span class="p">,</span> <span class="o">&lt;-</span><span class="nx">inB</span><span class="p">,</span> <span class="o">&lt;-</span><span class="nx">inA</span>
+			<span class="nx">output</span> <span class="o">&lt;-</span> <span class="nx">a1</span> <span class="p">^</span> <span class="nx">b</span> <span class="o">&amp;</span> <span class="nx">a2</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">return</span> <span class="nx">output</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="数据分解">数据分解</h4>
+<p>数据分解是数据合成的逆过程。一个数据分解者从一个通道读取一份数据，并将此数据分解为多份数据。 这里就不举例了。</p>
+<h4 id="数据复制增殖">数据复制/增殖</h4>
+<p>数据复制（增殖）可以看作是特殊的数据分解。一份输入数据将被复制多份并输出给多个数据流。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Duplicator</span><span class="p">(</span><span class="nx">in</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">(</span><span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">,</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">outA</span><span class="p">,</span> <span class="nx">outB</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">),</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span>
+	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="nx">x</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">in</span> <span class="p">{</span>
+			<span class="nx">outA</span> <span class="o">&lt;-</span> <span class="nx">x</span>
+			<span class="nx">outB</span> <span class="o">&lt;-</span> <span class="nx">x</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">return</span> <span class="nx">outA</span><span class="p">,</span> <span class="nx">outB</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="数据计算分析">数据计算/分析</h4>
+<p>数据计算和数据分析模块的功能因具体程序不同而有很大的差异。 一般来说，数据分析者接收一份数据并对之加工处理后转换为另一份数据。</p>
+<p>下面的简单示例中，每个输入的<code>uint64</code>值将被进行位反转后输出。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Calculator</span><span class="p">(</span><span class="nx">in</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">,</span> <span class="nx">out</span> <span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">(</span><span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">out</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">out</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="nx">x</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">in</span> <span class="p">{</span>
+			<span class="nx">out</span> <span class="o">&lt;-</span> <span class="p">^</span><span class="nx">x</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">return</span> <span class="nx">out</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="数据验证过滤">数据验证/过滤</h4>
+<p>一个数据验证或过滤者的任务是检查输入数据的合理性并抛弃不合理的数据。 比如，下面的工作者协程将抛弃所有的非素数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="s">&#34;math/big&#34;</span>
+
+<span class="kd">func</span> <span class="nf">Filter0</span><span class="p">(</span><span class="nx">input</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">,</span> <span class="nx">output</span> <span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">output</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">output</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">bigInt</span> <span class="o">:=</span> <span class="nx">big</span><span class="p">.</span><span class="nf">NewInt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+		<span class="k">for</span> <span class="nx">x</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">input</span> <span class="p">{</span>
+			<span class="nx">bigInt</span><span class="p">.</span><span class="nf">SetUint64</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nx">bigInt</span><span class="p">.</span><span class="nf">ProbablyPrime</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">output</span> <span class="o">&lt;-</span> <span class="nx">x</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">return</span> <span class="nx">output</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">Filter</span><span class="p">(</span><span class="nx">input</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nf">Filter0</span><span class="p">(</span><span class="nx">input</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="数据服务存盘">数据服务/存盘</h4>
+<p>一般，一个数据服务或者存盘模块为一个数据流系统中的最后一个模块。 这里的实现值是简单地将数据输出到终端。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+
+<span class="kd">func</span> <span class="nf">Printer</span><span class="p">(</span><span class="nx">input</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="nx">x</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">input</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="组装数据流系统">组装数据流系统</h4>
+<p>Now，让我们使用上面的模块工作者函数实现来组装一些数据流系统。 组装数据流仅仅是创建一些工作者协程函数调用，并为这些调用指定输入数据流和输出数据流。</p>
+<p>数据流系统例子1（一个流线型系统）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="o">...</span> <span class="c1">// 上面的模块工作者函数实现
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nf">Printer</span><span class="p">(</span>
+		<span class="nf">Filter</span><span class="p">(</span>
+			<span class="nf">Calculator</span><span class="p">(</span>
+				<span class="nf">RandomGenerator</span><span class="p">(),</span> <span class="kc">nil</span><span class="p">,</span>
+			<span class="p">),</span>
+		<span class="p">),</span>
+	<span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://gfw.go101.org/article/res/data-flow-linear.png" alt="pipe"></p>
+<p>数据流系统例子2（一个单向无环图系统）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="o">...</span> <span class="c1">// 上面的模块工作者函数实现
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">filterA</span> <span class="o">:=</span> <span class="nf">Filter</span><span class="p">(</span><span class="nf">RandomGenerator</span><span class="p">())</span>
+	<span class="nx">filterB</span> <span class="o">:=</span> <span class="nf">Filter</span><span class="p">(</span><span class="nf">RandomGenerator</span><span class="p">())</span>
+	<span class="nx">filterC</span> <span class="o">:=</span> <span class="nf">Filter</span><span class="p">(</span><span class="nf">RandomGenerator</span><span class="p">())</span>
+	<span class="nx">filter</span> <span class="o">:=</span> <span class="nf">Aggregator</span><span class="p">(</span><span class="nx">filterA</span><span class="p">,</span> <span class="nx">filterB</span><span class="p">,</span> <span class="nx">filterC</span><span class="p">)</span>
+	<span class="nx">calculatorA</span> <span class="o">:=</span> <span class="nf">Calculator</span><span class="p">(</span><span class="nx">filter</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+	<span class="nx">calculatorB</span> <span class="o">:=</span> <span class="nf">Calculator</span><span class="p">(</span><span class="nx">filter</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+	<span class="nx">calculator</span> <span class="o">:=</span> <span class="nf">Aggregator</span><span class="p">(</span><span class="nx">calculatorA</span><span class="p">,</span> <span class="nx">calculatorB</span><span class="p">)</span>
+	<span class="nf">Printer</span><span class="p">(</span><span class="nx">calculator</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://gfw.go101.org/article/res/data-flow-dag.png" alt="no circle"></p>
+<p>更复杂的数据流系统可以表示为任何拓扑结构的图。比如一个复杂的数据流系统可能有多个输出模块。 但是有环拓扑结构的数据流系统在实践中很少用。</p>
+<p>从上面两个例子可以看出，使用通道来构建数据流系统是很简单和直观的。而且，通过使用数据聚合模块，我们可以很轻松地实现各个模块的工作协程数量的扇入（fan-in）和扇出（fan-out）。</p>
+<p>事实上，我们也可以使用一个简单的通道来代替数据聚合模块的角色。比如，下面的代码使用两个通道代替了上例中的两个数据聚合器。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="o">...</span> <span class="c1">// 上面的模块工作者函数实现
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">c1</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+	<span class="nf">Filter0</span><span class="p">(</span><span class="nf">RandomGenerator</span><span class="p">(),</span> <span class="nx">c1</span><span class="p">)</span> <span class="c1">// filterA
+</span><span class="c1"></span>	<span class="nf">Filter0</span><span class="p">(</span><span class="nf">RandomGenerator</span><span class="p">(),</span> <span class="nx">c1</span><span class="p">)</span> <span class="c1">// filterB
+</span><span class="c1"></span>	<span class="nf">Filter0</span><span class="p">(</span><span class="nf">RandomGenerator</span><span class="p">(),</span> <span class="nx">c1</span><span class="p">)</span> <span class="c1">// filterC
+</span><span class="c1"></span>	<span class="nx">c2</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">uint64</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+	<span class="nf">Calculator</span><span class="p">(</span><span class="nx">c1</span><span class="p">,</span> <span class="nx">c2</span><span class="p">)</span> <span class="c1">// calculatorA
+</span><span class="c1"></span>	<span class="nf">Calculator</span><span class="p">(</span><span class="nx">c1</span><span class="p">,</span> <span class="nx">c2</span><span class="p">)</span> <span class="c1">// calculatorB
+</span><span class="c1"></span>	<span class="nf">Printer</span><span class="p">(</span><span class="nx">c2</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://gfw.go101.org/article/res/data-flow-dag-b.png" alt="new topo"></p>
+<p>上面的代码示例并没有太多考虑如何关闭一个数据流，会单独开一个文章介绍。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">CctoctoFX</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-12-22
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/golang/channel-graceful/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Close Channels Gracefully</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/golang/go-testing/">
+            <span class="next-text nav-default">Golang TDD</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="derios1230@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/pillumina" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/fang-xian-20" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:2000/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>CctoctoFX</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

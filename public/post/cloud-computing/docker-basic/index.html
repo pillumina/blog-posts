@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Docker Cheat Sheet - CctoctoFX</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="CctoctoFX" /><meta name="description" content="Books Docker in Action (English ver.) Docker入门到实践(中文) 速查 Docker Cheat Sheet 全量CLI 容器管理CLI 查看容器CLI 容器交互CLI 镜像管理CLI 镜像传输CLI DOCK" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.4 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:2000/post/cloud-computing/docker-basic/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.2e81bbed97b8b282c1aeb57488cc71c8d8c8ec559f3931531bd396bf31e0d4dd.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Docker Cheat Sheet" />
+<meta property="og:description" content="Books Docker in Action (English ver.) Docker入门到实践(中文) 速查 Docker Cheat Sheet 全量CLI 容器管理CLI 查看容器CLI 容器交互CLI 镜像管理CLI 镜像传输CLI DOCK" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:2000/post/cloud-computing/docker-basic/" />
+<meta property="article:published_time" content="2021-03-30T11:22:18+08:00" />
+<meta property="article:modified_time" content="2021-03-30T11:22:18+08:00" />
+<meta itemprop="name" content="Docker Cheat Sheet">
+<meta itemprop="description" content="Books Docker in Action (English ver.) Docker入门到实践(中文) 速查 Docker Cheat Sheet 全量CLI 容器管理CLI 查看容器CLI 容器交互CLI 镜像管理CLI 镜像传输CLI DOCK">
+<meta itemprop="datePublished" content="2021-03-30T11:22:18+08:00" />
+<meta itemprop="dateModified" content="2021-03-30T11:22:18+08:00" />
+<meta itemprop="wordCount" content="596">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker Cheat Sheet"/>
+<meta name="twitter:description" content="Books Docker in Action (English ver.) Docker入门到实践(中文) 速查 Docker Cheat Sheet 全量CLI 容器管理CLI 查看容器CLI 容器交互CLI 镜像管理CLI 镜像传输CLI DOCK"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CctoctoFX</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CctoctoFX</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Docker Cheat Sheet</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-03-30 </span>
+        
+          <span class="more-meta"> 596 words </span>
+          <span class="more-meta"> 2 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#books">Books</a></li>
+        <li><a href="#速查">速查</a>
+          <ul>
+            <li><a href="#全量cli">全量CLI</a></li>
+            <li><a href="#容器管理cli">容器管理CLI</a></li>
+            <li><a href="#查看容器cli">查看容器CLI</a></li>
+            <li><a href="#容器交互cli">容器交互CLI</a></li>
+            <li><a href="#镜像管理cli">镜像管理CLI</a></li>
+            <li><a href="#镜像传输cli">镜像传输CLI</a></li>
+            <li><a href="#dockerfile主要命令">DOCKERFILE主要命令</a></li>
+          </ul>
+        </li>
+        <li><a href="#dockerfile">Dockerfile</a>
+          <ul>
+            <li><a href="#基底">基底</a></li>
+            <li><a href="#变量">变量</a></li>
+            <li><a href="#初始化">初始化</a></li>
+            <li><a href="#onbuild">Onbuild</a></li>
+            <li><a href="#命令">命令</a></li>
+            <li><a href="#entrypoint">Entrypoint</a></li>
+            <li><a href="#metadata">Metadata</a></li>
+          </ul>
+        </li>
+        <li><a href="#docker-compose">Docker Compose</a>
+          <ul>
+            <li><a href="#基本用法">基本用法</a></li>
+            <li><a href="#指令">指令</a></li>
+          </ul>
+        </li>
+        <li><a href="#reference例子">Reference(例子)</a>
+          <ul>
+            <li><a href="#构建">构建</a></li>
+            <li><a href="#端口">端口</a></li>
+            <li><a href="#指令-1">指令</a></li>
+            <li><a href="#环境变量">环境变量</a></li>
+            <li><a href="#依赖">依赖</a></li>
+            <li><a href="#其他选项">其他选项</a></li>
+          </ul>
+        </li>
+        <li><a href="#高级特性">高级特性</a>
+          <ul>
+            <li><a href="#打标签">打标签</a></li>
+            <li><a href="#dns服务器">DNS服务器</a></li>
+            <li><a href="#设备绑定">设备绑定</a></li>
+            <li><a href="#外部链接">外部链接</a></li>
+            <li><a href="#主机设置">主机设置</a></li>
+            <li><a href="#services">Services</a></li>
+          </ul>
+        </li>
+        <li><a href="#clean-up">Clean up</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="books">Books</h2>
+<p><a href="https://pepa.holla.cz/wp-content/uploads/2016/10/Docker-in-Action.pdf">Docker in Action (English ver.)</a></p>
+<p><a href="https://yeasy.gitbook.io/docker_practice/">Docker入门到实践(中文)</a></p>
+<h2 id="速查">速查</h2>
+<p><a href="https://github.com/wsargent/docker-cheat-sheet/tree/master/zh-cn">Docker Cheat Sheet</a></p>
+<h3 id="全量cli">全量CLI</h3>
+<p><img src="https://raw.githubusercontent.com/sangam14/dockercheatsheets/master/dockercheatsheet8.png" alt="docker cheat sheet"></p>
+<h3 id="容器管理cli">容器管理CLI</h3>
+<p><img src="https://raw.githubusercontent.com/sangam14/dockercheatsheets/master/dockercheatsheet1.png" alt="container management commands"></p>
+<h3 id="查看容器cli">查看容器CLI</h3>
+<p><img src="https://raw.githubusercontent.com/sangam14/dockercheatsheets/master/dockercheatsheet3.png" alt="inspect container commands"></p>
+<h3 id="容器交互cli">容器交互CLI</h3>
+<p><img src="https://raw.githubusercontent.com/sangam14/dockercheatsheets/master/dockercheatsheet4.png" alt="interact with container commands"></p>
+<h3 id="镜像管理cli">镜像管理CLI</h3>
+<p><img src="https://raw.githubusercontent.com/sangam14/dockercheatsheets/master/dockercheatsheet5.png" alt="image management commands"></p>
+<h3 id="镜像传输cli">镜像传输CLI</h3>
+<p><img src="https://raw.githubusercontent.com/sangam14/dockercheatsheets/master/dockercheatsheet6.png" alt="image transfer commands"></p>
+<h3 id="dockerfile主要命令">DOCKERFILE主要命令</h3>
+<p><img src="https://raw.githubusercontent.com/sangam14/dockercheatsheets/master/dockercheatsheet7.png" alt="builder main commands"></p>
+<h2 id="dockerfile">Dockerfile</h2>
+<h3 id="基底">基底</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">FROM</span><span class="s"> ruby:2.2.2</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="变量">变量</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">ENV</span> APP_HOME/myapp<span class="err">
+</span><span class="err"></span><span class="k">RUN</span> mkdir <span class="nv">$APP_HOME</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="初始化">初始化</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">RUN</span> bundle install<span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">WORKDIR</span><span class="s"> /myapp</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">VOLUME</span> <span class="p">[</span><span class="s2">&#34;/data&#34;</span><span class="p">]</span><span class="err">
+</span><span class="err"></span><span class="c"># Specification for mount point</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">ADD</span> file.xyz /file.xyz<span class="err">
+</span><span class="err"></span><span class="k">COPY</span> --chown<span class="o">=</span>user:group host_file.xyz /path/container_file.xyz<span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="onbuild">Onbuild</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">ONBUILD</span> <span class="k">RUN</span> bundle install<span class="err">
+</span><span class="err"></span><span class="c"># when used with another file</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="命令">命令</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">EXPOSE</span><span class="s"> 5900</span><span class="err">
+</span><span class="err"></span><span class="k">CMD</span> <span class="p">[</span><span class="s2">&#34;bundle&#34;</span><span class="p">,</span> <span class="s2">&#34;exec&#34;</span><span class="p">,</span> <span class="s2">&#34;rails&#34;</span><span class="p">,</span> <span class="s2">&#34;server&#34;</span><span class="p">]</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="entrypoint">Entrypoint</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">ENTRYPOINT</span> <span class="nb">exec</span> top -b<span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="metadata">Metadata</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">LABEL</span> <span class="nv">version</span><span class="o">=</span><span class="s2">&#34;1.0&#34;</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">LABEL</span> <span class="s2">&#34;com.example.vendor&#34;</span><span class="o">=</span><span class="s2">&#34;ACME Incorporated&#34;</span><span class="err">
+</span><span class="err"></span><span class="k">LABEL</span> com.example.label-with-value<span class="o">=</span><span class="s2">&#34;foo&#34;</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">LABEL</span> <span class="nv">description</span><span class="o">=</span><span class="s2">&#34;This text illustrates \
+</span><span class="s2">that label-values can span multiple lines.&#34;</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="docker-compose">Docker Compose</h2>
+<h3 id="基本用法">基本用法</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># docker-compose.yml</span><span class="w">
+</span><span class="w"></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;2&#39;</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">web</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l">.</span><span class="w">
+</span><span class="w">    </span><span class="c"># build from Dockerfile</span><span class="w">
+</span><span class="w">    </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l">./Path</span><span class="w">
+</span><span class="w">    </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l">Dockerfile</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">     </span>- <span class="s2">&#34;5000:5000&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">     </span>- <span class="l">.:/code</span><span class="w">
+</span><span class="w">  </span><span class="nt">redis</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">redis</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="指令">指令</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">docker-compose start
+docker-compose stop
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">docker-compose pause
+docker-compose unpause
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">docker-compose ps
+docker-compose up
+docker-compose down
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="reference例子">Reference(例子)</h2>
+<h3 id="构建">构建</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">web</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># build from Dockerfile</span><span class="w">
+</span><span class="w">  </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l">.</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="c"># build from custom Dockerfile</span><span class="w">
+</span><span class="w">  </span><span class="nt">build</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l">./dir</span><span class="w">
+</span><span class="w">    </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l">Dockerfile.dev</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w"> </span><span class="c"># build from image</span><span class="w">
+</span><span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu</span><span class="w">
+</span><span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu:14.04</span><span class="w">
+</span><span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">tutum/influxdb</span><span class="w">
+</span><span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">example-registry:4000/postgresql</span><span class="w">
+</span><span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">a4bc65fd</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="端口">端口</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="s2">&#34;3000&#34;</span><span class="w">
+</span><span class="w">    </span>- <span class="s2">&#34;8000:80&#34;</span><span class="w">  </span><span class="c"># guest:host</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="c"># expose ports to linked services (not to host)</span><span class="w">
+</span><span class="w">  </span><span class="nt">expose</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;3000&#34;</span><span class="p">]</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="指令-1">指令</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="c"># command to execute</span><span class="w">
+</span><span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l">bundle exec thin -p 3000</span><span class="w">
+</span><span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">bundle, exec, thin, -p, 3000]</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="c"># override the entrypoint</span><span class="w">
+</span><span class="w">  </span><span class="nt">entrypoint</span><span class="p">:</span><span class="w"> </span><span class="l">/app/start.sh</span><span class="w">
+</span><span class="w">  </span><span class="nt">entrypoint</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">php, -d, vendor/bin/phpunit]</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="环境变量">环境变量</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="c"># environment vars</span><span class="w">
+</span><span class="w">  </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">RACK_ENV</span><span class="p">:</span><span class="w"> </span><span class="l">development</span><span class="w">
+</span><span class="w">  </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">RACK_ENV=development</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="c"># environment vars from file</span><span class="w">
+</span><span class="w">  </span><span class="nt">env_file</span><span class="p">:</span><span class="w"> </span><span class="l">.env</span><span class="w">
+</span><span class="w">  </span><span class="nt">env_file</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">.env, .development.env]</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="依赖">依赖</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="c"># makes the `db` service available as the hostname `database`</span><span class="w">
+</span><span class="w">  </span><span class="c"># (implies depends_on)</span><span class="w">
+</span><span class="w">  </span><span class="nt">links</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">db:database</span><span class="w">
+</span><span class="w">    </span>- <span class="l">redis</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="c"># make sure `db` is alive before starting</span><span class="w">
+</span><span class="w">  </span><span class="nt">depends_on</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">db</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="其他选项">其他选项</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="c"># make this service extend another</span><span class="w">
+</span><span class="w">  </span><span class="nt">extends</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l">common.yml </span><span class="w"> </span><span class="c"># optional</span><span class="w">
+</span><span class="w">    </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span><span class="l">webapp</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">/var/lib/mysql</span><span class="w">
+</span><span class="w">    </span>- <span class="l">./_data:/var/lib/mysql</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="高级特性">高级特性</h2>
+<h3 id="打标签">打标签</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">web</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">com.example.description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;Accounting web app&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="dns服务器">DNS服务器</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">web</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">dns</span><span class="p">:</span><span class="w"> </span><span class="m">8.8.8.8</span><span class="w">
+</span><span class="w">    </span><span class="nt">dns</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="m">8.8.8.8</span><span class="w">
+</span><span class="w">      </span>- <span class="m">8.8.4.4</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="设备绑定">设备绑定</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">web</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">devices</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="s2">&#34;/dev/ttyUSB0:/dev/ttyUSB0&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="外部链接">外部链接</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">web</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">external_links</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="l">redis_1</span><span class="w">
+</span><span class="w">      </span>- <span class="l">project_db_1:mysql</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="主机设置">主机设置</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">web</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">extra_hosts</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;somehost:192.168.1.100&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="services">Services</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># To view list of all the services runnning in swarm</span>
+docker service ls 
+
+<span class="c1"># To see all running services</span>
+docker stack services stack_name
+
+<span class="c1"># to see all services logs</span>
+docker service logs stack_name service_name 
+
+<span class="c1"># To scale services quickly across qualified node</span>
+docker service scale <span class="nv">stack_name_service_name</span><span class="o">=</span>replicas
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="clean-up">Clean up</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># To clean or prune unused (dangling) images</span>
+docker image prune 
+
+<span class="c1"># To remove all images which are not in use containers , add - a</span>
+docker image prune -a 
+
+<span class="c1"># To Purne your entire system</span>
+docker system prune 
+
+<span class="c1"># To leave swarm</span>
+docker swarm leave
+
+<span class="c1"># To remove swarm ( deletes all volume data and database info)</span>
+docker stack rm stack_name 
+
+<span class="c1"># To kill all running containers</span>
+docker <span class="nb">kill</span> <span class="k">$(</span>docekr ps -q <span class="k">)</span> 
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">CctoctoFX</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2021-03-30
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/cloud-computing/k8s-basic/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Kubernetes Handbook (Start &amp; Pod)</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="derios1230@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/pillumina" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/fang-xian-20" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:2000/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>CctoctoFX</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

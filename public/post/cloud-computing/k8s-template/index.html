@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Kubernetes Developement - CctoctoFX</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="CctoctoFX" /><meta name="description" content="资源模板 statefulset举例 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 apiVersion:apps/v1beta1kind:StatefulSetmetadata:name:kubiaspec:serviceName:kubiareplicas:2template:metadata:labels:app:kubiaspec:containers:- name:kubiaimage:derios/kubiaports:- name:httpcontainerPort:8080volumeMounts:- name:datamountPath:/var/datavolumeClaimTemplates:- metadata:name:dataspec:resources:requests:storage:1MiaccessModes:- ReadWriteOnce headless service举例 1 2 3 4 5 6" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.4 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:2000/post/cloud-computing/k8s-template/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.2e81bbed97b8b282c1aeb57488cc71c8d8c8ec559f3931531bd396bf31e0d4dd.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Kubernetes Developement" />
+<meta property="og:description" content="资源模板 statefulset举例 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 apiVersion:apps/v1beta1kind:StatefulSetmetadata:name:kubiaspec:serviceName:kubiareplicas:2template:metadata:labels:app:kubiaspec:containers:- name:kubiaimage:derios/kubiaports:- name:httpcontainerPort:8080volumeMounts:- name:datamountPath:/var/datavolumeClaimTemplates:- metadata:name:dataspec:resources:requests:storage:1MiaccessModes:- ReadWriteOnce headless service举例 1 2 3 4 5 6" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:2000/post/cloud-computing/k8s-template/" />
+<meta property="article:published_time" content="2021-04-21T11:22:18+08:00" />
+<meta property="article:modified_time" content="2021-04-21T11:22:18+08:00" />
+<meta itemprop="name" content="Kubernetes Developement">
+<meta itemprop="description" content="资源模板 statefulset举例 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 apiVersion:apps/v1beta1kind:StatefulSetmetadata:name:kubiaspec:serviceName:kubiareplicas:2template:metadata:labels:app:kubiaspec:containers:- name:kubiaimage:derios/kubiaports:- name:httpcontainerPort:8080volumeMounts:- name:datamountPath:/var/datavolumeClaimTemplates:- metadata:name:dataspec:resources:requests:storage:1MiaccessModes:- ReadWriteOnce headless service举例 1 2 3 4 5 6">
+<meta itemprop="datePublished" content="2021-04-21T11:22:18+08:00" />
+<meta itemprop="dateModified" content="2021-04-21T11:22:18+08:00" />
+<meta itemprop="wordCount" content="2366">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kubernetes Developement"/>
+<meta name="twitter:description" content="资源模板 statefulset举例 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 apiVersion:apps/v1beta1kind:StatefulSetmetadata:name:kubiaspec:serviceName:kubiareplicas:2template:metadata:labels:app:kubiaspec:containers:- name:kubiaimage:derios/kubiaports:- name:httpcontainerPort:8080volumeMounts:- name:datamountPath:/var/datavolumeClaimTemplates:- metadata:name:dataspec:resources:requests:storage:1MiaccessModes:- ReadWriteOnce headless service举例 1 2 3 4 5 6"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CctoctoFX</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CctoctoFX</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Kubernetes Developement</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-04-21 </span>
+        
+          <span class="more-meta"> 2366 words </span>
+          <span class="more-meta"> 5 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#资源模板">资源模板</a>
+          <ul>
+            <li><a href="#statefulset举例"><code>statefulset</code>举例</a></li>
+            <li><a href="#headless-service举例"><code>headless service</code>举例</a></li>
+            <li><a href="#storage-class-local-pv"><code>storage class</code> local PV</a></li>
+          </ul>
+        </li>
+        <li><a href="#key-point">Key Point</a>
+          <ul>
+            <li><a href="#使用local-pv的实际场景">使用Local PV的实际场景</a></li>
+            <li><a href="#local-pv与hostpath的对比">Local PV与HostPath的对比</a></li>
+            <li><a href="#使用local-pv的几个注意的问题">使用Local PV的几个注意的问题</a></li>
+            <li><a href="#使用local-pv例子">使用Local PV例子</a></li>
+            <li><a href="#local-pv的清理">Local PV的清理</a></li>
+            <li><a href="#k8s服务的概念"><code>k8s</code>服务的概念</a></li>
+            <li><a href="#数据库详细配置">数据库详细配置</a></li>
+            <li><a href="#资源声明">资源声明</a></li>
+            <li><a href="#用投射卷聚合配置信息">用投射卷聚合配置信息</a></li>
+            <li><a href="#简单部署tidb-operator以及集群">简单部署<code>TiDB Operator</code>以及集群</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="资源模板">资源模板</h2>
+<h3 id="statefulset举例"><code>statefulset</code>举例</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1beta1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StatefulSet</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">derios/kubia</span><span class="w">
+</span><span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">http</span><span class="w">
+</span><span class="w">          </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">8080</span><span class="w">
+</span><span class="w">        </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">data</span><span class="w">
+</span><span class="w">          </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/data</span><span class="w">
+</span><span class="w">   </span><span class="nt">volumeClaimTemplates</span><span class="p">:</span><span class="w">
+</span><span class="w">   </span>- <span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">       </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">data</span><span class="w">
+</span><span class="w">     </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">       </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span><span class="w">         </span><span class="nt">requests</span><span class="p">:</span><span class="w">
+</span><span class="w">           </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l">1Mi</span><span class="w">
+</span><span class="w">       </span><span class="nt">accessModes</span><span class="p">:</span><span class="w">
+</span><span class="w">       </span>- <span class="l">ReadWriteOnce</span><span class="w">
+</span><span class="w">       
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="headless-service举例"><code>headless service</code>举例</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Service</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l">None</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">http</span><span class="w">
+</span><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">80</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="storage-class-local-pv"><code>storage class</code> local PV</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StorageClass</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">storage.k8s.io/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">local-storage</span><span class="w">
+</span><span class="w"></span><span class="nt">provisioner</span><span class="p">:</span><span class="w"> </span><span class="l">kubernetes.io/no-provisioner</span><span class="w">
+</span><span class="w"></span><span class="nt">volumeBindingMode</span><span class="p">:</span><span class="w"> </span><span class="l">WaitForFirstConsumer</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StatefulSet</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">local-test</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;local-service&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">local-test</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">local-test</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">test-container</span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">k8s.gcr.io/busybox</span><span class="w">
+</span><span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="s2">&#34;/bin/sh&#34;</span><span class="w">
+</span><span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="s2">&#34;-c&#34;</span><span class="w">
+</span><span class="w">        </span>- <span class="s2">&#34;sleep 100000&#34;</span><span class="w">
+</span><span class="w">        </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">local-vol</span><span class="w">
+</span><span class="w">          </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/usr/test-pod</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumeClaimTemplates</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">local-vol</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">accessModes</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&#34;ReadWriteOnce&#34;</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="w">      </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;local-storage&#34;</span><span class="w">
+</span><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">requests</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l">368Gi</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="key-point">Key Point</h2>
+<h3 id="使用local-pv的实际场景">使用Local PV的实际场景</h3>
+<ul>
+<li>使用本地磁盘作为缓存的系统</li>
+<li>CI/CD中用于存储构建中的系统</li>
+<li>一些允许丢失和不需要保证可靠的数据(session, token)</li>
+</ul>
+<h3 id="local-pv与hostpath的对比">Local PV与HostPath的对比</h3>
+<p><code>hostpath</code>:</p>
+<ul>
+<li>绑定在pod的生命周期上,pod结束,pv则被删除.</li>
+<li>可以通过pvc引用,也可以直接使用pv</li>
+<li>使用node的磁盘,不经过网络,开销非常小</li>
+</ul>
+<p><code>本地持久卷</code>:</p>
+<ul>
+<li>生命周期和node绑定,Kubernetes调度程序始终确保使用本地永久卷的Pod安排到同一节点</li>
+<li>无法通过storageclass动态创建.</li>
+<li>使用node磁盘,不经过网络,开销非常小.</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">The biggest difference is that the Kubernetes scheduler understands which node a Local Persistent Volume belongs to. With HostPath volumes, a pod referencing a HostPath volume may be moved by the scheduler to a different node resulting in data loss. But with Local Persistent Volumes, the Kubernetes scheduler ensures that a pod using a Local Persistent Volume is always scheduled to the same node.
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="使用local-pv的几个注意的问题">使用Local PV的几个注意的问题</h3>
+<ul>
+<li>本地持久卷依然会丢失数据,例如node本身出了问题.</li>
+<li>本地持久卷需要提供<code>volumeBindingMode:WaitForFirstConsumer</code>支持</li>
+<li>不支持动态卷配置,实际上需要一个外部的controller来控制,包括创建pv和销毁pv并清理磁盘</li>
+</ul>
+<h3 id="使用local-pv例子">使用Local PV例子</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PersistentVolume</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">example-pv</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">capacity</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l">2Gi</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumeMode</span><span class="p">:</span><span class="w"> </span><span class="l">Filesystem</span><span class="w">
+</span><span class="w">  </span><span class="l">accessModes:	</span><span class="w">
+</span><span class="w">    </span>- <span class="l">ReadWriteMany</span><span class="w">
+</span><span class="w">  </span><span class="nt">persistentVolumeReclaimPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">Delete</span><span class="w">
+</span><span class="w">  </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l">local-storage</span><span class="w">
+</span><span class="w">  </span><span class="nt">local</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">/home/tangxu/localpv</span><span class="w">
+</span><span class="w">  </span><span class="c"># 比普通的pv就多了这个亲和性调度, 也是必须加的</span><span class="w">
+</span><span class="w">  </span><span class="nt">nodeAffinity</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">nodeSelectorTerms</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">kubernetes.io/hostname</span><span class="w">
+</span><span class="w">              </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">              </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">                </span>- <span class="l">tangxu-pc</span><span class="w">
+</span><span class="w"></span><span class="nn">---</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Service</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">local-pv-service</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">local-test</span><span class="w">
+</span><span class="w">  </span><span class="nt">clusterIP</span><span class="p">:</span><span class="w"> </span><span class="l">None</span><span class="w">
+</span><span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">8090</span><span class="w">
+</span><span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="m">80</span><span class="w">
+</span><span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">tcp</span><span class="w">
+</span><span class="w"></span><span class="nn">---</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">StatefulSet</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">local-test</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">serviceName</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;local-pv-service&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">local-test</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">local-test</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">test-container</span><span class="w">
+</span><span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">nginx:latest</span><span class="w">
+</span><span class="w">          </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">80</span><span class="w">
+</span><span class="w">              </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">tcp</span><span class="w">
+</span><span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">http</span><span class="w">
+</span><span class="w">          </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">local-vol</span><span class="w">
+</span><span class="w">              </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/usr/test-pod</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumeClaimTemplates</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">local-vol</span><span class="w">
+</span><span class="w">      </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">accessModes</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="s2">&#34;ReadWriteMany&#34;</span><span class="w">
+</span><span class="w">        </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;local-storage&#34;</span><span class="w">
+</span><span class="w">        </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">requests</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l">1Gi</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl create ns <span class="nb">test</span>
+namespace/test created
+$ kubectl apply -f localPV.yaml
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="local-pv的清理">Local PV的清理</h3>
+<p>在使用了local pv之后,清理就不再是简单的使用命令删除了,因为kubernetes不会为我们管理local pv的创建和删除工作(并且删除是阻塞的,主要依靠<code>finalizer</code>机制)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1">#先删除使用pv的资源</span>
+$ kubectl delete -f localPV.yaml
+persistentvolume <span class="s2">&#34;example-pv&#34;</span> deleted
+service <span class="s2">&#34;local-pv-service&#34;</span> deleted
+statefulset.apps <span class="s2">&#34;local-test&#34;</span> deleted
+<span class="c1">#此处应该阻塞...</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>再起一个终端:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl patch pv example-pv -p <span class="s1">&#39;{&#34;metadata&#34;:{&#34;finalizers&#34;: []}}&#39;</span> --type<span class="o">=</span>merge
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="k8s服务的概念"><code>k8s</code>服务的概念</h3>
+<ul>
+<li>
+<p>相同命名空间的可以用service名称作为主机名访问，可以查看<code>/etc/resolve.conf</code></p>
+</li>
+<li>
+<p>业务的数据库连接，如何规划暴露的服务，db-proxy是否需要刷新endpoints？</p>
+</li>
+<li>
+<p>需要为pod添加就绪探针，让客户端只与正常的pod交互，而不管后端是否有pod出现问题，这样在就绪探针出问题了，<code>Endpoints</code>资源会去掉这个pod。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nn">...</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">luksa/kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">readinessProbe</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">exec</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="l">ls</span><span class="w">
+</span><span class="w">        </span>- <span class="l">/var/ready</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>应该通过删除pod或者更改pod标签而不是手动更改探针来从服务中手动移除pod</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">如果想要从某个服务中手动添加或者删除pod的时候，把enabled=true作为标签添加到pod，以及服务的标签选择器中。当想要从服务中移除pod中，删除标签即可。
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="数据库详细配置">数据库详细配置</h3>
+<ul>
+<li>
+<p>安装数据库时，数据库之间的路由配置从哪里来？</p>
+</li>
+<li>
+<p>业务访问数据库时的网络管道&hellip;</p>
+</li>
+<li>
+<p>数据库启停，pod的增删，以及前端服务显示形式。CRD中要定义描述数据库停止的状态信息，此时数据库存储和网络标识还在。</p>
+</li>
+<li>
+<p>数据库agent检测的状态，如何同步给CR？</p>
+<ul>
+<li>
+<p>Operator主从状态确认行为</p>
+<p><code>unreachableTimeout</code>  &mdash; <code>pollingInterval</code></p>
+</li>
+</ul>
+</li>
+<li>
+<p>主备HA，是否由controller控制？</p>
+<ul>
+<li><code>oracle times ten database是放在operator进行HA操作</code></li>
+</ul>
+</li>
+<li>
+<p>数据库软件包的下载时机和形式？</p>
+</li>
+<li>
+<p>以挂卷方式将进程在容器内启动的可行性？</p>
+</li>
+<li>
+<p>database metadata的定义形式？</p>
+<ul>
+<li>
+<p>由投射卷管理所有配置</p>
+</li>
+<li>
+<p>admin信息，密码信息</p>
+</li>
+<li>
+<p>user信息，密码信息</p>
+</li>
+<li>
+<p>TLS配置</p>
+</li>
+</ul>
+</li>
+<li>
+<p>数据库的端口问题？</p>
+</li>
+<li>
+<p>数据库集群部署state:</p>
+<ul>
+<li>
+<p>主从</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">- Initializing
+- Normal
+- ActiveDown
+- StandbyDown
+- StandbyPartiallyDown
+- StanbyPartiallyStarting
+- BothDown
+- Failed
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>单机</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">- Intializing
+- Normal
+- ActiveDown
+- Failed
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p>数据库修改</p>
+<ul>
+<li>以修改连接数为例（方案一：采用<code>configmap</code>保存实例的连接配置信息、db信息等）
+<ol>
+<li>修改<code>configmap</code>中的字段</li>
+<li><code>operator</code>删除stanby pod，并重新创建，该创建的standby pod采用新的<code>configmap</code>字段创建</li>
+<li>standby pod正常后，删除active pod进行自动倒换，<code>operator</code>再原地创建新的stanby pod，感知<code>configmap</code>中连接数字段创建。</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="资源声明">资源声明</h3>
+<h4 id="operator">operator</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># operator deployment</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">zenith-operator</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">zenith-operator</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">zenith-operator</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="l">zenith-operator</span><span class="w">
+</span><span class="w">      </span><span class="c"># imagePullSecrets:</span><span class="w">
+</span><span class="w">      </span><span class="c"># - name: zenith-image-pulling-secret</span><span class="w">
+</span><span class="w">      </span><span class="nt">packageVesion</span><span class="p">:</span><span class="w"> </span><span class="l">v1.0.0</span><span class="w">
+</span><span class="w">      </span><span class="nt">softwarePackage</span><span class="p">:</span><span class="w"> </span><span class="l">zenith-operator</span><span class="w">
+</span><span class="w">      </span><span class="nt">packageType</span><span class="p">:</span><span class="w"> </span><span class="l">tar</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">zenith-operator</span><span class="w">
+</span><span class="w">          </span><span class="c"># image: ....</span><span class="w">
+</span><span class="w">          </span><span class="nt">command</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="l">zenith-operator</span><span class="w">
+</span><span class="w">          </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">Never</span><span class="w">
+</span><span class="w">          </span><span class="nt">env</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">WATCH_NAMESPACE</span><span class="w">
+</span><span class="w">              </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w">
+</span><span class="w">                </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w">
+</span><span class="w">                  </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l">metadata.namespace</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">POD_NAME</span><span class="w">
+</span><span class="w">              </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w">
+</span><span class="w">                </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w">
+</span><span class="w">                  </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l">metadata.name</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">OPERATOR_NAME</span><span class="w">
+</span><span class="w">              </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;zenith-operator&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id="configmap-secrets">configmap /secrets</h4>
+<h4 id="db-object">DB Object</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">huawei.cloudb.com/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">zenithCluster</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w"> 
+</span><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">${zenith_cluster_name}</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">${cluster_namespace}</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">zenithSpec</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">               </span><span class="c"># master-slave </span><span class="w">
+</span><span class="w">    </span><span class="nt">version: v1.0.0           # eg.</span><span class="p">:</span><span class="w"> </span><span class="l">Zenith-1.0.0.tar</span><span class="w">
+</span><span class="w">    </span><span class="nt">packageName</span><span class="p">:</span><span class="w"> </span><span class="l">Zenith      </span><span class="w"> </span><span class="c"># --- | </span><span class="w">
+</span><span class="w">    </span><span class="nt">packageType</span><span class="p">:</span><span class="w"> </span><span class="l">tar         </span><span class="w"> </span><span class="c"># --- |</span><span class="w">
+</span><span class="w">    </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l">local  </span><span class="w"> </span><span class="c"># PV</span><span class="w">
+</span><span class="w">    </span><span class="nt">storageSize</span><span class="p">:</span><span class="w"> </span><span class="l">5G          </span><span class="w"> </span><span class="c"># PV</span><span class="w">
+</span><span class="w">    </span><span class="nt">replicationSSLMandatory</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="w">    </span><span class="nt">pollingInterval</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="w">
+</span><span class="w">    </span><span class="nt">unreachableTimeout</span><span class="p">:</span><span class="w"> </span><span class="m">30</span><span class="w">
+</span><span class="w">    </span><span class="nt">instanceConfigMap</span><span class="p">:</span><span class="w"> 
+</span><span class="w">    </span>- <span class="l">zenith-instance-config</span><span class="w">
+</span><span class="w">    </span><span class="nt">dbConfigMap</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">zenith-db-config</span><span class="w">
+</span><span class="w">    </span><span class="nt">dbSecrets</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">zenith-db-secret</span><span class="w">
+</span><span class="w">    </span><span class="nt">dbSpecs</span><span class="p">:</span><span class="w">            
+</span><span class="w">      </span><span class="l">... </span><span class="w">
+</span><span class="w">  </span><span class="nt">agentSpec</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l">v1.0.0</span><span class="w">
+</span><span class="w">    </span><span class="nt">packageName</span><span class="p">:</span><span class="w"> </span><span class="l">DBAgent</span><span class="w">
+</span><span class="w">    </span><span class="nt">packageType</span><span class="p">:</span><span class="w"> </span><span class="l">tar</span><span class="w">
+</span><span class="w">    </span><span class="nt">agentConfig</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">db-agent-sample-config</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">affinity</span><span class="p">:</span><span class="w"> 
+</span><span class="w">      </span><span class="l">...</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">selectors</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchLables</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="l">...</span><span class="w">
+</span><span class="w">      </span><span class="nt">initContainers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">notify-download-package</span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">k8s.gcr.io/busybox</span><span class="w">
+</span><span class="w">        </span><span class="nt">commands</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="l">sh</span><span class="w">
+</span><span class="w">        </span>- <span class="s2">&#34;-c&#34;</span><span class="w">
+</span><span class="w">        </span>- <span class="p">|</span><span class="sd">
+</span><span class="sd">          /bin/bash &lt;&lt; &#39;EOF&#39;
+</span><span class="sd">          This is used for notify nodeagent to download zenith software package
+</span><span class="sd">          EOF</span><span class="w">          
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">zenith-ha</span><span class="w">
+</span><span class="w">        </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">requests</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2048Mi&#34;</span><span class="w">
+</span><span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1000m&#34;</span><span class="w">
+</span><span class="w">          </span><span class="nt">limits</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;4096Mi&#34;</span><span class="w">
+</span><span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2000m&#34;</span><span class="w">
+</span><span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">listen-port</span><span class="w">
+</span><span class="w">            </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">32080</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">replication-port</span><span class="w">
+</span><span class="w">            </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">12345</span><span class="w">
+</span><span class="w">        </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">zenith-certs</span><span class="w">
+</span><span class="w">            </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/certificate</span><span class="w">
+</span><span class="w">            </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">watch-uds</span><span class="w">
+</span><span class="w">            </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/uds/watch-server-uds</span><span class="w">
+</span><span class="w">            </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">zenith-server-uds</span><span class="w">
+</span><span class="w">            </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/uds/zenith-server-uds</span><span class="w">
+</span><span class="w">            </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">agent-config</span><span class="w">
+</span><span class="w">            </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/DBAgent/dbagent.conf</span><span class="w">
+</span><span class="w">            </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">        </span><span class="nt">env</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">POD_NAME</span><span class="w">
+</span><span class="w">            </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="l">...</span><span class="w">
+</span><span class="w">          </span><span class="l">...</span><span class="w">
+</span><span class="w">      </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> 
+</span><span class="w">  </span><span class="nt">volumeClaimTemplates</span><span class="p">:</span><span class="w">   </span><span class="c"># PVC</span><span class="w">
+</span><span class="w">    </span><span class="l">...        </span><span class="w">
+</span><span class="w">  
+</span><span class="w">    
+</span><span class="w">  
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="用投射卷聚合配置信息">用投射卷聚合配置信息</h3>
+<p><a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/node/all-in-one-volume.md">proposal</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Constraints and Assumptions
+1. The volume types must remain unchanged for backward compatibility
+2. There will be a new volume type for this proposed functionality, but no other API changes
+3. The new volume type should support atomic updates in the event of an input change
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Use Cases
+1. As a user, I want to automatically populate a single volume with the keys from multiple secrets, configmaps, and with downward API information, so that I can synthesize a single directory with various sources of information
+2. As a user, I want to populate a single volume with the keys from multiple secrets, configmaps, and with downward API information, explicitly specifying paths for each item, so that I can have full control over the contents of that volume
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="以前的情况">以前的情况</h4>
+<p>要使用secrets, configmaps, downward APIs都要在volumeMounts里面声明不同的mount paths:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">volume-test</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">container-test</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">busybox</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mysecret</span><span class="w">
+</span><span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/secrets&#34;</span><span class="w">
+</span><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">podInfo</span><span class="w">
+</span><span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/podinfo&#34;</span><span class="w">
+</span><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">config-volume</span><span class="w">
+</span><span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/config&#34;</span><span class="w">
+</span><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mysecret</span><span class="w">
+</span><span class="w">    </span><span class="nt">secret</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l">jpeeler-db-secret</span><span class="w">
+</span><span class="w">      </span><span class="nt">items</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">username</span><span class="w">
+</span><span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">my-group/my-username</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">podInfo</span><span class="w">
+</span><span class="w">    </span><span class="nt">downwardAPI</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">items</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;labels&#34;</span><span class="w">
+</span><span class="w">          </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l">metadata.labels</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;annotations&#34;</span><span class="w">
+</span><span class="w">          </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l">metadata.annotations</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">config-volume</span><span class="w">
+</span><span class="w">    </span><span class="nt">configMap</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">special-config</span><span class="w">
+</span><span class="w">      </span><span class="nt">items</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">special.how</span><span class="w">
+</span><span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">path/to/special-key</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id="投射卷的情况">投射卷的情况</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">volume-test</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">container-test</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">busybox</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">all-in-one</span><span class="w">
+</span><span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/projected-volume&#34;</span><span class="w">
+</span><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">all-in-one</span><span class="w">
+</span><span class="w">    </span><span class="nt">projected</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">sources</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">secret</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mysecret</span><span class="w">
+</span><span class="w">          </span><span class="nt">items</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">user</span><span class="w">
+</span><span class="w">              </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">my-group/my-username</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">downwardAPI</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">items</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;labels&#34;</span><span class="w">
+</span><span class="w">              </span><span class="nt">fieldRef</span><span class="p">:</span><span class="w">
+</span><span class="w">                </span><span class="nt">fieldPath</span><span class="p">:</span><span class="w"> </span><span class="l">metadata.labels</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;cpu_limit&#34;</span><span class="w">
+</span><span class="w">              </span><span class="nt">resourceFieldRef</span><span class="p">:</span><span class="w">
+</span><span class="w">                </span><span class="nt">containerName</span><span class="p">:</span><span class="w"> </span><span class="l">container-test</span><span class="w">
+</span><span class="w">                </span><span class="nt">resource</span><span class="p">:</span><span class="w"> </span><span class="l">limits.cpu</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">configMap</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">myconfigmap</span><span class="w">
+</span><span class="w">          </span><span class="nt">items</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">config</span><span class="w">
+</span><span class="w">              </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">my-group/my-config</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="简单部署tidb-operator以及集群">简单部署<code>TiDB Operator</code>以及集群</h3>
+<h4 id="crd安装"><code>crd</code>安装</h4>
+<p><code>kubectl apply -f https://raw.githubusercontent.com/pingcap/tidb-operator/v1.1.12/manifests/crd.yaml</code></p>
+<h4 id="安装operator">安装operator</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">helm repo add pingcap https://charts.pingcap.org/
+
+kubectl create namespace tidb-admin
+
+helm install --namespace tidb-admin tidb-operator pingcap/tidb-operator --version v1.1.12
+
+kubectl get pods --namespace tidb-admin -l app.kubernetes.io/instance=tidb-operator
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="部署tidb集群和监控">部署<code>TiDB</code>集群和监控</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">kubectl create namespace tidb-cluster &amp;&amp; \
+    kubectl -n tidb-cluster apply -f https://raw.githubusercontent.com/pingcap/tidb-operator/master/examples/basic/tidb-cluster.yaml
+    
+kubectl -n tidb-cluster apply -f https://raw.githubusercontent.com/pingcap/tidb-operator/master/examples/basic/tidb-monitor.yaml
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">CctoctoFX</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2021-04-21
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/cloud-computing/k8s-config-update/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Kubernetes ConfigMap 热更新</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/cloud-computing/k8s-advance-schedule/">
+            <span class="next-text nav-default">Kubernetes Handbook (Schedule)</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="derios1230@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/pillumina" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/fang-xian-20" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:2000/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>CctoctoFX</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Golang逃逸分析 - CctoctoFX</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="CctoctoFX" /><meta name="description" content="问题： golang函数传参是不是应该和c一样，尽量不要直接传结构体，而是要传结构体指针？ 逃逸分析 逃逸分析指的是，在计算机语言编译器优化原理中" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.4 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:2000/post/golang/golang-escape-analysis/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.2e81bbed97b8b282c1aeb57488cc71c8d8c8ec559f3931531bd396bf31e0d4dd.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Golang逃逸分析" />
+<meta property="og:description" content="问题： golang函数传参是不是应该和c一样，尽量不要直接传结构体，而是要传结构体指针？ 逃逸分析 逃逸分析指的是，在计算机语言编译器优化原理中" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:2000/post/golang/golang-escape-analysis/" />
+<meta property="article:published_time" content="2020-11-23T11:22:18+08:00" />
+<meta property="article:modified_time" content="2020-11-23T11:22:18+08:00" />
+<meta itemprop="name" content="Golang逃逸分析">
+<meta itemprop="description" content="问题： golang函数传参是不是应该和c一样，尽量不要直接传结构体，而是要传结构体指针？ 逃逸分析 逃逸分析指的是，在计算机语言编译器优化原理中">
+<meta itemprop="datePublished" content="2020-11-23T11:22:18+08:00" />
+<meta itemprop="dateModified" content="2020-11-23T11:22:18+08:00" />
+<meta itemprop="wordCount" content="4742">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Golang逃逸分析"/>
+<meta name="twitter:description" content="问题： golang函数传参是不是应该和c一样，尽量不要直接传结构体，而是要传结构体指针？ 逃逸分析 逃逸分析指的是，在计算机语言编译器优化原理中"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CctoctoFX</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CctoctoFX</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Golang逃逸分析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-11-23 </span>
+        
+          <span class="more-meta"> 4742 words </span>
+          <span class="more-meta"> 10 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#逃逸分析">逃逸分析</a></li>
+        <li><a href="#区别">区别</a></li>
+        <li><a href="#golang逃逸分析">Golang逃逸分析</a>
+          <ul>
+            <li><a href="#case-1">case 1</a></li>
+            <li><a href="#case-2">case 2</a></li>
+            <li><a href="#case3">case3</a></li>
+          </ul>
+        </li>
+        <li><a href="#总结与深入本质">总结与深入本质</a></li>
+        <li><a href="#对ioreader的解释">对io.Reader的解释</a></li>
+        <li><a href="#几点强调">几点强调</a></li>
+        <li><a href="#深入逃逸和内联">深入逃逸和内联</a>
+          <ul>
+            <li><a href="#逃逸的深入解释">逃逸的深入解释</a></li>
+            <li><a href="#内联">内联</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p><em><strong>问题： golang函数传参是不是应该和c一样，尽量不要直接传结构体，而是要传结构体指针？</strong></em></p>
+<h2 id="逃逸分析">逃逸分析</h2>
+<p>逃逸分析指的是，在计算机语言编译器优化原理中，分析指针动态范围的方法，和编译器优化原理的指针分析和外形分析相关联。当变量（或者对象）在方法中被分配后，其指针有可能被返回或者被全局引用，这种现象就是指针（或引用）的逃逸（Escape）。</p>
+<p>其实在java概念中有一个误解 &mdash; new出来的东西都在堆上，栈上存的是它的引用。 这句话在现代JVM上有问题，就是因为逃逸分析机制。简单来说，就是JVM的逃逸分析会在运行时(runtime)检测当前方法栈帧(frame)内new出来的对象的引用，是否被传出当前的栈帧。如果传出，就会发生逃逸，没有传出则不会。对于未发生逃逸的变量，则会直接在栈上分配内存。因为栈上内存由在函数返回时自动回收，而堆上的的内存需要gc去回收，如果程序中有大量逃逸的对象，那么势必会增加gc的压力。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">(){</span>
+  <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+  <span class="n">a</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">1</span><span class="o">);</span> <span class="c1">// a 未逃逸，在栈上分配
+</span><span class="c1"></span><span class="o">}</span>
+
+<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="nf">test1</span><span class="o">(){</span>
+  <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+  <span class="n">a</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">1</span><span class="o">);</span>
+  <span class="k">return</span> <span class="n">a</span> <span class="c1">// 发生逃逸，因此分配在堆上
+</span><span class="c1"></span><span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="区别">区别</h2>
+<ul>
+<li>不同于JVM运行时的逃逸分析，Golang的逃逸分析是在编译期完成。</li>
+<li>golang的逃逸分析只针对指针。一个值引用变量如果没有被取址，那么它永远不可能逃逸。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">go version go1.13.4 darwin/amd64
+</code></pre></td></tr></table>
+</div>
+</div><p>验证某个函数的变量是否发生逃逸的方法：</p>
+<ul>
+<li>
+<p>go run -gcflags &ldquo;-m -l&rdquo; (-m打印逃逸分析信息，-l禁止内联编译)</p>
+</li>
+<li>
+<p>go tool compile -S xxxx.go | grep runtime.newobject（汇编代码中搜newobject指令，这个指令用于生成堆对象）</p>
+</li>
+</ul>
+<p>备注： 关于-gcflags &ldquo;-m -l&quot;的输出，有两种情况：</p>
+<ul>
+<li>Moved to heap: xxx</li>
+<li>xxx escapes to heap</li>
+</ul>
+<p>二者都表示发生了逃逸，当xxx变量为指针的时候，出现第二种；当xxx变量为值类型时，为上一种，测试代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">S</span> <span class="kt">int</span>
+<span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+  <span class="nx">a</span> <span class="o">:=</span> <span class="nf">S</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+  <span class="nx">b</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="o">*</span><span class="nx">S</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+  <span class="nx">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">a</span>
+  <span class="nx">c</span> <span class="o">:=</span> <span class="nb">new</span><span class="p">(</span><span class="nx">S</span><span class="p">)</span>
+  <span class="nx">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">c</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="golang逃逸分析">Golang逃逸分析</h2>
+<p>本文探究什么时候，什么情况下会发生逃逸</p>
+<h3 id="case-1">case 1</h3>
+<p>最基本的情况</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">在某个函数中new或者字面量创建出的变量，将其指针作为函数返回值，则该变量一定发生逃逸
+</code></pre></td></tr></table>
+</div>
+</div><p>下面是例子:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="o">*</span><span class="nx">User</span><span class="p">{</span>
+  <span class="nx">a</span> <span class="o">:=</span> <span class="nx">User</span><span class="p">{}</span>
+  <span class="k">return</span> <span class="o">&amp;</span><span class="nx">a</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="case-2">case 2</h3>
+<p>需要验证文章开头情况的正确性，也就是当某个值取指针并传给另一个函数的时候，是否有逃逸：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span><span class="p">{</span>
+  <span class="nx">Username</span> <span class="kt">string</span>
+  <span class="nx">Password</span> <span class="kt">string</span>
+  <span class="nx">Age</span>	<span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+  <span class="nx">a</span> <span class="o">:=</span> <span class="s">&#34;aaa&#34;</span>
+  <span class="nx">u</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">User</span><span class="p">{</span><span class="nx">a</span><span class="p">,</span> <span class="s">&#34;123&#34;</span><span class="p">,</span> <span class="mi">12</span><span class="p">}</span>
+  <span class="nf">Call1</span><span class="p">(</span><span class="nx">u</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">Call1</span><span class="p">(</span><span class="nx">u</span> <span class="o">*</span><span class="nx">User</span><span class="p">){</span>
+  <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%v&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>逃逸情况:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">-&gt; go run -gcflags &#34;-m -l&#34; main.go
+# command-line-arguments
+./main.go:18:12: leaking param: u
+./main.go:19:12: Call1... argument does bnot escape
+./main.go:19:13 u escapes to heap
+./main.go:14:23 &amp;User literal escapes to heap
+</code></pre></td></tr></table>
+</div>
+</div><p>可见发生了逃逸，这里将指针传给一个函数并打印，如果不打印，只对u进行读写：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Call1</span><span class="p">(</span><span class="nx">u</span> <span class="o">*</span><span class="nx">User</span><span class="p">)</span> <span class="kt">int</span><span class="p">{</span>
+  <span class="nx">u</span><span class="p">.</span><span class="nx">Username</span> <span class="p">=</span> <span class="s">&#34;bbb&#34;</span>
+  <span class="k">return</span> <span class="nx">u</span><span class="p">.</span><span class="nx">Age</span> <span class="o">*</span> <span class="mi">20</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>结果:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">-&gt; go run -gcflags &#34;-m -l&#34; main.go
+# command-line-arguments
+./main.go:19:12: Call1 u does not escape
+./main.go:14:23 main &amp;User literal does not escape
+</code></pre></td></tr></table>
+</div>
+</div><p>并没有发生逃逸。其实如果只是对u进行读写，不管调用几次函数，传了几次指针，都不会逃逸。所以我们可以怀疑fmt.Printf的源码有问题，可以发现传入的u被赋值给了pp指针的一个成员变量</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Printf formats according to a format specifier and writes to standard output.
+</span><span class="c1">// It returns the number of bytes written and any write error encountered.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">Printf</span><span class="p">(</span><span class="nx">format</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">a</span> <span class="o">...</span><span class="kd">interface</span><span class="p">{})</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nf">Fprintf</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span> <span class="nx">format</span><span class="p">,</span> <span class="nx">a</span><span class="o">...</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Fprintf formats according to a format specifier and writes to w.
+</span><span class="c1">// It returns the number of bytes written and any write error encountered.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Writer</span><span class="p">,</span> <span class="nx">format</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">a</span> <span class="o">...</span><span class="kd">interface</span><span class="p">{})</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">p</span> <span class="o">:=</span> <span class="nf">newPrinter</span><span class="p">()</span>
+	<span class="nx">p</span><span class="p">.</span><span class="nf">doPrintf</span><span class="p">(</span><span class="nx">format</span><span class="p">,</span> <span class="nx">a</span><span class="p">)</span>
+	<span class="nx">n</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">w</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">buf</span><span class="p">)</span>
+	<span class="nx">p</span><span class="p">.</span><span class="nf">free</span><span class="p">()</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+
+<span class="c1">// doPrintf里有
+</span><span class="c1">// ....
+</span><span class="c1"></span><span class="nx">p</span><span class="p">.</span><span class="nf">printArg</span><span class="p">(</span><span class="nx">a</span><span class="p">[</span><span class="nx">argNum</span><span class="p">],</span> <span class="nb">rune</span><span class="p">(</span><span class="nx">c</span><span class="p">))</span>
+<span class="c1">// ....
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">pp</span><span class="p">)</span> <span class="nf">printArg</span><span class="p">(</span><span class="nx">arg</span> <span class="kd">interface</span><span class="p">{},</span> <span class="nx">verb</span> <span class="kt">rune</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">p</span><span class="p">.</span><span class="nx">arg</span> <span class="p">=</span> <span class="nx">arg</span>
+	<span class="nx">p</span><span class="p">.</span><span class="nx">value</span> <span class="p">=</span> <span class="nx">reflect</span><span class="p">.</span><span class="nx">Value</span><span class="p">{}</span>
+  <span class="c1">// ....
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这个pp类型的指针p是由构造函数newPrinter返回，根据case1，p一定会发生逃逸，而p引用了传入指针，所以我们可以总结：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">被已经逃逸的变量引用的指针，一定发生逃逸。
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="case3">case3</h3>
+<p>上述备注代码的例子：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+  <span class="nx">a</span>  <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="o">*</span><span class="kt">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="nx">b</span> <span class="o">:=</span> <span class="mi">12</span>
+  <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">b</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>实际上这个代码中, slice a不会逃逸，而被a引用的b会逃逸。类似的情况会发生在map和chan之中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+  <span class="nx">a</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="o">*</span><span class="kt">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="nx">b</span> <span class="o">:=</span> <span class="mi">12</span>
+  <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">b</span>
+  
+  <span class="nx">c</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="kt">int</span><span class="p">)</span>
+  <span class="nx">d</span> <span class="o">:=</span> <span class="mi">14</span>
+  <span class="nx">c</span><span class="p">[</span><span class="s">&#34;aaa&#34;</span><span class="p">]</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">d</span>
+  
+  <span class="nx">e</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="o">*</span><span class="kt">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="nx">f</span> <span class="o">:=</span> <span class="mi">15</span>
+  <span class="nx">e</span> <span class="o">&lt;-</span> <span class="o">&amp;</span><span class="nx">f</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>结果可以发现, b, d, f都逃逸了。所以我们可以得出结论：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">被指针类型的slice, map和chan引用的指针一定会发生逃逸。
+备注： stack overflow上有人提问为何使用指针的chan比使用值得chan慢%30， 答案就在这里。使用指针的chan发生逃逸，gc拖慢了速度。
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="总结与深入本质">总结与深入本质</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">变量的逃逸，本质由于对于stack栈帧的内存分配，对于函数的调用将开辟一个栈帧frame，在这个栈帧内定义局部变量，当传出栈帧内创建的变量引用到前一个栈帧离去，如果函数结束，那么原来这块栈帧有可能被其他覆盖，这个传出去的引用就有问题。所以编译器把这种函数返回的变量可能在后续被引用的情况，将变量逃逸到堆上是一个非常合理的策略。
+GopherCon SG 2019
+1. When a value could possibly be reference after the function that constructed the value returns.
+2. When the compiler determines a value is too large to fit on the stack.
+3. When the compiler doesn&#39;t know the size of a value at compile time.
+</code></pre></td></tr></table>
+</div>
+</div><p>我们得出指针<strong>必然逃逸</strong>的情况：</p>
+<ul>
+<li>在某个函数中new或者字面量创建出的变量，将其指针作为函数返回，则该变量一定发生逃逸（构造函数返回的指针变量一定逃逸）</li>
+<li>被已经逃逸的变量引用的指针，一定发生逃逸</li>
+<li>被指针类型slice, map和chan引用的指针，一定发生逃逸</li>
+</ul>
+<p>同时我们也得出一些<strong>必然不会逃逸</strong>的情况：</p>
+<ul>
+<li>指针被未发生逃逸的变量引用</li>
+<li>仅仅在函数内对变量做取址操作，而未将指针传出</li>
+</ul>
+<p>有些情况<strong>可能发生逃逸，也可能不会发生逃逸</strong> ：</p>
+<ul>
+<li>将指针作为入参传给别的函数，这里还是要看指针在被传入的函数中的处理过程，如果发生了上述三种情况，则会逃逸；否则不会发生逃逸。</li>
+</ul>
+<p><em><strong>因此，对于文章开头的问题，我们不能仅仅依据使用值引用作为函数入参可能因为copy导致额外内存开销而放弃这种值引用类型入参的写法。因为如果函数内有造成变量逃逸的操作情形，gc可能会成为程序效率不高的瓶颈。</strong></em></p>
+<h2 id="对ioreader的解释">对io.Reader的解释</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Reader</span> <span class="kd">struct</span><span class="p">{</span>
+  <span class="nf">Read</span><span class="p">(</span><span class="nx">p</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Instead of 
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Reader</span> <span class="kd">struct</span><span class="p">{</span>
+  <span class="nf">Read</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="nx">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对于一个Reader来说当然第二种写法更为贴近逻辑，但是根据逃逸分析，第二种写法明显在不断的Read时在堆上产生过多的垃圾。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// escape to heap
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+  <span class="nx">b</span> <span class="o">:=</span> <span class="nf">read</span><span class="p">()</span>
+  <span class="c1">// use b
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">read</span><span class="p">()</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">{</span>
+  <span class="c1">// return a new slice
+</span><span class="c1"></span>  <span class="nx">b</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+  <span class="k">return</span> <span class="nx">b</span>
+<span class="p">}</span>
+
+<span class="c1">// stay on stack
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+  <span class="nx">b</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+  <span class="nf">read</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span>
+  <span class="c1">// use b
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">read</span><span class="p">(</span><span class="nx">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">){</span>
+  <span class="c1">// write into slice
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="几点强调">几点强调</h2>
+<ul>
+<li>Optimize for correctness, not performance.</li>
+<li>Go only puts function variables on the stakc if it can prove a variable is not used after the function returned.</li>
+<li>Sharing down typically stay on the stack (传递指针给函数)</li>
+<li>Sharing up typically escapes to the heap (返回指针，不过不必须，都加了typically，比如内联可能会让情形不太一样)</li>
+<li>Ask the compiler to find out</li>
+</ul>
+<h2 id="深入逃逸和内联">深入逃逸和内联</h2>
+<h3 id="逃逸的深入解释">逃逸的深入解释</h3>
+<p>​    前面尝试了几个例子去分析逃逸的场景，实际上我们还是需要理解其内部机制，才能把收益最大化（开发效率v.s.运行效率）。逃逸分析的本质是当compiler发现函数变量将脱离函数栈的有效域或被函数栈域外的变量所引用时，把变量分配在堆上而不是栈上，分析一些典型的场景：</p>
+<ul>
+<li>
+<p>上述讨论过的，函数返回变量地址，或者返回包含变量地址的结构体。</p>
+</li>
+<li>
+<p>把变量地址写入channel或者sync.Pool，compiler无法获取goroutine如何使用这个变量，也就无法在编译的时候决定变量的生命周期。</p>
+</li>
+<li>
+<p>闭包可能导致闭包上下文逃逸，</p>
+</li>
+<li>
+<p>slice变量超过cap重新分配时，将在堆上进行，栈的大小毕竟是固定和有限的。</p>
+</li>
+<li>
+<p>上述讨论过的把变量地址赋值给可扩容容器（map, slice）时。</p>
+</li>
+<li>
+<p>把变量赋给可扩容interface容器（k或v为interface的map，或[]interface）的时候。</p>
+</li>
+<li>
+<p>几乎涉及到interface的地方都有可能导致对象逃逸，MyInterface(x).Foo(a)会导致a逃逸，如果a是引用语义(pointer, slice, map etc.)，那么a也会分配到堆上。涉及到interface的很多逃逸优化都很保守，比如reflect.ValueOf(x)会显式调用escapes(x)导致x逃逸。</p>
+<p>我们分析一下slice重分配的场景。这个场景是在堆上发生的，因为slice重分配时，会发生数据迁移，此时会把原本slice len内的元素<strong>浅拷贝</strong>到新的space。这个浅拷贝会导致新的slice(堆内存)引用了p(栈内存)的内容，而栈内存和堆内存的生命周期不一样，导致了可能出现函数return了以后，堆内存引用无效的栈内存的情形，这无疑会影响到运行的稳定。所以即使slice变量本身没有显式得逃逸，由于隐式的数据迁移，compiler会保守把slice或者map的指针元素逃逸到堆上。</p>
+<p>对于interface相关的，interface{}把值语义变为引用语义，其本质是type+pointer，这个pointer指向实际的data (源码分析开坑)。如果把值语义的变量赋值给interface容器，那么容器会持有变量的引用，所以这个变量会逃逸到堆上分配。</p>
+<p>案例里也分析了，fmt.Printf会导致逃逸，其实fmt.Sprintf或者logrus.Debugf都会导致所有传入参数逃逸，因为不定参数实际上是slice语法糖，编译器无法确定这些函数不会对参数slice进行append操作导致重分配，所以基于保守策略，都会把这些传入的参数分配到堆上以保证浅拷贝是准确的。</p>
+<p>这里我评价golang编译器的逃逸策略为保守应该是比较合适的，好的逃逸分析需要在编译期更深入地理解程序，这无疑非常困难，特别是涉及到interface{}，指针，可扩展容器的时候。</p>
+</li>
+</ul>
+<h3 id="内联">内联</h3>
+<p>关于内联我需要在另一篇post中深入讨论，这里简单地说些感受。逃逸分析+GC很好用但是如果没有内联就会显得很昂贵，所有函数返回的地方会有一道“墙”，任何想要从墙逃逸到墙外的变量都会分配到堆上，比如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">NewCoord</span><span class="p">()</span> <span class="o">*</span><span class="nx">Coord</span><span class="p">{</span>
+  <span class="k">return</span> <span class="o">&amp;</span><span class="nx">Coord</span><span class="p">{</span>
+    <span class="nx">x</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nx">z</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">foo</span><span class="p">(){</span>
+  <span class="nx">c</span> <span class="o">:=</span> <span class="nf">NewCoord</span><span class="p">()</span>
+  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">x</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>像NewCoord这样简单的构造函数都会导致返回值分配在堆上，抽离函数的代价也会更大。所以Go的内联，逃逸分析，GC像是三剑客，共同把其他语言避之不及的指针变得cheap。</p>
+<p>Go1.9开始对内联做了比较大的runtime优化，开始支持<a href="https://go.googlesource.com/proposal/+/master/design/19348-midstack-inlining.md">mid-stack inline</a> ，并且通过<code>-l</code>编译参数指定内联等级(<a href="https://golang.org/src/cmd/compile/internal/gc/inl.go">参数定义</a>)。并且只在<code>-l=4</code>中提供了mid-stack inline，Go官方统计，这大概可以提升9%的性能，不过也增加了11%左右的二进制大小。</p>
+<p>Go1.10做一些interface相关的优化，比如<a href="https://github.com/golang/go/issues/19361">devirtualization</a> , compiler能够知道interface具体对象的情况下(如<code>var i Iface = &amp;myStruct{}</code>)可以直接生成对象相关代码调用(而非内联)，无需走interface方法查找。不过目前这个优化还不完善，还不能应用于逃逸分析优化。</p>
+<p>Go1.12开始默认支持了mid-stack inline</p>
+<p>在目前的项目中，似乎还不需要去调整内联参数，因为这个操作是个trade-off，过于激进的内联会导致生成的二进制文件更大你，CPU intstruction cache miss也可能会增加。默认等级的内联大部分时候都工作得很好并且保持稳定，到Go1.13为止，对interface方法的调用还不能被内联（哪怕compiler知道其具体的类型）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">I</span> <span class="kd">interface</span> <span class="p">{</span>
+  <span class="nf">F</span><span class="p">()</span> <span class="kt">int</span>
+<span class="p">}</span>
+<span class="kd">type</span> <span class="nx">A</span> <span class="kd">struct</span><span class="p">{</span>
+  <span class="nx">x</span> <span class="kt">int</span>
+  <span class="nx">y</span> <span class="kt">int</span>
+<span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">A</span><span class="p">)</span> <span class="nf">F</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="nx">z</span> <span class="o">:=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="nx">a</span><span class="p">.</span><span class="nx">y</span>
+  <span class="k">return</span> <span class="nx">z</span>
+<span class="p">}</span>
+<span class="kd">func</span> <span class="nf">BenchmarkX</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">b</span><span class="p">.</span><span class="nf">ReportAllocs</span><span class="p">()</span>
+  <span class="k">for</span> <span class="nx">i</span><span class="o">:=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="p">&lt;</span><span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+      <span class="c1">// F() 会被内联 0.36 ns/op
+</span><span class="c1"></span>      <span class="c1">// var a = &amp;A{}
+</span><span class="c1"></span>      <span class="c1">// a.F()
+</span><span class="c1"></span>      <span class="c1">// 对Interface的方法调用不能被内联 18.4 ns/op
+</span><span class="c1"></span>      <span class="kd">var</span> <span class="nx">i</span> <span class="nx">I</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">A</span><span class="p">{}</span>
+      <span class="nx">i</span><span class="p">.</span><span class="nf">F</span><span class="p">()</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对于一些偏底层基础的结构体，像上述的外层抽象了接口interface用于提供简单的对字段的访问设置，按照目前的分析和测试，内联会把字段访问速度提升一个数量级。</p>
+<p><strong>PS： 个人的感受是目前Go interfaced的内联做的不够好，或许可以用公共API返回具体类型而不是interface，比如etcdclient.New, grpc.NewServer这些都是这样实践的，它们通过private fields加public methods让外部用起来像interface一样，但是数据逻辑层可能实践起来比较麻烦，因为Go的访问控制太差。</strong></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">CctoctoFX</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-11-23
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/golang/memory-management/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Golang内存管理</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="derios1230@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/pillumina" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/fang-xian-20" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:2000/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>CctoctoFX</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
