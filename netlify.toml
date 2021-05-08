@@ -11,7 +11,7 @@
   HUGO_BASEURL = "https://cctoctofx.netlify.app/"
 
 [context.deploy-preview]
-  command = "hugo -s  -b $DEPLOY_PRIME_URL"
+  command = "hugo -s -b $DEPLOY_PRIME_URL"
 
 [[headers]]
   for = "/*"
