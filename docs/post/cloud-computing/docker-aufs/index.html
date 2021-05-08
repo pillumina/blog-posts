@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Docker Fundamentals: AUFS - CctoctoFX</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="CctoctoFX" /><meta name="description" content="AUFS是一种Union File System，所谓的UnionFS实际上就是把不同物理位置的目录合并mount到同一个目录当中。一种典型的Unio" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.4 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:2000/post/cloud-computing/docker-aufs/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.b87e76cd589b185c91369316107a6cff8b59e96cf13a7e3b13b57dfb75b68d79.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Docker Fundamentals: AUFS" />
+<meta property="og:description" content="AUFS是一种Union File System，所谓的UnionFS实际上就是把不同物理位置的目录合并mount到同一个目录当中。一种典型的Unio" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:2000/post/cloud-computing/docker-aufs/" />
+<meta property="article:published_time" content="2021-04-06T11:22:18+08:00" />
+<meta property="article:modified_time" content="2021-04-06T11:22:18+08:00" />
+<meta itemprop="name" content="Docker Fundamentals: AUFS">
+<meta itemprop="description" content="AUFS是一种Union File System，所谓的UnionFS实际上就是把不同物理位置的目录合并mount到同一个目录当中。一种典型的Unio">
+<meta itemprop="datePublished" content="2021-04-06T11:22:18+08:00" />
+<meta itemprop="dateModified" content="2021-04-06T11:22:18+08:00" />
+<meta itemprop="wordCount" content="3862">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker Fundamentals: AUFS"/>
+<meta name="twitter:description" content="AUFS是一种Union File System，所谓的UnionFS实际上就是把不同物理位置的目录合并mount到同一个目录当中。一种典型的Unio"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CctoctoFX</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CctoctoFX</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Docker Fundamentals: AUFS</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-04-06 </span>
+        
+          <span class="more-meta"> 3862 words </span>
+          <span class="more-meta"> 8 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#docker分层镜像对unionfs的使用">Docker分层镜像对UnionFS的使用</a></li>
+        <li><a href="#aufs特性">AUFS特性</a>
+          <ul>
+            <li><a href="#术语">术语</a></li>
+            <li><a href="#问题">问题</a></li>
+          </ul>
+        </li>
+        <li><a href="#aufs的性能">AUFS的性能</a></li>
+        <li><a href="#资料">资料</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>AUFS是一种Union File System，所谓的UnionFS实际上就是把不同物理位置的目录合并mount到同一个目录当中。一种典型的UnionFS的应用，就是把一张CD/DVD和一个硬盘目录联合mount在一起，然后你就可以对这个只读的CD/DVD上的文件进行修改。</p>
+<p>AUFS又叫做Another UnionFS，后面改成Alternative UnionFS，然后又变成Advance UnionFS&hellip;..当然名字的改变叫啥不重要，本质还是没变的。2006年Junjiro Okajima开发了AUFS，完全重写了早期的UnionFS 1.X，主要目的是为了可靠性和性能，再引入一些新的功能，例如可写分支的负载均衡。不过很有意思的是，AUFS的性能比UnionFS 1.X好很多，后面UnionFS 2.x就抄AUFS的功能，而AUFS本身却没有合入到Linux主线，因为代码量太大质量也不好。虽然后面Junjiro不断提升代码质量，不断提交但是还是被Linus拒绝了。所以哪怕是今天AUFS也没进到Linux里，虽然质量已经可以了。</p>
+<p>不过一些发行版比如：Ubuntu 10.04，Debian6.0都支持AUFS，所以也还好。我在Ubuntu 14.04演示一下例子。</p>
+<p>首先，我们建立两个水果和蔬菜的目录，在这个目录上放一些文件，水果里有苹果和番茄，蔬菜有胡萝卜和番茄:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ tree
+.
+├── fruits
+│   ├── apple
+│   └── tomato
+└── vegetables
+    ├── carrots
+    └── tomato
+</code></pre></td></tr></table>
+</div>
+</div><p>然后输入:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 创建一个mount目录</span>
+$ mkdir mnt
+
+<span class="c1"># 把水果目录和蔬菜目录union mount到 ./mnt目录中</span>
+$ sudo mount -t aufs -o <span class="nv">dirs</span><span class="o">=</span>./fruits:./vegetables none ./mnt
+
+<span class="c1">#  查看./mnt目录</span>
+$ tree ./mnt
+./mnt
+├── apple
+├── carrots
+└── tomato
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到<code>mnt</code>目录下有三个文件，水果和蔬菜的目录被合并起来了。如果我们修改一下文件内容:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nb">echo</span> mnt &gt; ./mnt/apple
+$ cat ./mnt/apple
+mnt
+$ cat ./fruits/apple
+mnt
+</code></pre></td></tr></table>
+</div>
+</div><p>可以发现如果修改了<code>/mnt/apple</code>下的内容，<code>/fruits/apple</code>下的内容也会被修改。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nb">echo</span> mnt_carrots &gt; ./mnt/carrots
+$ cat ./vegetables/carrots 
+
+$ cat ./fruits/carrots
+mnt_carrots
+</code></pre></td></tr></table>
+</div>
+</div><p>但是这里又变得奇怪，我们修改了<code>/mnt/carrots</code>的内容，按照道理说应该是<code>/vegetables/carrots</code>被修改，但发现并不是，反而在<code>/fruits</code>下面出现了<code>carrots</code>的文件，并且我们的修改出现在这里面。换句话说，<strong>我们在<code>mount aufs</code>的时候没有指定vegetable和fruits的目录权限</strong>，默认来说命令行第一个的目录是<code>rw</code>的，后面的都是<code>ro</code>。如果我们在<code>mount aufs</code>的时候指定一下权限，就会有不一样的效果（先把刚才的<code>/fruits/carrots</code>删了）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ sudo mount -t aufs -o <span class="nv">dirs</span><span class="o">=</span>./fruits<span class="o">=</span>rw:./vegetables<span class="o">=</span>rw none ./mnt
+
+$ <span class="nb">echo</span> <span class="s2">&#34;mnt_carrots&#34;</span> &gt; ./mnt/carrots 
+
+$ cat ./vegetables/carrots
+mnt_carrots
+
+$ cat ./fruits/carrots
+cat: ./fruits/carrots: No such file or directory
+</code></pre></td></tr></table>
+</div>
+</div><p>现在我们再看看修改:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nb">echo</span> <span class="s2">&#34;mnt_tomato&#34;</span> &gt; ./mnt/tomato 
+
+$ cat ./fruits/tomato
+mnt_tomato
+
+$ cat ./vegetables/tomato
+I am a vegetable
+</code></pre></td></tr></table>
+</div>
+</div><p>看上去就对味了。</p>
+<p>我们可以思考一下一些使用场景，例如我们可以把一个目录，例如我们自己的source code，作为只读的模板，和另一个working directory给union起来，那么我们就可以随便魔改不用害怕把源代码改坏。有点像<code>ad hoc snapshot</code>。</p>
+<h2 id="docker分层镜像对unionfs的使用">Docker分层镜像对UnionFS的使用</h2>
+<p>Docker就把UnionFS的技术借鉴到了容器中。在Linux Namespace中我们讨论了mount namespace和chroot去<code>fake</code>了一个镜像。而UnionFS的技术可以用来制作分层镜像。</p>
+<p>下面是Docker官方文档<a href="http://docs.docker.com/terms/layer/">Layer</a>，展示了Docker用UnionFS搭建制作的分层镜像：</p>
+<p><img src="https://coolshell.cn/wp-content/uploads/2015/04/docker-filesystems-multilayer.png" alt="docker layer"></p>
+<p>docker的分层镜像不单单可以使用aufs，还支持例如btrfs, devicemapper和vfs。可以使用<code>-s</code>或者<code>-storage-driver=</code>选项来指定相关的镜像存储。Ubuntu14.04的环境里docker默认用的是aufs，而Centos7下用的是devicemapper，这个会有另一个post来讨论。</p>
+<p>可以在下面的路径查看每个层的镜像:</p>
+<p><code>/var/lib/docker/aufs/diff/&lt;id&gt; </code></p>
+<p>docker执行起来以后，<code>docker run -it ubuntu /bin/bash</code>，可以从<code>/sys/fs/aufs/si_[id]</code>目录查看aufs的mount情况，比如:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1">#ls /sys/fs/aufs/si_b71b209f85ff8e75/</span>
+br0      br2      br4      br6      brid1    brid3    brid5    xi_path
+br1      br3      br5      brid0    brid2    brid4    brid6 
+
+<span class="c1"># cat /sys/fs/aufs/si_b71b209f85ff8e75/*</span>
+/var/lib/docker/aufs/diff/87315f1367e5703f599168d1e17528a0500bd2e2df7d2fe2aaf9595f3697dbd7<span class="o">=</span>rw
+/var/lib/docker/aufs/diff/87315f1367e5703f599168d1e17528a0500bd2e2df7d2fe2aaf9595f3697dbd7-init<span class="o">=</span>ro+wh
+/var/lib/docker/aufs/diff/d0955f21bf24f5bfffd32d2d0bb669d0564701c271bc3dfc64cfc5adfdec2d07<span class="o">=</span>ro+wh
+/var/lib/docker/aufs/diff/9fec74352904baf5ab5237caa39a84b0af5c593dc7cc08839e2ba65193024507<span class="o">=</span>ro+wh
+/var/lib/docker/aufs/diff/a1a958a248181c9aa6413848cd67646e5afb9797f1a3da5995c7a636f050f537<span class="o">=</span>ro+wh
+/var/lib/docker/aufs/diff/f3c84ac3a0533f691c9fea4cc2ceaaf43baec22bf8d6a479e069f6d814be9b86<span class="o">=</span>ro+wh
+/var/lib/docker/aufs/diff/511136ea3c5a64f264b78b5433614aec563103b4d4702f3ba7d4d2698e22c158<span class="o">=</span>ro+wh
+<span class="m">64</span>
+<span class="m">65</span>
+<span class="m">66</span>
+<span class="m">67</span>
+<span class="m">68</span>
+<span class="m">69</span>
+<span class="m">70</span>
+/run/shm/aufs.xino
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到，只有最顶层的是有<code>rw</code>权限，其他都是<code>ro+wh</code>权限只读。</p>
+<p>docker的aufs配置，可以在<code>/var/lib/docker/repositories-aufs</code>这个文件中看到。</p>
+<h2 id="aufs特性">AUFS特性</h2>
+<p>AUFS包含了所有UnionFS的特性，把多个目录合并成一个目录，对每个需要合并的目录指定权限，可以实时得去添加、删除或者修改已经被mount的目录。甚至，还可以在多个可写的<code>branch/dir</code>之间做负载均衡。</p>
+<p>以上是AUFS的mount特性，我们再来看一下被union的目录的相关权限:</p>
+<ul>
+<li>
+<p><code>rw</code>表示可读可写</p>
+</li>
+<li>
+<p><code>ro</code>表示只读，如果在使用的时候不指定，那么除了第一个以外，其他都是<code>ro</code>。也就是时候，<code>ro</code>的branch不会接收到写的操作，也不会收到查找<code>whiteout</code>的操作。</p>
+</li>
+<li>
+<p><code>rr</code>表示<code>real-read-only</code>，这个和<code>ro</code>还是有区别的。<code>rr</code>指的是天生就是只读的分支，能够让AUFS提供性能，例如可以不用设置<code>inotify</code>来检查文件变动通知。</p>
+</li>
+<li>
+<p><code>whiteout</code>属性一般来说<code>ro</code>分支都会有，上面的snippet中也展示了<code>ro+wh</code>，而它的意思就是，如果在union中删除某个文件，实际上是处于一个<code>readonly</code>的分支目录上。在mount的union这个目录你会看不到这个文件，但是<code>readonly</code>这个层上我们无法做任何的修改，因此我们就必须对<code>readonly</code>目录里的文件做<code>whiteout</code>。AUFS的<code>whiteout</code>实现是通过在上层的可写目录下建立对应<code>whiteout</code>隐藏文件夹实现的。</p>
+<p>举个🌰：</p>
+<p>还是最开始的例子，我们有以下的结构:</p>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># tree</span>
+.
+├── fruits
+│   ├── apple
+│   └── tomato
+├── <span class="nb">test</span>
+└── vegetables
+    ├── carrots
+    └── tomato
+</code></pre></td></tr></table>
+</div>
+</div><p>我们按照下面的指令进行mount和权限分配:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ mkdir mnt
+
+$ mount -t aufs -o <span class="nv">dirs</span><span class="o">=</span>./test<span class="o">=</span>rw:./fruits<span class="o">=</span>ro:./vegetables<span class="o">=</span>ro none ./mnt
+
+$ ls ./mnt/
+apple  carrots  tomato 
+</code></pre></td></tr></table>
+</div>
+</div><p>我们在权限为<code>rw</code>的test目录下新建一个whiteout的隐藏文件<code>.wh.apple</code>，可以发现<code>./mnt/apple</code>这个目录之间消失了:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ touch ./test/.wh.apple
+
+$ ls ./mnt
+carrots  tomato
+</code></pre></td></tr></table>
+</div>
+</div><p>也就是说这个操作和<code>rm ./mnt/apple</code>是一样的。</p>
+<h3 id="术语">术语</h3>
+<p><strong>Branch</strong> – 就是各个要被union起来的目录（就是我在上面使用的dirs的命令行参数）</p>
+<ul>
+<li>Branch根据被union的顺序形成一个stack，一般来说最上面的是可写的，下面的都是只读的。</li>
+<li>Branch的stack可以在被mount后进行修改，比如：修改顺序，加入新的branch，或是删除其中的branch，或是直接修改branch的权限</li>
+</ul>
+<p><strong>Whiteout</strong> 和 <strong>Opaque</strong></p>
+<ul>
+<li>
+<p>如果UnionFS中的某个目录被删除了，那么就应该不可见了，就算是在底层的branch中还有这个目录，那也应该不可见了。</p>
+</li>
+<li>
+<p>Whiteout就是某个上层目录覆盖了下层的相同名字的目录。用于隐藏低层分支的文件，也用于阻止readdir进入低层分支。</p>
+</li>
+<li>
+<p>Opaque的意思就是不允许任何下层的某个目录显示出来。</p>
+</li>
+<li>
+<p>在隐藏低层档的情况下，whiteout的名字是’.wh.<filename>’。</p>
+</li>
+<li>
+<p>在阻止readdir的情况下，名字是’.wh..wh..opq’或者 ’.wh.__dir_opaque’。</p>
+</li>
+</ul>
+<h3 id="问题">问题</h3>
+<ol>
+<li>
+<p><strong>要有文件在原来的地方被修改了会怎么样，mount的目录会一起改变吗？</strong></p>
+<p>会也可能不会。因为你可以指定一个叫udba的参数（全称：User’s Direct Branch Access），这个参数有三个取值：</p>
+<ul>
+<li><strong>udba=none</strong> – 设置上这个参数后，AUFS会运转的更快，因为那些不在mount目录里发生的修改，aufs不会同步过来了，所以会有数据出错的问题。</li>
+<li><strong>udba=reval</strong> – 设置上这个参数后，AUFS会去查文件有没有被更新，如果有的话，就会把修改拉到mount目录内。</li>
+<li><strong>udba=notify</strong> – 这个参数会让AUFS为所有的branch注册inotify，这样可以让AUFS在更新文件修改的性能更高一些。</li>
+</ul>
+</li>
+<li>
+<p><strong>如果有多个rw的branch（目录）被union起来了，那么，当我创建文件的时候，aufs会创建在哪里呢？</strong></p>
+<p>AUFS提供了一个叫<code>create</code>的参数可以供你来配置相当的创建策略，下面有几个例子：</p>
+<ul>
+<li>
+<p><strong>create=rr | round−robin</strong> 轮询。下面的示例可以看到，新创建的文件轮流写到三个目录中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">derios$ sudo mount -t aufs  -o <span class="nv">dirs</span><span class="o">=</span>./1<span class="o">=</span>rw:./2<span class="o">=</span>rw:./3<span class="o">=</span>rw -o <span class="nv">create</span><span class="o">=</span>rr none ./mnt
+derios$ touch ./mnt/a ./mnt/b ./mnt/c
+derios$ tree
+.
+├── <span class="m">1</span>
+│   └── a
+├── <span class="m">2</span>
+│   └── c
+└── <span class="m">3</span>
+    └── b
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>create=mfs[:second] | most−free−space[:second]</strong> 选一个可用空间最好的分支。可以指定一个检查可用磁盘空间的时间。</p>
+</li>
+<li>
+<p><strong>create=mfsrr:low[:second]</strong> 选一个空间大于low的branch，如果空间小于low了，那么aufs会使用 round-robin 方式。</p>
+</li>
+</ul>
+<p>一些AUFS的细节参数，建议还是<code>man aufs</code>查看。</p>
+</li>
+</ol>
+<h2 id="aufs的性能">AUFS的性能</h2>
+<p>AUFS把所有的分支mount起来，所以在查找文件上是慢一些。因为它要遍历所有的分支，O(N)复杂度的算法。因此分支越多，查找文件的性能也就越慢。但是一旦AUFS找到了这个文件的inode，那之后的读写和操作源文件基本是一样的。</p>
+<p>所以如果程序跑在AUFS下，那么<code>open</code>和<code>stat</code>操作会有明显的性能下降，分支越多性能就越差。但在<code>write/read</code>操作上性能没有什么变化。</p>
+<p>这里有一份IBM做的Docker性能报告《<a href="http://domino.research.ibm.com/library/cyberdig.nsf/papers/0929052195DD819C85257D2300681E7B/$File/rc25482.pdf">An Updated Performance Comparison of Virtual Machinesand Linux Containers</a>》。</p>
+<h2 id="资料">资料</h2>
+<ul>
+<li>
+<p><a href="http://www.linuxjournal.com/article/7714">Introduce UnionFS</a></p>
+</li>
+<li>
+<p><a href="http://lwn.net/Articles/325369/">Union file systems: Implementations, part I</a></p>
+</li>
+<li>
+<p><a href="http://lwn.net/Articles/327738/">Union file systems: Implementations, part 2</a></p>
+</li>
+<li>
+<p><a href="http://lwn.net/Articles/403012/">Another union filesystem approach</a></p>
+</li>
+<li>
+<p><a href="http://lwn.net/Articles/324291/">Unioning file systems: Architecture, features, and design choices</a></p>
+</li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">CctoctoFX</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2021-04-06
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/cloud-computing/k8s-advance-schedule/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Kubernetes Handbook (Schedule)</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/cloud-computing/docker-cgroup/">
+            <span class="next-text nav-default">Docker Fundamentals: Cgroup</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="derios1230@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/pillumina" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/fang-xian-20" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:2000/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>CctoctoFX</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

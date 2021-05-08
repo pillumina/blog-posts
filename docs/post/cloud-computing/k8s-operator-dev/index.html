@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Kubernetes Operator Development History - CctoctoFX</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="CctoctoFX" /><meta name="description" content="本文旨在记录对中间件、编排组件容器化部署后，实现kubernetes扩展组件Controller的过程。 Third-Parties kubernetes-client: javascript client-go kube-rs client-go源码分析" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.4 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:2000/post/cloud-computing/k8s-operator-dev/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.b87e76cd589b185c91369316107a6cff8b59e96cf13a7e3b13b57dfb75b68d79.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Kubernetes Operator Development History" />
+<meta property="og:description" content="本文旨在记录对中间件、编排组件容器化部署后，实现kubernetes扩展组件Controller的过程。 Third-Parties kubernetes-client: javascript client-go kube-rs client-go源码分析" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:2000/post/cloud-computing/k8s-operator-dev/" />
+<meta property="article:published_time" content="2021-04-29T11:22:18+08:00" />
+<meta property="article:modified_time" content="2021-04-29T11:22:18+08:00" />
+<meta itemprop="name" content="Kubernetes Operator Development History">
+<meta itemprop="description" content="本文旨在记录对中间件、编排组件容器化部署后，实现kubernetes扩展组件Controller的过程。 Third-Parties kubernetes-client: javascript client-go kube-rs client-go源码分析">
+<meta itemprop="datePublished" content="2021-04-29T11:22:18+08:00" />
+<meta itemprop="dateModified" content="2021-04-29T11:22:18+08:00" />
+<meta itemprop="wordCount" content="2693">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kubernetes Operator Development History"/>
+<meta name="twitter:description" content="本文旨在记录对中间件、编排组件容器化部署后，实现kubernetes扩展组件Controller的过程。 Third-Parties kubernetes-client: javascript client-go kube-rs client-go源码分析"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CctoctoFX</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CctoctoFX</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Kubernetes Operator Development History</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-04-29 </span>
+        
+          <span class="more-meta"> 2693 words </span>
+          <span class="more-meta"> 6 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#third-parties">Third-Parties</a></li>
+        <li><a href="#client-go源码分析"><code>client-go</code>源码分析</a>
+          <ul>
+            <li><a href="#目录结构">目录结构</a></li>
+            <li><a href="#代码实例">代码实例</a></li>
+            <li><a href="#kubeconfig"><code>kubeconfig</code></a></li>
+            <li><a href="#restconfig"><code>rest.config</code></a></li>
+            <li><a href="#clientset"><code>clientset</code></a></li>
+            <li><a href="#corev1client"><code>CoreV1Client</code></a></li>
+            <li><a href="#restclient"><code>RESTClient</code></a></li>
+            <li><a href="#总结">总结</a></li>
+          </ul>
+        </li>
+        <li><a href="#operator-sdk"><code>Operator SDK</code></a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <blockquote>
+<p>本文旨在记录对中间件、编排组件容器化部署后，实现kubernetes扩展组件Controller的过程。</p>
+</blockquote>
+<h2 id="third-parties">Third-Parties</h2>
+<p><a href="https://github.com/kubernetes-client/javascript">kubernetes-client: javascript</a></p>
+<p><a href="https://github.com/kubernetes/client-go">client-go</a></p>
+<p><a href="https://github.com/clux/kube-rs">kube-rs</a></p>
+<h2 id="client-go源码分析"><code>client-go</code>源码分析</h2>
+<h3 id="目录结构">目录结构</h3>
+<blockquote>
+<ul>
+<li><code>kubernetes</code>: contains the clientset to access Kubernetes API.</li>
+<li><code>discovery</code>: discover APIs supported by a Kubernetes API server.</li>
+<li><code>dynamic</code>: contains a dynamic client that can perform generic operations on arbitrary Kubernetes API objects.</li>
+<li><code>transport</code>: set up auth and start a connection.</li>
+<li><code>tools/cache</code>: useful for writing controllers.</li>
+<li><code>informers</code>:  informer group</li>
+<li><code>listers</code>:  lister group</li>
+</ul>
+</blockquote>
+<h3 id="代码实例">代码实例</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">git clone https://github.com/huweihuang/client-go.git
+<span class="nb">cd</span> client-go
+<span class="c1">#保证本地HOME目录有配置kubernetes集群的配置文件</span>
+go run client-go.go
+</code></pre></td></tr></table>
+</div>
+</div><p><code>client-go.go</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;flag&#34;</span>
+	<span class="s">&#34;fmt&#34;</span>
+	<span class="s">&#34;os&#34;</span>
+	<span class="s">&#34;path/filepath&#34;</span>
+	<span class="s">&#34;time&#34;</span>
+
+	<span class="nx">metav1</span> <span class="s">&#34;k8s.io/apimachinery/pkg/apis/meta/v1&#34;</span>
+	<span class="s">&#34;k8s.io/client-go/kubernetes&#34;</span>
+	<span class="s">&#34;k8s.io/client-go/tools/clientcmd&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">kubeconfig</span> <span class="o">*</span><span class="kt">string</span>
+	<span class="k">if</span> <span class="nx">home</span> <span class="o">:=</span> <span class="nf">homeDir</span><span class="p">();</span> <span class="nx">home</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+		<span class="nx">kubeconfig</span> <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="s">&#34;kubeconfig&#34;</span><span class="p">,</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">home</span><span class="p">,</span> <span class="s">&#34;.kube&#34;</span><span class="p">,</span> <span class="s">&#34;config&#34;</span><span class="p">),</span> <span class="s">&#34;(optional) absolute path to the kubeconfig file&#34;</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">kubeconfig</span> <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="s">&#34;kubeconfig&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;absolute path to the kubeconfig file&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">flag</span><span class="p">.</span><span class="nf">Parse</span><span class="p">()</span>
+	<span class="c1">// uses the current context in kubeconfig
+</span><span class="c1"></span>	<span class="nx">config</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientcmd</span><span class="p">.</span><span class="nf">BuildConfigFromFlags</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">kubeconfig</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+	<span class="p">}</span>
+	<span class="c1">// creates the clientset
+</span><span class="c1"></span>	<span class="nx">clientset</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">kubernetes</span><span class="p">.</span><span class="nf">NewForConfig</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="nx">pods</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientset</span><span class="p">.</span><span class="nf">CoreV1</span><span class="p">().</span><span class="nf">Pods</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">).</span><span class="nf">List</span><span class="p">(</span><span class="nx">metav1</span><span class="p">.</span><span class="nx">ListOptions</span><span class="p">{})</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+		<span class="p">}</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;There are %d pods in the cluster\n&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">pods</span><span class="p">.</span><span class="nx">Items</span><span class="p">))</span>
+		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">homeDir</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">h</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="s">&#34;HOME&#34;</span><span class="p">);</span> <span class="nx">h</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">h</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="s">&#34;USERPROFILE&#34;</span><span class="p">)</span> <span class="c1">// windows
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>output</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">➜ go run client-go.go
+There are <span class="m">9</span> pods in the cluster
+There are <span class="m">7</span> pods in the cluster
+There are <span class="m">7</span> pods in the cluster
+There are <span class="m">7</span> pods in the cluster
+There are <span class="m">7</span> pods in the cluster
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="kubeconfig"><code>kubeconfig</code></h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">kubeconfig</span> <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="s">&#34;kubeconfig&#34;</span><span class="p">,</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">home</span><span class="p">,</span> <span class="s">&#34;.kube&#34;</span><span class="p">,</span> <span class="s">&#34;config&#34;</span><span class="p">),</span> <span class="s">&#34;(optional) absolute path to the kubeconfig file&#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>为了获取k8s配置文件<code>kubeconfig</code>的绝对路径，一般路径为<code>$HOME/.kube/config</code>，这个文件主要用来配置本地连接的k8s集群。</p>
+<p>config的内容大概如图所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">clusters</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">cluster</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l">http://&lt;kube-master-ip&gt;:8080</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">k8s</span><span class="w">
+</span><span class="w"></span><span class="nt">contexts</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">context</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l">k8s</span><span class="w">
+</span><span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w"></span><span class="nt">current-context</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Config</span><span class="w">
+</span><span class="w"></span><span class="nt">preferences</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w"></span><span class="nt">users</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="restconfig"><code>rest.config</code></h3>
+<p>通过参数和<code>BuildConfigFromFlags</code>方法获取<code>rest.Config</code>对象</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">config</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientcmd</span><span class="p">.</span><span class="nf">BuildConfigFromFlags</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">kubeconfig</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><a href="https://github.com/kubernetes/client-go/blob/master/tools/clientcmd/client_config.go#L522">k8s.io/client-go/tools/clientcmd/client_config.go</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// BuildConfigFromFlags is a helper function that builds configs from a master
+</span><span class="c1">// url or a kubeconfig filepath. These are passed in as command line flags for cluster
+</span><span class="c1">// components. Warnings should reflect this usage. If neither masterUrl or kubeconfigPath
+</span><span class="c1">// are passed in we fallback to inClusterConfig. If inClusterConfig fails, we fallback
+</span><span class="c1">// to the default config.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">BuildConfigFromFlags</span><span class="p">(</span><span class="nx">masterUrl</span><span class="p">,</span> <span class="nx">kubeconfigPath</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">restclient</span><span class="p">.</span><span class="nx">Config</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">kubeconfigPath</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="o">&amp;&amp;</span> <span class="nx">masterUrl</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Warning</span><span class="p">(</span><span class="s">&#34;Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.  This might not work.&#34;</span><span class="p">)</span>
+		<span class="nx">kubeconfig</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">restclient</span><span class="p">.</span><span class="nf">InClusterConfig</span><span class="p">()</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">kubeconfig</span><span class="p">,</span> <span class="kc">nil</span>
+		<span class="p">}</span>
+		<span class="nx">klog</span><span class="p">.</span><span class="nf">Warning</span><span class="p">(</span><span class="s">&#34;error creating inClusterConfig, falling back to default config: &#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nf">NewNonInteractiveDeferredLoadingClientConfig</span><span class="p">(</span>
+		<span class="o">&amp;</span><span class="nx">ClientConfigLoadingRules</span><span class="p">{</span><span class="nx">ExplicitPath</span><span class="p">:</span> <span class="nx">kubeconfigPath</span><span class="p">},</span>
+		<span class="o">&amp;</span><span class="nx">ConfigOverrides</span><span class="p">{</span><span class="nx">ClusterInfo</span><span class="p">:</span> <span class="nx">clientcmdapi</span><span class="p">.</span><span class="nx">Cluster</span><span class="p">{</span><span class="nx">Server</span><span class="p">:</span> <span class="nx">masterUrl</span><span class="p">}}).</span><span class="nf">ClientConfig</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="clientset"><code>clientset</code></h3>
+<p>通过<code>*rest.Config</code>参数和<code>NewForConfig</code>方法来获取<code>clientset</code>对象，<code>clientset</code>是多个<code>client</code>集合，每个<code>client</code>可能包括不同版本的方法调用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">clientset</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">kubernetes</span><span class="p">.</span><span class="nf">NewForConfig</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="newforconfig"><code>NewForConfig</code></h4>
+<p><code>NewForConfig</code>函数就是初始化<code>clientset</code>中的每个client。</p>
+<p><a href="https://github.com/kubernetes/client-go/blob/87887458218a51f3944b2f4c553eb38173458e97/kubernetes/clientset.go#L396">k8s.io/client-go/kubernetes/clientset.go</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// NewForConfig creates a new Clientset for the given config.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">NewForConfig</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">rest</span><span class="p">.</span><span class="nx">Config</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">Clientset</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">configShallowCopy</span> <span class="o">:=</span> <span class="o">*</span><span class="nx">c</span>
+	<span class="o">...</span>
+	<span class="kd">var</span> <span class="nx">cs</span> <span class="nx">Clientset</span>
+	<span class="nx">cs</span><span class="p">.</span><span class="nx">appsV1beta1</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">appsv1beta1</span><span class="p">.</span><span class="nf">NewForConfig</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">configShallowCopy</span><span class="p">)</span>
+	<span class="o">...</span>
+	<span class="nx">cs</span><span class="p">.</span><span class="nx">coreV1</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">corev1</span><span class="p">.</span><span class="nf">NewForConfig</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">configShallowCopy</span><span class="p">)</span>
+	<span class="o">...</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="clientset的结构体"><code>clientset</code>的结构体</h4>
+<p><a href="https://github.com/kubernetes/client-go/blob/master/kubernetes/clientset.go">k8s.io/client-go/kubernetes/clientset.go</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Clientset contains the clients for groups. Each group has exactly one
+</span><span class="c1">// version included in a Clientset.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Clientset</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="o">*</span><span class="nx">discovery</span><span class="p">.</span><span class="nx">DiscoveryClient</span>
+	<span class="nx">admissionregistrationV1</span>      <span class="o">*</span><span class="nx">admissionregistrationv1</span><span class="p">.</span><span class="nx">AdmissionregistrationV1Client</span>
+	<span class="nx">admissionregistrationV1beta1</span> <span class="o">*</span><span class="nx">admissionregistrationv1beta1</span><span class="p">.</span><span class="nx">AdmissionregistrationV1beta1Client</span>
+	<span class="nx">internalV1alpha1</span>             <span class="o">*</span><span class="nx">internalv1alpha1</span><span class="p">.</span><span class="nx">InternalV1alpha1Client</span>
+	<span class="nx">appsV1</span>                       <span class="o">*</span><span class="nx">appsv1</span><span class="p">.</span><span class="nx">AppsV1Client</span>
+	<span class="nx">appsV1beta1</span>                  <span class="o">*</span><span class="nx">appsv1beta1</span><span class="p">.</span><span class="nx">AppsV1beta1Client</span>
+	<span class="nx">appsV1beta2</span>                  <span class="o">*</span><span class="nx">appsv1beta2</span><span class="p">.</span><span class="nx">AppsV1beta2Client</span>
+	<span class="nx">authenticationV1</span>             <span class="o">*</span><span class="nx">authenticationv1</span><span class="p">.</span><span class="nx">AuthenticationV1Client</span>
+	<span class="nx">authenticationV1beta1</span>        <span class="o">*</span><span class="nx">authenticationv1beta1</span><span class="p">.</span><span class="nx">AuthenticationV1beta1Client</span>
+	<span class="nx">authorizationV1</span>              <span class="o">*</span><span class="nx">authorizationv1</span><span class="p">.</span><span class="nx">AuthorizationV1Client</span>
+	<span class="nx">authorizationV1beta1</span>         <span class="o">*</span><span class="nx">authorizationv1beta1</span><span class="p">.</span><span class="nx">AuthorizationV1beta1Client</span>
+	<span class="nx">autoscalingV1</span>                <span class="o">*</span><span class="nx">autoscalingv1</span><span class="p">.</span><span class="nx">AutoscalingV1Client</span>
+	<span class="nx">autoscalingV2beta1</span>           <span class="o">*</span><span class="nx">autoscalingv2beta1</span><span class="p">.</span><span class="nx">AutoscalingV2beta1Client</span>
+	<span class="nx">autoscalingV2beta2</span>           <span class="o">*</span><span class="nx">autoscalingv2beta2</span><span class="p">.</span><span class="nx">AutoscalingV2beta2Client</span>
+	<span class="nx">batchV1</span>                      <span class="o">*</span><span class="nx">batchv1</span><span class="p">.</span><span class="nx">BatchV1Client</span>
+	<span class="nx">batchV1beta1</span>                 <span class="o">*</span><span class="nx">batchv1beta1</span><span class="p">.</span><span class="nx">BatchV1beta1Client</span>
+	<span class="nx">certificatesV1</span>               <span class="o">*</span><span class="nx">certificatesv1</span><span class="p">.</span><span class="nx">CertificatesV1Client</span>
+	<span class="nx">certificatesV1beta1</span>          <span class="o">*</span><span class="nx">certificatesv1beta1</span><span class="p">.</span><span class="nx">CertificatesV1beta1Client</span>
+	<span class="nx">coordinationV1beta1</span>          <span class="o">*</span><span class="nx">coordinationv1beta1</span><span class="p">.</span><span class="nx">CoordinationV1beta1Client</span>
+	<span class="nx">coordinationV1</span>               <span class="o">*</span><span class="nx">coordinationv1</span><span class="p">.</span><span class="nx">CoordinationV1Client</span>
+	<span class="nx">coreV1</span>                       <span class="o">*</span><span class="nx">corev1</span><span class="p">.</span><span class="nx">CoreV1Client</span>
+	<span class="nx">discoveryV1</span>                  <span class="o">*</span><span class="nx">discoveryv1</span><span class="p">.</span><span class="nx">DiscoveryV1Client</span>
+	<span class="nx">discoveryV1beta1</span>             <span class="o">*</span><span class="nx">discoveryv1beta1</span><span class="p">.</span><span class="nx">DiscoveryV1beta1Client</span>
+	<span class="nx">eventsV1</span>                     <span class="o">*</span><span class="nx">eventsv1</span><span class="p">.</span><span class="nx">EventsV1Client</span>
+	<span class="nx">eventsV1beta1</span>                <span class="o">*</span><span class="nx">eventsv1beta1</span><span class="p">.</span><span class="nx">EventsV1beta1Client</span>
+	<span class="nx">extensionsV1beta1</span>            <span class="o">*</span><span class="nx">extensionsv1beta1</span><span class="p">.</span><span class="nx">ExtensionsV1beta1Client</span>
+	<span class="nx">flowcontrolV1alpha1</span>          <span class="o">*</span><span class="nx">flowcontrolv1alpha1</span><span class="p">.</span><span class="nx">FlowcontrolV1alpha1Client</span>
+	<span class="nx">flowcontrolV1beta1</span>           <span class="o">*</span><span class="nx">flowcontrolv1beta1</span><span class="p">.</span><span class="nx">FlowcontrolV1beta1Client</span>
+	<span class="nx">networkingV1</span>                 <span class="o">*</span><span class="nx">networkingv1</span><span class="p">.</span><span class="nx">NetworkingV1Client</span>
+	<span class="nx">networkingV1beta1</span>            <span class="o">*</span><span class="nx">networkingv1beta1</span><span class="p">.</span><span class="nx">NetworkingV1beta1Client</span>
+	<span class="nx">nodeV1</span>                       <span class="o">*</span><span class="nx">nodev1</span><span class="p">.</span><span class="nx">NodeV1Client</span>
+	<span class="nx">nodeV1alpha1</span>                 <span class="o">*</span><span class="nx">nodev1alpha1</span><span class="p">.</span><span class="nx">NodeV1alpha1Client</span>
+	<span class="nx">nodeV1beta1</span>                  <span class="o">*</span><span class="nx">nodev1beta1</span><span class="p">.</span><span class="nx">NodeV1beta1Client</span>
+	<span class="nx">policyV1</span>                     <span class="o">*</span><span class="nx">policyv1</span><span class="p">.</span><span class="nx">PolicyV1Client</span>
+	<span class="nx">policyV1beta1</span>                <span class="o">*</span><span class="nx">policyv1beta1</span><span class="p">.</span><span class="nx">PolicyV1beta1Client</span>
+	<span class="nx">rbacV1</span>                       <span class="o">*</span><span class="nx">rbacv1</span><span class="p">.</span><span class="nx">RbacV1Client</span>
+	<span class="nx">rbacV1beta1</span>                  <span class="o">*</span><span class="nx">rbacv1beta1</span><span class="p">.</span><span class="nx">RbacV1beta1Client</span>
+	<span class="nx">rbacV1alpha1</span>                 <span class="o">*</span><span class="nx">rbacv1alpha1</span><span class="p">.</span><span class="nx">RbacV1alpha1Client</span>
+	<span class="nx">schedulingV1alpha1</span>           <span class="o">*</span><span class="nx">schedulingv1alpha1</span><span class="p">.</span><span class="nx">SchedulingV1alpha1Client</span>
+	<span class="nx">schedulingV1beta1</span>            <span class="o">*</span><span class="nx">schedulingv1beta1</span><span class="p">.</span><span class="nx">SchedulingV1beta1Client</span>
+	<span class="nx">schedulingV1</span>                 <span class="o">*</span><span class="nx">schedulingv1</span><span class="p">.</span><span class="nx">SchedulingV1Client</span>
+	<span class="nx">storageV1beta1</span>               <span class="o">*</span><span class="nx">storagev1beta1</span><span class="p">.</span><span class="nx">StorageV1beta1Client</span>
+	<span class="nx">storageV1</span>                    <span class="o">*</span><span class="nx">storagev1</span><span class="p">.</span><span class="nx">StorageV1Client</span>
+	<span class="nx">storageV1alpha1</span>              <span class="o">*</span><span class="nx">storagev1alpha1</span><span class="p">.</span><span class="nx">StorageV1alpha1Client</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="clientsetinterface"><code>clientset.Interface</code></h4>
+<p><code>clientset</code>实现了以下的interface，可以通过以下的方法获得具体的client，例如:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">pods</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientset</span><span class="p">.</span><span class="nf">CoreV1</span><span class="p">().</span><span class="nf">Pods</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">).</span><span class="nf">List</span><span class="p">(</span><span class="nx">metav1</span><span class="p">.</span><span class="nx">ListOptions</span><span class="p">{})</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Interface</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Discovery</span><span class="p">()</span> <span class="nx">discovery</span><span class="p">.</span><span class="nx">DiscoveryInterface</span>
+	<span class="nf">AdmissionregistrationV1</span><span class="p">()</span> <span class="nx">admissionregistrationv1</span><span class="p">.</span><span class="nx">AdmissionregistrationV1Interface</span>
+	<span class="nf">AdmissionregistrationV1beta1</span><span class="p">()</span> <span class="nx">admissionregistrationv1beta1</span><span class="p">.</span><span class="nx">AdmissionregistrationV1beta1Interface</span>
+	<span class="nf">InternalV1alpha1</span><span class="p">()</span> <span class="nx">internalv1alpha1</span><span class="p">.</span><span class="nx">InternalV1alpha1Interface</span>
+	<span class="nf">AppsV1</span><span class="p">()</span> <span class="nx">appsv1</span><span class="p">.</span><span class="nx">AppsV1Interface</span>
+	<span class="nf">AppsV1beta1</span><span class="p">()</span> <span class="nx">appsv1beta1</span><span class="p">.</span><span class="nx">AppsV1beta1Interface</span>
+	<span class="nf">AppsV1beta2</span><span class="p">()</span> <span class="nx">appsv1beta2</span><span class="p">.</span><span class="nx">AppsV1beta2Interface</span>
+	<span class="nf">AuthenticationV1</span><span class="p">()</span> <span class="nx">authenticationv1</span><span class="p">.</span><span class="nx">AuthenticationV1Interface</span>
+	<span class="nf">AuthenticationV1beta1</span><span class="p">()</span> <span class="nx">authenticationv1beta1</span><span class="p">.</span><span class="nx">AuthenticationV1beta1Interface</span>
+	<span class="nf">AuthorizationV1</span><span class="p">()</span> <span class="nx">authorizationv1</span><span class="p">.</span><span class="nx">AuthorizationV1Interface</span>
+	<span class="nf">AuthorizationV1beta1</span><span class="p">()</span> <span class="nx">authorizationv1beta1</span><span class="p">.</span><span class="nx">AuthorizationV1beta1Interface</span>
+	<span class="nf">AutoscalingV1</span><span class="p">()</span> <span class="nx">autoscalingv1</span><span class="p">.</span><span class="nx">AutoscalingV1Interface</span>
+	<span class="nf">AutoscalingV2beta1</span><span class="p">()</span> <span class="nx">autoscalingv2beta1</span><span class="p">.</span><span class="nx">AutoscalingV2beta1Interface</span>
+	<span class="nf">AutoscalingV2beta2</span><span class="p">()</span> <span class="nx">autoscalingv2beta2</span><span class="p">.</span><span class="nx">AutoscalingV2beta2Interface</span>
+	<span class="nf">BatchV1</span><span class="p">()</span> <span class="nx">batchv1</span><span class="p">.</span><span class="nx">BatchV1Interface</span>
+	<span class="nf">BatchV1beta1</span><span class="p">()</span> <span class="nx">batchv1beta1</span><span class="p">.</span><span class="nx">BatchV1beta1Interface</span>
+	<span class="nf">CertificatesV1</span><span class="p">()</span> <span class="nx">certificatesv1</span><span class="p">.</span><span class="nx">CertificatesV1Interface</span>
+	<span class="nf">CertificatesV1beta1</span><span class="p">()</span> <span class="nx">certificatesv1beta1</span><span class="p">.</span><span class="nx">CertificatesV1beta1Interface</span>
+	<span class="nf">CoordinationV1beta1</span><span class="p">()</span> <span class="nx">coordinationv1beta1</span><span class="p">.</span><span class="nx">CoordinationV1beta1Interface</span>
+	<span class="nf">CoordinationV1</span><span class="p">()</span> <span class="nx">coordinationv1</span><span class="p">.</span><span class="nx">CoordinationV1Interface</span>
+	<span class="nf">CoreV1</span><span class="p">()</span> <span class="nx">corev1</span><span class="p">.</span><span class="nx">CoreV1Interface</span>
+	<span class="nf">DiscoveryV1</span><span class="p">()</span> <span class="nx">discoveryv1</span><span class="p">.</span><span class="nx">DiscoveryV1Interface</span>
+	<span class="nf">DiscoveryV1beta1</span><span class="p">()</span> <span class="nx">discoveryv1beta1</span><span class="p">.</span><span class="nx">DiscoveryV1beta1Interface</span>
+	<span class="nf">EventsV1</span><span class="p">()</span> <span class="nx">eventsv1</span><span class="p">.</span><span class="nx">EventsV1Interface</span>
+	<span class="nf">EventsV1beta1</span><span class="p">()</span> <span class="nx">eventsv1beta1</span><span class="p">.</span><span class="nx">EventsV1beta1Interface</span>
+	<span class="nf">ExtensionsV1beta1</span><span class="p">()</span> <span class="nx">extensionsv1beta1</span><span class="p">.</span><span class="nx">ExtensionsV1beta1Interface</span>
+	<span class="nf">FlowcontrolV1alpha1</span><span class="p">()</span> <span class="nx">flowcontrolv1alpha1</span><span class="p">.</span><span class="nx">FlowcontrolV1alpha1Interface</span>
+	<span class="nf">FlowcontrolV1beta1</span><span class="p">()</span> <span class="nx">flowcontrolv1beta1</span><span class="p">.</span><span class="nx">FlowcontrolV1beta1Interface</span>
+	<span class="nf">NetworkingV1</span><span class="p">()</span> <span class="nx">networkingv1</span><span class="p">.</span><span class="nx">NetworkingV1Interface</span>
+	<span class="nf">NetworkingV1beta1</span><span class="p">()</span> <span class="nx">networkingv1beta1</span><span class="p">.</span><span class="nx">NetworkingV1beta1Interface</span>
+	<span class="nf">NodeV1</span><span class="p">()</span> <span class="nx">nodev1</span><span class="p">.</span><span class="nx">NodeV1Interface</span>
+	<span class="nf">NodeV1alpha1</span><span class="p">()</span> <span class="nx">nodev1alpha1</span><span class="p">.</span><span class="nx">NodeV1alpha1Interface</span>
+	<span class="nf">NodeV1beta1</span><span class="p">()</span> <span class="nx">nodev1beta1</span><span class="p">.</span><span class="nx">NodeV1beta1Interface</span>
+	<span class="nf">PolicyV1</span><span class="p">()</span> <span class="nx">policyv1</span><span class="p">.</span><span class="nx">PolicyV1Interface</span>
+	<span class="nf">PolicyV1beta1</span><span class="p">()</span> <span class="nx">policyv1beta1</span><span class="p">.</span><span class="nx">PolicyV1beta1Interface</span>
+	<span class="nf">RbacV1</span><span class="p">()</span> <span class="nx">rbacv1</span><span class="p">.</span><span class="nx">RbacV1Interface</span>
+	<span class="nf">RbacV1beta1</span><span class="p">()</span> <span class="nx">rbacv1beta1</span><span class="p">.</span><span class="nx">RbacV1beta1Interface</span>
+	<span class="nf">RbacV1alpha1</span><span class="p">()</span> <span class="nx">rbacv1alpha1</span><span class="p">.</span><span class="nx">RbacV1alpha1Interface</span>
+	<span class="nf">SchedulingV1alpha1</span><span class="p">()</span> <span class="nx">schedulingv1alpha1</span><span class="p">.</span><span class="nx">SchedulingV1alpha1Interface</span>
+	<span class="nf">SchedulingV1beta1</span><span class="p">()</span> <span class="nx">schedulingv1beta1</span><span class="p">.</span><span class="nx">SchedulingV1beta1Interface</span>
+	<span class="nf">SchedulingV1</span><span class="p">()</span> <span class="nx">schedulingv1</span><span class="p">.</span><span class="nx">SchedulingV1Interface</span>
+	<span class="nf">StorageV1beta1</span><span class="p">()</span> <span class="nx">storagev1beta1</span><span class="p">.</span><span class="nx">StorageV1beta1Interface</span>
+	<span class="nf">StorageV1</span><span class="p">()</span> <span class="nx">storagev1</span><span class="p">.</span><span class="nx">StorageV1Interface</span>
+	<span class="nf">StorageV1alpha1</span><span class="p">()</span> <span class="nx">storagev1alpha1</span><span class="p">.</span><span class="nx">StorageV1alpha1Interface</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="corev1client"><code>CoreV1Client</code></h3>
+<p>常用的<code>CoreV1Client</code>为例子分析</p>
+<h4 id="corev1newforconfig"><code>corev1.NewForConfig</code></h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// NewForConfig creates a new CoreV1Client for the given config.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">NewForConfig</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">rest</span><span class="p">.</span><span class="nx">Config</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">config</span> <span class="o">:=</span> <span class="o">*</span><span class="nx">c</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">setConfigDefaults</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">config</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="nx">client</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">rest</span><span class="p">.</span><span class="nf">RESTClientFor</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">config</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">CoreV1Client</span><span class="p">{</span><span class="nx">client</span><span class="p">},</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过传入配置信息<code>rest.Config</code>来实例化对象，其本质是调用了<code>rest.RESTClientFor(&amp;Config)</code>方法创建了<code>RESTClient</code>的对象，即<code>CoreV1Client</code>的本质就是一个<code>RESTClient</code>对象。</p>
+<h4 id="corev1client结构体定义"><code>CoreV1Client</code>结构体定义</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// CoreV1Client is used to interact with features provided by the  group.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">CoreV1Client</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">restClient</span> <span class="nx">rest</span><span class="p">.</span><span class="nx">Interface</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>CoreV1Client</code>实现了<code>CoreV1Interface</code>接口，从而对k8s的资源对象进行增删改查的操作。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">//CoreV1Client的方法
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">ComponentStatuses</span><span class="p">()</span> <span class="nx">ComponentStatusInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="c1">//ConfigMaps
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">ConfigMaps</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">ConfigMapInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="c1">//Endpoints
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">Endpoints</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">EndpointsInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">Events</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">EventInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">LimitRanges</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">LimitRangeInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="c1">//Namespaces
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">Namespaces</span><span class="p">()</span> <span class="nx">NamespaceInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="c1">//Nodes
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">Nodes</span><span class="p">()</span> <span class="nx">NodeInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">PersistentVolumes</span><span class="p">()</span> <span class="nx">PersistentVolumeInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">PersistentVolumeClaims</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">PersistentVolumeClaimInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="c1">//Pods
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">Pods</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">PodInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">PodTemplates</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">PodTemplateInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="c1">//ReplicationControllers
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">ReplicationControllers</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">ReplicationControllerInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">ResourceQuotas</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">ResourceQuotaInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">Secrets</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">SecretInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="c1">//Services
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">Services</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">ServiceInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">ServiceAccounts</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">ServiceAccountInterface</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="corev1interface"><code>CoreV1Interface</code></h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">CoreV1Interface</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">RESTClient</span><span class="p">()</span> <span class="nx">rest</span><span class="p">.</span><span class="nx">Interface</span>
+	<span class="nx">ComponentStatusesGetter</span>
+	<span class="nx">ConfigMapsGetter</span>
+	<span class="nx">EndpointsGetter</span>
+	<span class="nx">EventsGetter</span>
+	<span class="nx">LimitRangesGetter</span>
+	<span class="nx">NamespacesGetter</span>
+	<span class="nx">NodesGetter</span>
+	<span class="nx">PersistentVolumesGetter</span>
+	<span class="nx">PersistentVolumeClaimsGetter</span>
+	<span class="nx">PodsGetter</span>
+	<span class="nx">PodTemplatesGetter</span>
+	<span class="nx">ReplicationControllersGetter</span>
+	<span class="nx">ResourceQuotasGetter</span>
+	<span class="nx">SecretsGetter</span>
+	<span class="nx">ServicesGetter</span>
+	<span class="nx">ServiceAccountsGetter</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>CoreV1Interface</code>中包含了各种k8s对象的调用接口，例如<code>PodsGetter</code>是对k8s中pod对象增删改查的接口。<code>ServicesGetter</code>是对service对象的操作的接口。</p>
+<h4 id="podsgetter接口举例探索"><code>PodsGetter</code>接口举例探索</h4>
+<p>可以以<code>PodsGetter</code>接口为例来研究一下<code>CoreV1Client</code>对pod对象的增删改查调用。</p>
+<p>示例中的代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">pods</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">clientset</span><span class="p">.</span><span class="nf">CoreV1</span><span class="p">().</span><span class="nf">Pods</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">).</span><span class="nf">List</span><span class="p">(</span><span class="nx">metav1</span><span class="p">.</span><span class="nx">ListOptions</span><span class="p">{})</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>CoreV1().Pods()</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// core_client.go
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">)</span> <span class="nf">Pods</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">PodInterface</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nf">newPods</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">namespace</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// pod.go
+</span><span class="c1">// newPods returns a Pods
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">newPods</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">CoreV1Client</span><span class="p">,</span> <span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="nx">pods</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">pods</span><span class="p">{</span>
+		<span class="nx">client</span><span class="p">:</span> <span class="nx">c</span><span class="p">.</span><span class="nf">RESTClient</span><span class="p">(),</span>
+		<span class="nx">ns</span><span class="p">:</span>     <span class="nx">namespace</span><span class="p">,</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>CoreV1().Pods()</code>方法实际上调用了<code>newPods()</code>方法，创建了一个pod对象，该对象继承了<code>rest.Interface</code>接口，即最终的实现本质是<code>RESTClient</code>的HTTP调用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// pods implements PodInterface
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">pods</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">client</span> <span class="nx">rest</span><span class="p">.</span><span class="nx">Interface</span>
+	<span class="nx">ns</span>     <span class="kt">string</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>pods</code>对象实现了<code>PodInterface</code>接口：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// PodInterface has methods to work with Pod resources.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">PodInterface</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Create</span><span class="p">(</span><span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Update</span><span class="p">(</span><span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">UpdateStatus</span><span class="p">(</span><span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Delete</span><span class="p">(</span><span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">options</span> <span class="o">*</span><span class="nx">metav1</span><span class="p">.</span><span class="nx">DeleteOptions</span><span class="p">)</span> <span class="kt">error</span>
+	<span class="nf">DeleteCollection</span><span class="p">(</span><span class="nx">options</span> <span class="o">*</span><span class="nx">metav1</span><span class="p">.</span><span class="nx">DeleteOptions</span><span class="p">,</span> <span class="nx">listOptions</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ListOptions</span><span class="p">)</span> <span class="kt">error</span>
+	<span class="nf">Get</span><span class="p">(</span><span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">options</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">GetOptions</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">List</span><span class="p">(</span><span class="nx">opts</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ListOptions</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">PodList</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Watch</span><span class="p">(</span><span class="nx">opts</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ListOptions</span><span class="p">)</span> <span class="p">(</span><span class="nx">watch</span><span class="p">.</span><span class="nx">Interface</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Patch</span><span class="p">(</span><span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">pt</span> <span class="nx">types</span><span class="p">.</span><span class="nx">PatchType</span><span class="p">,</span> <span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">subresources</span> <span class="o">...</span><span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">result</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">Pod</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">GetEphemeralContainers</span><span class="p">(</span><span class="nx">podName</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">options</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">GetOptions</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">EphemeralContainers</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">UpdateEphemeralContainers</span><span class="p">(</span><span class="nx">podName</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">ephemeralContainers</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">EphemeralContainers</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">EphemeralContainers</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+
+	<span class="nx">PodExpansion</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>这个interface定义了<code>pods</code>对象的增删改查等方法。</p>
+<p><code>PodsGetter</code> 继承了<code>PodInterface</code>的接口:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// PodsGetter has a method to return a PodInterface.
+</span><span class="c1">// A group&#39;s client should implement this interface.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">PodsGetter</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Pods</span><span class="p">(</span><span class="nx">namespace</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">PodInterface</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>Pods().List()</code>方法通过<code>RESTClient</code>的HTTP调用来实现对k8s的pod资源的获取:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// List takes label and field selectors, and returns the list of Pods that match those selectors.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">pods</span><span class="p">)</span> <span class="nf">List</span><span class="p">(</span><span class="nx">opts</span> <span class="nx">metav1</span><span class="p">.</span><span class="nx">ListOptions</span><span class="p">)</span> <span class="p">(</span><span class="nx">result</span> <span class="o">*</span><span class="nx">v1</span><span class="p">.</span><span class="nx">PodList</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">timeout</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span>
+	<span class="k">if</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">TimeoutSeconds</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">timeout</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Duration</span><span class="p">(</span><span class="o">*</span><span class="nx">opts</span><span class="p">.</span><span class="nx">TimeoutSeconds</span><span class="p">)</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span>
+	<span class="p">}</span>
+	<span class="nx">result</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">v1</span><span class="p">.</span><span class="nx">PodList</span><span class="p">{}</span>
+	<span class="nx">err</span> <span class="p">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">client</span><span class="p">.</span><span class="nf">Get</span><span class="p">().</span>
+		<span class="nf">Namespace</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">ns</span><span class="p">).</span>
+		<span class="nf">Resource</span><span class="p">(</span><span class="s">&#34;pods&#34;</span><span class="p">).</span>
+		<span class="nf">VersionedParams</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">opts</span><span class="p">,</span> <span class="nx">scheme</span><span class="p">.</span><span class="nx">ParameterCodec</span><span class="p">).</span>
+		<span class="nf">Timeout</span><span class="p">(</span><span class="nx">timeout</span><span class="p">).</span>
+		<span class="nf">Do</span><span class="p">().</span>
+		<span class="nf">Into</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>以上分析了<code>clientset.CoreV1().Pods(&quot;&quot;).List(metav1.ListOptions{})</code>对pod资源获取的过程，最终是调用<code>RESTClient</code>的方法实现。</p>
+<h3 id="restclient"><code>RESTClient</code></h3>
+<p>待补充</p>
+<h3 id="总结">总结</h3>
+<p><code>client-go</code>对K8s资源对象的调用，需要先获取k8s的配置信息，也就是<code>$HOME/.kube/config</code>。</p>
+<p>调用顺序如下：</p>
+<blockquote>
+<p><code>kubeconfig</code> -&gt; <code>rest.config</code> -&gt; <code>clientset</code> -&gt; 具体的client(CoreV1Client) -&gt; 具体的资源对象(如pod) -&gt; <code>RESTClient</code> -&gt; <code>http.Client</code> -&gt; HTTP 请求的发送和响应</p>
+</blockquote>
+<p>常用的client有<code>CoreV1Client</code>、<code>AppsV1betaClient</code>、<code>ExtensionsV1beta1Client</code>等。</p>
+<h2 id="operator-sdk"><code>Operator SDK</code></h2>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">CctoctoFX</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2021-04-29
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/cloud-computing/k8s-config-update/">
+            <span class="next-text nav-default">Kubernetes ConfigMap 热更新</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="derios1230@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/pillumina" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/fang-xian-20" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:2000/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>CctoctoFX</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Golang on CctoctoFX</title>
+    <link>http://localhost:2000/post/golang/</link>
+    <description>Recent content in Golang on CctoctoFX</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 10 Nov 2020 10:52:50 +0800</lastBuildDate><atom:link href="http://localhost:2000/post/golang/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Profiling a Go Service in Production</title>
+      <link>http://localhost:2000/post/golang/go-profiling/</link>
+      <pubDate>Wed, 07 Apr 2021 11:25:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/go-profiling/</guid>
+      <description>参考 Julia Evans: Profiling Go programs with pprof How I investigated memory leaks in Go using pprof on a large codebase Memory Profiling a Go Service Russ Cox: Profling Go Programs Package pprof overview github: pprof Issue: Why &amp;lsquo;Total MB&amp;rsquo; in golang heap profile is less than &amp;lsquo;RES&amp;rsquo; in top? Issue: Cannot free memory once occupied by bytes.Buffer Issue: FreeOSMemory() in production Issue: Is this an idiomatic worker thread</description>
+    </item>
+    
+    <item>
+      <title>Life of an HTTP request in a Go server</title>
+      <link>http://localhost:2000/post/golang/lifecycle-of-http/</link>
+      <pubDate>Sat, 20 Feb 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/lifecycle-of-http/</guid>
+      <description>这篇文章的启发是我在阅读Go的http源码时获得的，之前对这块缺乏深入的了解，这篇文章会结合源码讨论包括典型http request的路由，还</description>
+    </item>
+    
+    <item>
+      <title>A Million WebSocket and Go</title>
+      <link>http://localhost:2000/post/golang/websocket/</link>
+      <pubDate>Sat, 16 Jan 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/websocket/</guid>
+      <description>这篇文章是我研究高负载网络服务器架构看到的的一个有趣的story，添加了我自身学习websocket的感受和记录，希望我能在飞机落地前写完:</description>
+    </item>
+    
+    <item>
+      <title>fasthttp对性能的优化压榨</title>
+      <link>http://localhost:2000/post/golang/fasthttp/</link>
+      <pubDate>Sun, 10 Jan 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/fasthttp/</guid>
+      <description>最近在看网络模型和go net的源码，以及各web框架例如fasthttp, weaver, gnet(更轻量)源码。fasthttp在github上已经写上</description>
+    </item>
+    
+    <item>
+      <title>[源码分析]sync pool</title>
+      <link>http://localhost:2000/post/golang/sync-pool/</link>
+      <pubDate>Fri, 01 Jan 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/sync-pool/</guid>
+      <description>1 2 - 当多个goroutine都需要创建同一个对象，如果gorountine数过多，导致对象的创建数目剧增，进而导致GC压力增大，形成“并发</description>
+    </item>
+    
+    <item>
+      <title>[自建轮]高性能Goroutine Pool</title>
+      <link>http://localhost:2000/post/golang/goroutine-pool/</link>
+      <pubDate>Wed, 30 Dec 2020 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/goroutine-pool/</guid>
+      <description>高性能Goroutine Pool go调度器没有限制对goroutine的数量，在goroutine瞬时大规模爆发的场景下来不及复用goroutin</description>
+    </item>
+    
+    <item>
+      <title>Possible Memory Leak</title>
+      <link>http://localhost:2000/post/golang/memory-leak/</link>
+      <pubDate>Fri, 25 Dec 2020 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/memory-leak/</guid>
+      <description>实际上对于一个有GC的语言，我们不必太多关心内存泄漏的问题，因为程序的runtime帮我们很好地额回收不再使用的内存。但是，我们还是得了解一</description>
+    </item>
+    
+    <item>
+      <title>Close Channels Gracefully</title>
+      <link>http://localhost:2000/post/golang/channel-graceful/</link>
+      <pubDate>Thu, 24 Dec 2020 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/channel-graceful/</guid>
+      <description>优雅地关闭通道 场景一：M个接收者和一个发送者。发送者通过关闭用来传输数据的通道来传递发送结束信号 这是最简单的一种情形。当发送者欲结束发送，让</description>
+    </item>
+    
+    <item>
+      <title>Channels Concurrency Work-Around</title>
+      <link>http://localhost:2000/post/golang/channels/</link>
+      <pubDate>Tue, 22 Dec 2020 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/channels/</guid>
+      <description>记录了一些channels常见的场景，以及自己的一些感受： 使用通道进行异步和并发编程是简单和惬意的； 通道同步技术比被很多其它语言采用的其它同</description>
+    </item>
+    
+    <item>
+      <title>Golang TDD</title>
+      <link>http://localhost:2000/post/golang/go-testing/</link>
+      <pubDate>Sat, 19 Dec 2020 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/go-testing/</guid>
+      <description>Preface 本文整理golang编码的单元测试常用示例，以及TDD的简要流程。 单元测试基础 单元测试文件以_test.go结尾，需要记住以下原则： 文件名</description>
+    </item>
+    
+    <item>
+      <title>Golang并发调度</title>
+      <link>http://localhost:2000/post/golang/schedualing/</link>
+      <pubDate>Thu, 17 Dec 2020 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/schedualing/</guid>
+      <description>性能提升不会凭空出现，它总是伴随着代码复杂度的上升。 The performance improvement does not materialize from the air, it comes with code complexity increase. &amp;ndash; Dmitry Vyukov Go 语言的调度器我认为应该是整个运行时最有趣的组件了。</description>
+    </item>
+    
+    <item>
+      <title>BDD: Ginkgo测试框架</title>
+      <link>http://localhost:2000/post/golang/bdd-testing-framework/</link>
+      <pubDate>Fri, 04 Dec 2020 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/bdd-testing-framework/</guid>
+      <description>Preface BDD和TDD都是test case first的实现，无非是把后者的test改成前者的behavior。在TDD中，关注的核心点是function</description>
+    </item>
+    
+    <item>
+      <title>Golang内存管理</title>
+      <link>http://localhost:2000/post/golang/memory-management/</link>
+      <pubDate>Wed, 02 Dec 2020 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/memory-management/</guid>
+      <description>设计原则 现在我们来看 Go 中另一重要的关键组件：内存分配器。 Go 的内存分配器基于 Thread-Cache Malloc (tcmalloc) ，tcmalloc 为每个线程实现了一个本地缓存， 区分了小对象</description>
+    </item>
+    
+    <item>
+      <title>Golang逃逸分析</title>
+      <link>http://localhost:2000/post/golang/golang-escape-analysis/</link>
+      <pubDate>Mon, 23 Nov 2020 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/golang/golang-escape-analysis/</guid>
+      <description>问题： golang函数传参是不是应该和c一样，尽量不要直接传结构体，而是要传结构体指针？ 逃逸分析 逃逸分析指的是，在计算机语言编译器优化原理中</description>
+    </item>
+    
+  </channel>
+</rss>

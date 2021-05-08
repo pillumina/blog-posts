@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Kubernetes Handbook (Start &amp; Pod) - CctoctoFX</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="CctoctoFX" /><meta name="description" content="使用minikube构建本地单节点k8s集群 minikube ssh kubectl cluster-info kubectl get nodes #查看节点信息 kubectl describe node minikube #详细信息 多节点k8s集群，使用Google K8s Engine 构建方式看G" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.4 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:2000/post/cloud-computing/k8s-basic/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.b87e76cd589b185c91369316107a6cff8b59e96cf13a7e3b13b57dfb75b68d79.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Kubernetes Handbook (Start &amp; Pod)" />
+<meta property="og:description" content="使用minikube构建本地单节点k8s集群 minikube ssh kubectl cluster-info kubectl get nodes #查看节点信息 kubectl describe node minikube #详细信息 多节点k8s集群，使用Google K8s Engine 构建方式看G" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:2000/post/cloud-computing/k8s-basic/" />
+<meta property="article:published_time" content="2021-03-31T11:22:18+08:00" />
+<meta property="article:modified_time" content="2021-03-31T11:22:18+08:00" />
+<meta itemprop="name" content="Kubernetes Handbook (Start &amp; Pod)">
+<meta itemprop="description" content="使用minikube构建本地单节点k8s集群 minikube ssh kubectl cluster-info kubectl get nodes #查看节点信息 kubectl describe node minikube #详细信息 多节点k8s集群，使用Google K8s Engine 构建方式看G">
+<meta itemprop="datePublished" content="2021-03-31T11:22:18+08:00" />
+<meta itemprop="dateModified" content="2021-03-31T11:22:18+08:00" />
+<meta itemprop="wordCount" content="5143">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kubernetes Handbook (Start &amp; Pod)"/>
+<meta name="twitter:description" content="使用minikube构建本地单节点k8s集群 minikube ssh kubectl cluster-info kubectl get nodes #查看节点信息 kubectl describe node minikube #详细信息 多节点k8s集群，使用Google K8s Engine 构建方式看G"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CctoctoFX</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CctoctoFX</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Kubernetes Handbook (Start &amp; Pod)</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-03-31 </span>
+        
+          <span class="more-meta"> 5143 words </span>
+          <span class="more-meta"> 11 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#使用minikube构建本地单节点k8s集群">使用minikube构建本地单节点k8s集群</a></li>
+        <li><a href="#多节点k8s集群使用google-k8s-engine">多节点k8s集群，使用Google K8s Engine</a></li>
+        <li><a href="#k8s初步使用">k8s初步使用</a>
+          <ul>
+            <li><a href="#namespace相关操作">Namespace相关操作</a></li>
+            <li><a href="#创建服务对象访问web应用">创建服务对象，访问Web应用</a></li>
+            <li><a href="#replicationcontroller的角色">ReplicationController的角色</a></li>
+            <li><a href="#为何需要service">为何需要service</a></li>
+          </ul>
+        </li>
+        <li><a href="#k8s的pod">k8s的pod</a>
+          <ul>
+            <li><a href="#容器如何共享相同ip和端口空间">容器如何共享相同IP和端口空间</a></li>
+            <li><a href="#平坦网络">平坦网络</a></li>
+          </ul>
+        </li>
+        <li><a href="#通过pod合理管理容器">通过pod合理管理容器</a>
+          <ul>
+            <li><a href="#把多层应用分散到多个pod中">把多层应用分散到多个pod中</a></li>
+            <li><a href="#基于扩缩容考虑而分隔到多个pod中">基于扩缩容考虑而分隔到多个pod中</a></li>
+            <li><a href="#在pod中使用多个容器的时机">在pod中使用多个容器的时机</a></li>
+          </ul>
+        </li>
+        <li><a href="#以yaml或者json创建pod">以<code>YAML</code>或者<code>JSON</code>创建pod</a>
+          <ul>
+            <li><a href="#检查现有pod的yaml描述">检查现有pod的<code>YAML</code>描述</a></li>
+            <li><a href="#pod定义的主要部分">pod定义的主要部分</a></li>
+            <li><a href="#创建一个简单的yaml描述">创建一个简单的<code>YAML</code>描述</a></li>
+            <li><a href="#用kubectl-create来创建pod">用<code>kubectl create</code>来创建pod</a></li>
+          </ul>
+        </li>
+        <li><a href="#查看应用程序日志">查看应用程序日志</a></li>
+        <li><a href="#向pod发送请求">向pod发送请求</a>
+          <ul>
+            <li><a href="#将本地网络端口转发到pod中的端口">将本地网络端口转发到pod中的端口</a></li>
+            <li><a href="#通过端口转发连接到pod">通过端口转发连接到pod</a></li>
+          </ul>
+        </li>
+        <li><a href="#使用tag组织pod">使用Tag组织pod</a>
+          <ul>
+            <li><a href="#创建pod的时候指定标签">创建pod的时候指定标签</a></li>
+            <li><a href="#修改现有pod标签">修改现有pod标签</a></li>
+          </ul>
+        </li>
+        <li><a href="#通过标签选择器列出pod子集">通过<code>标签选择器</code>列出pod子集</a>
+          <ul>
+            <li><a href="#使用标签选择器列出pod">使用<code>标签选择器</code>列出pod</a></li>
+            <li><a href="#在标签选择器中使用多个条件">在<code>标签选择器</code>中使用多个条件</a></li>
+          </ul>
+        </li>
+        <li><a href="#使用标签和选择器约束pod调度">使用<code>标签</code>和<code>选择器</code>约束pod调度</a>
+          <ul>
+            <li><a href="#用标签分类工作节点">用标签分类工作节点</a></li>
+            <li><a href="#将pod调度到特定节点">将pod调度到特定节点</a></li>
+            <li><a href="#调度到特定一个节点不推荐">调度到特定一个节点(不推荐)</a></li>
+          </ul>
+        </li>
+        <li><a href="#注解pod">注解pod</a></li>
+        <li><a href="#使用命名空间对资源进行分组">使用命名空间对资源进行分组</a></li>
+        <li><a href="#停止和移除pod">停止和移除pod</a>
+          <ul>
+            <li><a href="#按名称删除">按名称删除</a></li>
+            <li><a href="#使用标签选择器删除">使用<code>标签选择器</code>删除</a></li>
+            <li><a href="#通过删除整个命名空间来删除pod">通过删除整个命名空间来删除pod</a></li>
+            <li><a href="#删除命名空间的所有pod但保留命名空间">删除命名空间的所有pod，但保留命名空间</a></li>
+            <li><a href="#删除命名空间中几乎所有资源">删除命名空间中(几乎)所有资源</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="使用minikube构建本地单节点k8s集群">使用minikube构建本地单节点k8s集群</h2>
+<ul>
+<li>minikube ssh</li>
+<li>kubectl cluster-info</li>
+<li>kubectl get nodes #查看节点信息</li>
+<li>kubectl describe node minikube #详细信息</li>
+</ul>
+<h2 id="多节点k8s集群使用google-k8s-engine">多节点k8s集群，使用Google K8s Engine</h2>
+<p>构建方式看GKE官网即可</p>
+<h2 id="k8s初步使用">k8s初步使用</h2>
+<p>kubectl run kubia &ndash;image=derios/kubia &ndash;port=8080 &ndash;generator=run/v1</p>
+<ul>
+<li><code>--image=derios/kubia</code>代表要运行的容器镜像</li>
+<li>这里的<code>--generator</code>会被废弃，其含义指代的是创建一个<code>ReplicationController</code>而不是<code>Deployment</code>。</li>
+<li>kubectl apply -f <yaml name> 更常用</li>
+<li>kubectl get pods</li>
+<li>kubectl get pods -o wide 显示pod ip和pod的节点</li>
+<li>如果使用GWE，可以访问集群的dashborad:</li>
+<li>kubectl clusert-info获取地址</li>
+<li>gcloud container clusters describe kubia | grep -E &ldquo;(username|password):&ldquo;获取用户名和密码
+如果仅仅使用minikube，则如下不需要任何凭证即可访问:</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">minikube dashboard
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="namespace相关操作">Namespace相关操作</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">kubectl config set-context --current --namespace=my-namespace</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="创建服务对象访问web应用">创建服务对象，访问Web应用</h3>
+<p><code>如果使用minikube或者kubeadm等自定义k8s，loadbalancer是没有集成的，需要AWS或者Google Cloud。最好使用NodePort或者Ingress Controller。如果真要用minikube, 可以使用minikube tunnel解决, 或者minikube service kubia-http</code></p>
+<ul>
+<li>
+<p>kubectl expose rc/po/svc kubia &ndash;type=LoadBalancer &ndash;name kubia-http创建出的service介于pod和node之间, kubectl get services可以查看</p>
+</li>
+<li>
+<p>如果没有外部IP地址，因为k8s运行的云基础设施新建lb需要一段时间，lb启动以后应该会显示</p>
+</li>
+</ul>
+<h3 id="replicationcontroller的角色">ReplicationController的角色</h3>
+<ul>
+<li>复制pod，replica扩缩</li>
+<li><code>kubectl scale rc kubia --replicas=3</code>  可以将rc下的pods方便进行扩缩容</li>
+</ul>
+<h3 id="为何需要service">为何需要service</h3>
+<p>解决不断变化的pod IP问题，以及在一个固定的IP和端口上对外暴露多个pod。</p>
+<p>当一个service被创建，会得到一个静态IP，在service的生命周期这个IP不会被改变，service会确保其中提个pod接受连接，而非关注这个pod运行在何处.</p>
+<h2 id="k8s的pod">k8s的pod</h2>
+<p>pod不一定要包含多个容器，单独容器的pod也是很常见的。如果pod包含多个容器，那么这些容器都工作在同一个工作节点上，pod是不能跨多个工作节点工作的。</p>
+<p>pod概念的提出，是因为我们不能把多个进程聚集在一个单独的容器中，我们需要另一种更为高级的结构将容器绑定在一起，并把他们欧威一个单元进行管理。</p>
+<p>一个Pod下的所有容器都在相同的额network和UTS命名空间下运行，所以共享相同的主机名和网络接口，也能够通过IPC进行通信，甚至在最新的k8s和docker版本下，能共享相同的PID命名空间。</p>
+<h3 id="容器如何共享相同ip和端口空间">容器如何共享相同IP和端口空间</h3>
+<p>由于pod中的容器运行于相同Namespace命名空间，所以他们共享相同的IP地址和端口空间。这意味着在同一个pod中的容器运行的多个线程不能绑定到相同的端口号，否则会冲突。此外，他们还有相同的loopback网络几口，所以容器可以通过localhost和同一个pod中的其他容器进行通信。</p>
+<h3 id="平坦网络">平坦网络</h3>
+<p>k8s集群中所有pod都在同一个共享网络地址空间中，也就是说每个pod都可以通过其他pod的IP地址来实现相互访问，表示他们之间没有NAT(网络地址转换)网管。当两个pod彼此之间发送网络数据包时，都把对方的实际IP地址看作数据包中的源IP。</p>
+<p>因此可以看到，pod就是逻辑主机，行为和非容器世界中的物理主机或者虚拟机相似。运行在同一个pod中的进程和运行在同一物理机或者虚拟机上的进程类似，只是每个进程封装在一个容器里。</p>
+<h2 id="通过pod合理管理容器">通过pod合理管理容器</h2>
+<p><code>一个由前端应用服务器和后端数据库组成的多层应用程序，应该讲其配置为单个pod还是两个pod呢？</code></p>
+<h3 id="把多层应用分散到多个pod中">把多层应用分散到多个pod中</h3>
+<p>一个pod下的所有容器运行在一起，而web服务器和数据库真的要在同一台计算机上运行吗？明显是否定的。而且如何k8s集群节点多了，如果只有一个单独的pod，其资源利用率也很低。</p>
+<h3 id="基于扩缩容考虑而分隔到多个pod中">基于扩缩容考虑而分隔到多个pod中</h3>
+<p>pod是扩缩容的基本单位，k8s不能横向扩缩单个容器，而只能扩缩整个pod，所以明显web服务器和数据库放在一起是不对的。
+而且数据库这种有状态的服务器，比无状态的web服务器更加难扩展，所以如果要单独扩缩容器，这个容器必须明确地部署在单独的pod当中</p>
+<h3 id="在pod中使用多个容器的时机">在pod中使用多个容器的时机</h3>
+<p>一般来说，常见场景是应用由一个主进程和多个辅助进程组成，也就是这个容器组是紧密耦合的。举例就是，pod中的主容器是仅仅服务于每个目录中文件的Web服务器，另一个sidecar容器定期从外部资源下载内容并将其存储在Web服务器目录里。这种情形需要使用k8s的Volume，把其挂在到两个容器里。
+sidecar容器包括：日志轮转器、收集器、数据处理器、通信适配器等等</p>
+<p>因此容器如何分组到pod这个问题，我们需要问以下的问题：</p>
+<ol>
+<li>它们是否需要一起运行还是可以在不同的主机上运行？</li>
+<li>它们代表的是一个整体还是相互独立的组件？</li>
+<li>它们必须一起扩缩容还是可以分别单独进行？</li>
+</ol>
+<h2 id="以yaml或者json创建pod">以<code>YAML</code>或者<code>JSON</code>创建pod</h2>
+<p>好处：<code>kubectl run</code>局限性很多，比如属性配置很有限，而资源配置的方式除了更方便定义k8s资源对象，还能把它们存储在版本控制系统中。
+注意参考: <a href="https://kubernetes.io/docs/reference/">k8s api reference</a></p>
+<h3 id="检查现有pod的yaml描述">检查现有pod的<code>YAML</code>描述</h3>
+<p><code>kubectl get po kubia-zxzij -o yaml</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span><span class="lnt">136
+</span><span class="lnt">137
+</span><span class="lnt">138
+</span><span class="lnt">139
+</span><span class="lnt">140
+</span><span class="lnt">141
+</span><span class="lnt">142
+</span><span class="lnt">143
+</span><span class="lnt">144
+</span><span class="lnt">145
+</span><span class="lnt">146
+</span><span class="lnt">147
+</span><span class="lnt">148
+</span><span class="lnt">149
+</span><span class="lnt">150
+</span><span class="lnt">151
+</span><span class="lnt">152
+</span><span class="lnt">153
+</span><span class="lnt">154
+</span><span class="lnt">155
+</span><span class="lnt">156
+</span><span class="lnt">157
+</span><span class="lnt">158
+</span><span class="lnt">159
+</span><span class="lnt">160
+</span><span class="lnt">161
+</span><span class="lnt">162
+</span><span class="lnt">163
+</span><span class="lnt">164
+</span><span class="lnt">165
+</span><span class="lnt">166
+</span><span class="lnt">167
+</span><span class="lnt">168
+</span><span class="lnt">169
+</span><span class="lnt">170
+</span><span class="lnt">171
+</span><span class="lnt">172
+</span><span class="lnt">173
+</span><span class="lnt">174
+</span><span class="lnt">175
+</span><span class="lnt">176
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">creationTimestamp</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-03-31T03:00:40Z&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">generateName</span><span class="p">:</span><span class="w"> </span><span class="l">kubia-</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w">  </span><span class="nt">managedFields</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsType</span><span class="p">:</span><span class="w"> </span><span class="l">FieldsV1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsV1</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">f:metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:generateName</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:labels</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="nt">f:app</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:ownerReferences</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="l">k:{&#34;uid&#34;:&#34;4b78e019-3753-40a1-998c-0d0ec4af9f29&#34;}:</span><span class="w">
+</span><span class="w">            </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:apiVersion</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:blockOwnerDeletion</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:controller</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:kind</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:name</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:uid</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">      </span><span class="nt">f:spec</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:containers</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="l">k:{&#34;name&#34;:&#34;kubia&#34;}:</span><span class="w">
+</span><span class="w">            </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:image</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:imagePullPolicy</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:name</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:ports</span><span class="p">:</span><span class="w">
+</span><span class="w">              </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">              </span><span class="l">k:{&#34;containerPort&#34;:90,&#34;protocol&#34;:&#34;TCP&#34;}:</span><span class="w">
+</span><span class="w">                </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">                </span><span class="nt">f:containerPort</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">                </span><span class="nt">f:protocol</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:resources</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:terminationMessagePath</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:terminationMessagePolicy</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:dnsPolicy</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:enableServiceLinks</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:restartPolicy</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:schedulerName</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:securityContext</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:terminationGracePeriodSeconds</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">    </span><span class="nt">manager</span><span class="p">:</span><span class="w"> </span><span class="l">kube-controller-manager</span><span class="w">
+</span><span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="l">Update</span><span class="w">
+</span><span class="w">    </span><span class="nt">time</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-03-31T03:00:40Z&#34;</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsType</span><span class="p">:</span><span class="w"> </span><span class="l">FieldsV1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsV1</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">f:status</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:conditions</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="l">k:{&#34;type&#34;:&#34;ContainersReady&#34;}:</span><span class="w">
+</span><span class="w">            </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastProbeTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastTransitionTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:status</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:type</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="l">k:{&#34;type&#34;:&#34;Initialized&#34;}:</span><span class="w">
+</span><span class="w">            </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastProbeTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastTransitionTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:status</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:type</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="l">k:{&#34;type&#34;:&#34;Ready&#34;}:</span><span class="w">
+</span><span class="w">            </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastProbeTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastTransitionTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:status</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:type</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:containerStatuses</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:hostIP</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:phase</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:podIP</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:podIPs</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="l">k:{&#34;ip&#34;:&#34;172.17.0.7&#34;}:</span><span class="w">
+</span><span class="w">            </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:ip</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:startTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">    </span><span class="nt">manager</span><span class="p">:</span><span class="w"> </span><span class="l">kubelet</span><span class="w">
+</span><span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="l">Update</span><span class="w">
+</span><span class="w">    </span><span class="nt">time</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-03-31T03:00:47Z&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia-2r2pb</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w">  </span><span class="nt">ownerReferences</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">blockOwnerDeletion</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">    </span><span class="nt">controller</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">ReplicationController</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l">4b78e019-3753-40a1-998c-0d0ec4af9f29</span><span class="w">
+</span><span class="w">  </span><span class="nt">resourceVersion</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;11025&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">selfLink</span><span class="p">:</span><span class="w"> </span><span class="l">/api/v1/namespaces/default/pods/kubia-2r2pb</span><span class="w">
+</span><span class="w">  </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l">342307fe-f6d8-4201-ba02-0210cd75d0a8</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">derios/kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">Always</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">90</span><span class="w">
+</span><span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
+</span><span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">    </span><span class="nt">terminationMessagePath</span><span class="p">:</span><span class="w"> </span><span class="l">/dev/termination-log</span><span class="w">
+</span><span class="w">    </span><span class="nt">terminationMessagePolicy</span><span class="p">:</span><span class="w"> </span><span class="l">File</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/run/secrets/kubernetes.io/serviceaccount</span><span class="w">
+</span><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">default-token-whxzx</span><span class="w">
+</span><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">dnsPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">ClusterFirst</span><span class="w">
+</span><span class="w">  </span><span class="nt">enableServiceLinks</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">nodeName</span><span class="p">:</span><span class="w"> </span><span class="l">minikube</span><span class="w">
+</span><span class="w">  </span><span class="nt">preemptionPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">PreemptLowerPriority</span><span class="w">
+</span><span class="w">  </span><span class="nt">priority</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">  </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">Always</span><span class="w">
+</span><span class="w">  </span><span class="nt">schedulerName</span><span class="p">:</span><span class="w"> </span><span class="l">default-scheduler</span><span class="w">
+</span><span class="w">  </span><span class="nt">securityContext</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">  </span><span class="nt">serviceAccount</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w">  </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w">  </span><span class="nt">terminationGracePeriodSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">30</span><span class="w">
+</span><span class="w">  </span><span class="nt">tolerations</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">effect</span><span class="p">:</span><span class="w"> </span><span class="l">NoExecute</span><span class="w">
+</span><span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">node.kubernetes.io/not-ready</span><span class="w">
+</span><span class="w">    </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">Exists</span><span class="w">
+</span><span class="w">    </span><span class="nt">tolerationSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">300</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">effect</span><span class="p">:</span><span class="w"> </span><span class="l">NoExecute</span><span class="w">
+</span><span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">node.kubernetes.io/unreachable</span><span class="w">
+</span><span class="w">    </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">Exists</span><span class="w">
+</span><span class="w">    </span><span class="nt">tolerationSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">300</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">default-token-whxzx</span><span class="w">
+</span><span class="w">    </span><span class="nt">secret</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">defaultMode</span><span class="p">:</span><span class="w"> </span><span class="m">420</span><span class="w">
+</span><span class="w">      </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l">default-token-whxzx</span><span class="w">
+</span><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">conditions</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">lastProbeTime</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+</span><span class="w">    </span><span class="nt">lastTransitionTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-03-31T03:00:40Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;True&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Initialized</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">lastProbeTime</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+</span><span class="w">    </span><span class="nt">lastTransitionTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-03-31T03:00:47Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;True&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Ready</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">lastProbeTime</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+</span><span class="w">    </span><span class="nt">lastTransitionTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-03-31T03:00:47Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;True&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">ContainersReady</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">lastProbeTime</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+</span><span class="w">    </span><span class="nt">lastTransitionTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-03-31T03:00:40Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;True&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">PodScheduled</span><span class="w">
+</span><span class="w">  </span><span class="nt">containerStatuses</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">containerID</span><span class="p">:</span><span class="w"> </span><span class="l">docker://1cce1d07039838f1f4d825d088fca52b54b15808efebf20d1f38cc2952a65ebd</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">derios/kubia:latest</span><span class="w">
+</span><span class="w">    </span><span class="nt">imageID</span><span class="p">:</span><span class="w"> </span><span class="l">docker-pullable://derios/kubia@sha256:7aa603e50514206f8d40126520409a6814001c1bae68b9f286cca9c1ca271f7a</span><span class="w">
+</span><span class="w">    </span><span class="nt">lastState</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">ready</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">    </span><span class="nt">restartCount</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">    </span><span class="nt">started</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">    </span><span class="nt">state</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">running</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">startedAt</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-03-31T03:00:46Z&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">hostIP</span><span class="p">:</span><span class="w"> </span><span class="m">192.168.49.2</span><span class="w">
+</span><span class="w">  </span><span class="nt">phase</span><span class="p">:</span><span class="w"> </span><span class="l">Running</span><span class="w">
+</span><span class="w">  </span><span class="nt">podIP</span><span class="p">:</span><span class="w"> </span><span class="m">172.17.0.7</span><span class="w">
+</span><span class="w">  </span><span class="nt">podIPs</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">ip</span><span class="p">:</span><span class="w"> </span><span class="m">172.17.0.7</span><span class="w">
+</span><span class="w">  </span><span class="nt">qosClass</span><span class="p">:</span><span class="w"> </span><span class="l">BestEffort</span><span class="w">
+</span><span class="w">  </span><span class="nt">startTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-03-31T03:00:40Z&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>虽然看着比较复杂，主要包含了<code>k8s对象/资源类型</code>、<code>k8s API版本</code>、<code>pod元数据</code>、<code>pod规格和内容</code>、<code>pod和内部容器的详细状态</code>等。</p>
+<h3 id="pod定义的主要部分">pod定义的主要部分</h3>
+<ol>
+<li><code>metadata</code>: 名称、命名空间、标签和关于该容器的其他信息</li>
+<li><code>spec</code>：包含pod内容的实际说明，例如pod的容器、卷和其他数据</li>
+<li><code>status</code>: 包含运行中的pod的当前信息，比如pod所处的条件、每个容器的描述和状态，以及内部IP和其他基本信息</li>
+</ol>
+<p>创建新的pod的时候，不需要提供<code>status</code>部分，这只是运行时数据。实际上深究每个属性的意义不是很大，我们需要关注创建pod的最基本信息。</p>
+<h3 id="创建一个简单的yaml描述">创建一个简单的<code>YAML</code>描述</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia-manual</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">derios/kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">8080</span><span class="w">
+</span><span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>可以用<code>kubectl explain pods</code>、<code>kubectl explain pod.spec</code>之类去看资源定义</p>
+<h3 id="用kubectl-create来创建pod">用<code>kubectl create</code>来创建pod</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl create -f kubia-manual.yaml
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl get pods
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="查看应用程序日志">查看应用程序日志</h2>
+<p>小型node.js应用把日志记录到进程的标准输出，容器化的应用程序通常把日志记录到标准输出和标准错误流，而不是写入文件。所以这就允许user通过标准的方式查看不同应用程序的日志。</p>
+<p>Docker(或者广义的container runtime)把这些流重定向到文件，可以用以下命令获取容器的日志：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ docker logs &lt;container id&gt;
+</code></pre></td></tr></table>
+</div>
+</div><p>一般可以ssh到pod运行节点然后这样查看，不过k8s提供了更为简单的方式。</p>
+<p><strong>使用<code>kubectl logs命令获取pod日志</code></strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl logs kubia-manual
+</code></pre></td></tr></table>
+</div>
+</div><p>如果一个pod只包含一个容器，那么查看k8s应用程序的日志会变得很简单。</p>
+<p><strong>获取多容器pod的日志时指定容器名称</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl logs kubia-manual -c kubia
+</code></pre></td></tr></table>
+</div>
+</div><p>请注意，如果pod被删了，那么pod里的日志也会被删。如果希望在pod删除之后仍然可以获取其日志，需要设置中心化、集群范围的日志系统，把所有日志存储到中心存储中，这个在后续会讨论。</p>
+<h2 id="向pod发送请求">向pod发送请求</h2>
+<p>通过<code>端口转发</code>连接到pod以进行测试和调试。</p>
+<h3 id="将本地网络端口转发到pod中的端口">将本地网络端口转发到pod中的端口</h3>
+<p>如果不想通过service情形下对某个特定的pod进行通信(debug)，可以通过<code>kubectl port-forward</code>命令完成端口转发:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nv">$kubectl</span> port-forward kubia-munual 8888:8080
+</code></pre></td></tr></table>
+</div>
+</div><p>这样就能通过本地端口连接到我们的pod。</p>
+<h3 id="通过端口转发连接到pod">通过端口转发连接到pod</h3>
+<p>另一个终端<code>curl localhost:8888</code>即可调试。实际上述指令起了一个线程进行对调试请求的处理。</p>
+<h2 id="使用tag组织pod">使用Tag组织pod</h2>
+<p>对于微服务架构，部署数量能很轻松膨胀：多副本、不同版本等等。所以需要进行Pod分组去管理对象。Tag标签不仅仅可以组织pod，还包括了其他k8s资源。</p>
+<p>标签的定义：可以附加到资源的任意键值对。只要标签的key在资源内唯一，那么一个资源便可以拥有多个标签，一般我们在创建资源的时候回把标签附加到资源上，当然后续可以新增、修改标签。举个例子：</p>
+<ul>
+<li><code>app</code>: 指定pod属于哪个应用、组件或者微服务</li>
+<li><code>rel</code>：显示在pod中运行的应用程序版本是stable、beta还是canary</li>
+</ul>
+<p>利用这种组织形式，访问集群的开发或者运维能通过查看pod标签轻松看到系统结构以及每个pod的角色。</p>
+<h3 id="创建pod的时候指定标签">创建pod的时候指定标签</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia-manual-v2</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">creation_method</span><span class="p">:</span><span class="w"> </span><span class="l">manual</span><span class="w">
+</span><span class="w">    </span><span class="nt">env</span><span class="p">:</span><span class="w"> </span><span class="l">prod</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">derios/kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">91</span><span class="w">
+</span><span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>可以通过以下查看标签</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl get po --show-labels
+</code></pre></td></tr></table>
+</div>
+</div><p>如果只对某些标签的pod感兴趣，可以使用<code>-L</code>选项把tag放在列上：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl get po -L creation_method,env
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">NAME              READY   STATUS    RESTARTS   AGE     CREATION_METHOD   ENV
+kubia-2r2pb       1/1     Running   <span class="m">0</span>          5h7m
+kubia-kt6gz       1/1     Running   <span class="m">0</span>          5h7m
+kubia-manual-v2   1/1     Running   <span class="m">0</span>          2m24s   manual            prod
+kubia-tqt52       1/1     Running   <span class="m">0</span>          5h7m
+nginx-r4hdr       1/1     Running   <span class="m">0</span>          18h
+nginx-rg76b       1/1     Running   <span class="m">0</span>          18h
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="修改现有pod标签">修改现有pod标签</h3>
+<p>新增的话，用<code>kubectl label</code>即可:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">kubectl label po kubia-manual <span class="nv">creation_method</span><span class="o">=</span>manual
+</code></pre></td></tr></table>
+</div>
+</div><p>更改的话，需要使用<code>--overwrite</code>选项:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">kubectl label po kubia-manual-v2 env=debug --overwrite
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="通过标签选择器列出pod子集">通过<code>标签选择器</code>列出pod子集</h2>
+<p>标签的强大功能体现在这里。</p>
+<p>标签选择器根据资源的以下条件来筛选资源:</p>
+<ol>
+<li>包含(or not)使用特定key的标签</li>
+<li>包含具有特定key和value的标签</li>
+<li>包含具有特定key的标签，但值和我们指定的不同</li>
+</ol>
+<h3 id="使用标签选择器列出pod">使用<code>标签选择器</code>列出pod</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl get po -l <span class="nv">creation_method</span><span class="o">=</span>manual
+NAME              READY   STATUS    RESTARTS   AGE
+kubia-manual-v2   1/1     Running   <span class="m">0</span>          9m5s
+</code></pre></td></tr></table>
+</div>
+</div><p>列出包含<code>env</code>标签的所有pod，无论其值多少：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl get po -l env
+NAME              READY   STATUS    RESTARTS   AGE
+kubia-manual-v2   1/1     Running   <span class="m">0</span>          10m
+</code></pre></td></tr></table>
+</div>
+</div><p>列出没有<code>env</code>标签的pod：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl get po -l <span class="s1">&#39;!env&#39;</span>
+NAME          READY   STATUS    RESTARTS   AGE
+kubia-2r2pb   1/1     Running   <span class="m">0</span>          5h17m
+kubia-kt6gz   1/1     Running   <span class="m">0</span>          5h17m
+kubia-tqt52   1/1     Running   <span class="m">0</span>          5h17m
+nginx-r4hdr   1/1     Running   <span class="m">0</span>          18h
+nginx-rg76b   1/1     Running   <span class="m">0</span>          18h
+</code></pre></td></tr></table>
+</div>
+</div><p>其他的选择器语法解释：</p>
+<ul>
+<li><code>creation_method!=manual</code>：选择带有<code>creation_method</code>标签，但其值不为manual的pod</li>
+<li><code>env in (prod, devel)</code>: 选择带有<code>env</code>标签且值为<code>prod</code>或者<code>devel</code>的pod</li>
+<li><code>env notin (prod, devel)</code>: 差不多自己理解</li>
+</ul>
+<h3 id="在标签选择器中使用多个条件">在<code>标签选择器</code>中使用多个条件</h3>
+<p>精确匹配：<code>app=pc,rel=beta</code></p>
+<p>这种列出pod子集的做法能够让我们能够进行子集的操作，简单的例如删除自己的pod</p>
+<h2 id="使用标签和选择器约束pod调度">使用<code>标签</code>和<code>选择器</code>约束pod调度</h2>
+<p>pod的随机调度是k8s集群的工作方式，但如果我们希望对将pod调度到何处有一定的发言权，比如我们的硬件是<code>异构</code>或者<code>非同质</code>的：cpu架构区别、节点磁盘种类区别、GPU密集型运算加速特定节点等。</p>
+<p>当然，我们不是说明pod应该调度到哪个节点，因为基础架构和应用程序的强耦合不是k8s的玩法。我们通过用<code>某种方式</code>描述对节点的需求，使得k8s选择一个符合这个需求的节点，也就是用<code>节点标签</code>和<code>节点标签选择器</code>完成。</p>
+<h3 id="用标签分类工作节点">用标签分类工作节点</h3>
+<p>假设集群中的一个节点刚添加完成，其包含一个用于通用GPU计算的GPU，我们希望加标签去展现这个节点特性:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl label node &lt;node name&gt; <span class="nv">gpu</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl get nodes -l <span class="nv">gpu</span><span class="o">=</span><span class="nb">true</span>
+NAME       STATUS   ROLES    AGE   VERSION
+minikube   Ready    master   20h   v1.19.2
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="将pod调度到特定节点">将pod调度到特定节点</h3>
+<p>假设已经给节点打上了标签，为了让调度器只在提供了确定标签的节点中进行选择，需要在pod的YAML文件中添加一个节点选择器(这里是deploy:test标签的节点):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia-manual-v2</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">creation_method</span><span class="p">:</span><span class="w"> </span><span class="l">manual</span><span class="w">
+</span><span class="w">    </span><span class="nt">env</span><span class="p">:</span><span class="w"> </span><span class="l">prod</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">nodeSelector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">deploy</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;test&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">derios/kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">kubia</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">91</span><span class="w">
+</span><span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="调度到特定一个节点不推荐">调度到特定一个节点(不推荐)</h3>
+<p>每个node有自己的一个唯一标签: <code>kubernetes.io/hostname</code>，但是如果节点离线了，就会导致pod无法调度，因此用标签选择器比较符合工作流程。当讨论Replication-Controllers和Service的时候，标签选择器的重要性也会彰显。</p>
+<h2 id="注解pod">注解pod</h2>
+<p>这块暂时不想深究，知道用法就行</p>
+<h2 id="使用命名空间对资源进行分组">使用命名空间对资源进行分组</h2>
+<p>待研究</p>
+<h2 id="停止和移除pod">停止和移除pod</h2>
+<h3 id="按名称删除">按名称删除</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="p">&amp;</span> kubectl delete po kubia
+</code></pre></td></tr></table>
+</div>
+</div><p>注意删除pod的时候，是k8s向进程发送<code>SIGTERM</code>信号并等待一定的秒数(30s默认)，如果还没有正常关闭，则发送<code>SIGKILL</code>终止线程。因此，为了保证线程可以正常关闭，需要正确处理<code>SIGTERM</code>信号。</p>
+<h3 id="使用标签选择器删除">使用<code>标签选择器</code>删除</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl delete po -l <span class="nv">creation_method</span><span class="o">=</span>manual
+</code></pre></td></tr></table>
+</div>
+</div><p>即删除带有此标签的所有pod。</p>
+<h3 id="通过删除整个命名空间来删除pod">通过删除整个命名空间来删除pod</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl delete ns custom-namespace
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="删除命名空间的所有pod但保留命名空间">删除命名空间的所有pod，但保留命名空间</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ kubectl delete po --all
+</code></pre></td></tr></table>
+</div>
+</div><p>删除当前命名空间的所有pod。</p>
+<p>注意如果空间内创建了replication controllers，删除所有还会新增新的pod出来，所以还需要删除rc。</p>
+<h3 id="删除命名空间中几乎所有资源">删除命名空间中(几乎)所有资源</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">kubectl delete all --all
+</code></pre></td></tr></table>
+</div>
+</div><p>使用all并不意味着会删除所有的内容，比如secret还是会被保留，这些是要明确指定删除的。</p>
+<p>注意：该命令会删除名为<code>kubernetes</code>的service，不过在几分钟之内会被重新创建。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">CctoctoFX</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2021-03-31
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/cloud-computing/docker-namespace/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Docker Fundamentals: Namespace</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/cloud-computing/docker-basic/">
+            <span class="next-text nav-default">Docker Cheat Sheet</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="derios1230@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/pillumina" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/fang-xian-20" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:2000/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>CctoctoFX</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

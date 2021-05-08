@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>IaaS vs PaaS vs SaaS - CctoctoFX</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="CctoctoFX" /><meta name="description" content="如果你在考虑将你的在线电子业务转移到云上，下面三个名词会经常遇到： IaaS PaaS SaaS 这些是云计算领域的三个主要类别 你很可能早就听说过它们，在各种各样的业" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.4 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:2000/post/iaas-paas-diff/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.b87e76cd589b185c91369316107a6cff8b59e96cf13a7e3b13b57dfb75b68d79.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="IaaS vs PaaS vs SaaS" />
+<meta property="og:description" content="如果你在考虑将你的在线电子业务转移到云上，下面三个名词会经常遇到： IaaS PaaS SaaS 这些是云计算领域的三个主要类别 你很可能早就听说过它们，在各种各样的业" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:2000/post/iaas-paas-diff/" />
+<meta property="article:published_time" content="2021-02-16T12:40:29+08:00" />
+<meta property="article:modified_time" content="2021-02-16T12:40:29+08:00" />
+<meta itemprop="name" content="IaaS vs PaaS vs SaaS">
+<meta itemprop="description" content="如果你在考虑将你的在线电子业务转移到云上，下面三个名词会经常遇到： IaaS PaaS SaaS 这些是云计算领域的三个主要类别 你很可能早就听说过它们，在各种各样的业">
+<meta itemprop="datePublished" content="2021-02-16T12:40:29+08:00" />
+<meta itemprop="dateModified" content="2021-02-16T12:40:29+08:00" />
+<meta itemprop="wordCount" content="1838">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="IaaS vs PaaS vs SaaS"/>
+<meta name="twitter:description" content="如果你在考虑将你的在线电子业务转移到云上，下面三个名词会经常遇到： IaaS PaaS SaaS 这些是云计算领域的三个主要类别 你很可能早就听说过它们，在各种各样的业"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CctoctoFX</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CctoctoFX</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">IaaS vs PaaS vs SaaS</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-02-16 </span>
+        
+          <span class="more-meta"> 1838 words </span>
+          <span class="more-meta"> 4 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#on-premise-saas-paas-iaas的关键区别">On-Premise, SaaS, PaaS, IaaS的关键区别</a></li>
+            <li><a href="#saas-paas-iaas-举例">SaaS, PaaS, IaaS 举例</a></li>
+            <li><a href="#三类云计算服务模型解释">三类云计算服务模型解释</a></li>
+            <li><a href="#executive-summary">Executive Summary</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>如果你在考虑将你的在线电子业务转移到云上，下面三个名词会经常遇到：</p>
+<ol>
+<li>IaaS</li>
+<li>PaaS</li>
+<li>SaaS</li>
+</ol>
+<p>这些是<a href="https://www.bigcommerce.com/ecommerce-answers/what-is-cloud-computing/">云计算领域的三个主要类别</a></p>
+<p>你很可能早就听说过它们，在各种各样的业务转移到云上的趋势下，它们各自占据的不同的比例：</p>
+<ol>
+<li>SaaS占据大概24%的企业负载</li>
+<li>IaaS在12%左右波动</li>
+<li>PaaS是近年来最流行的模型，大概占据32%，且当下和未来会有更多的增长</li>
+</ol>
+<h3 id="on-premise-saas-paas-iaas的关键区别">On-Premise, SaaS, PaaS, IaaS的关键区别</h3>
+<p><code>on-premise这里理解成本地部署的含义，比如企业内部部署的CRM软件系统，其反义词即为云端</code></p>
+<p>不久以前，所有公司的IT系统都是on-premise的，云的概念比较模糊和遥远。</p>
+<p>SaaS, PaaS, IaaS只是三种简单描述你如何为你的业务使用云设施的方式：</p>
+<ol>
+<li><strong>IaaS</strong>:  cloud-based services, 为存储、网络以及虚拟化等服务提供pay-as-you-go</li>
+<li><strong>PaaS</strong>: 通过internet提供硬件和软件工具</li>
+<li><strong>SaaS</strong>: 完全由第三方提供的软件服务</li>
+<li><strong>On-Premise</strong>: 企业内部部署</li>
+</ol>
+<p>下面是一个图解：</p>
+<p><img src="https://www.bigcommerce.com/blog/wp-content/uploads/2018/10/saas-vs-paas-vs-iaas-breakdown.jpg" alt="breakdown"></p>
+<h3 id="saas-paas-iaas-举例">SaaS, PaaS, IaaS 举例</h3>
+<p>大多数的业务一般使用SaaS以及IaaS云计算服务模型的组合，此外有很多业务会鼓励开发者使用PaaS去构建应用。</p>
+<p><strong>SaaS举例</strong>： BigCommerce, Google Apps, Salesforce, Dropbox, MailChimp, ZenDesk, DocuSign, Slack, Hubspot.</p>
+<p><strong>PaaS举例</strong>： AWS Elastic Beanstalk, Heroku, Windows Azure (mostly used as PaaS), Force.com, OpenShift, Apache Stratos, Magento Commerce Cloud.</p>
+<p><strong>IaaS举例</strong>： AWS EC2, Rackspace, Google Compute Engine (GCE), Digital Ocean, Magento 1 Enterprise Edition*.</p>
+<h3 id="三类云计算服务模型解释">三类云计算服务模型解释</h3>
+<h4 id="iaas-infrastructure-as-a-service">IaaS (Infrastructure as a Service)</h4>
+<p>IaaS业务提供诸如存储、网络和虚拟化的pay-as-you-go服务，也是对on-premise基础设施的替代。因此业务可以避免对庞大的on-site资源的投入。</p>
+<p>传统on-premise IT基础设施的维护是耗时耗力且耗费资金的，通常这种基础设施需要大量的初始投资在物理硬件，而且你经常也需要额外的IT运营去维护硬件以及维持更新。</p>
+<p><code>With IaaS, you can buy what you need, as you need it, and purchase more as your business grows.</code></p>
+<p>IaaS解决方案非常灵活且便于扩展，使用者能够轻易得进行方案替代，并且使用方能对基础设施进行全面掌控，其特征为：</p>
+<ul>
+<li>
+<p>Highly flexible and highly scalable.</p>
+</li>
+<li>
+<p>Accessible by multiple users.</p>
+</li>
+<li>
+<p>Cost-effective.</p>
+<p><strong>使用IaaS的时机</strong>：</p>
+<p>IaaS适用于所有体量的业务，因为它能让你对基础设施进行全面掌控，同时因为其工作模式为pay-as-you-use，因此任何的预算都能够很好cover。</p>
+</li>
+</ul>
+<h4 id="paas-platform-as-a-service">PaaS (Platform as a Service)</h4>
+<p>PaaS供应商通过网络提供软硬件工具，用户基于此去开发应用，所以PaaS使用者倾向于开发者。</p>
+<p><code>A PaaS solution provides the platform for developers to create unique, customizable software.</code></p>
+<p>这意味着开发者不需要在开发应用时从零开始，也就意味着帮助他们节省资金和精力。因此PaaS对于那些目标为创建独特应用的同时避免承担所有责任的人是一个流行的选择。</p>
+<p>PaaS平台的特征为：</p>
+<ul>
+<li>
+<p>Accessible by multiple users.</p>
+</li>
+<li>
+<p>Scalable – you can choose from various tiers of resources to suit the size of your business.</p>
+</li>
+<li>
+<p>Built on virtualization technology.</p>
+</li>
+<li>
+<p>Easy to run without extensive system administration knowledge.</p>
+<p><strong>使用PaaS的时机</strong>：</p>
+<p>开发者只需要投入app的开发、测试和部署，而不用关注其他细节比如软件更新维护、安全补丁等等。</p>
+<p><strong>PaaS 的Non-Ecommerce例子</strong>：</p>
+<p>一个很好的例子就是<a href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html">AWS Elastic Beanstalk</a>.</p>
+<p>AWS提供超过100个云计算服务比如EC2，RDS和S3。大多数这些服务可以被作为IaaS使用，而且大多数使用AWS的公司会选择他们想要的服务。</p>
+<p>然而，对于用户来说，管理很多不同的服务会很快变得艰难和耗时，所以AWS Elatsic Beanstalk的作用就在于：其工作为基础设施上面的一层，能够自动解决很多底层细节例如容量预测、负载均衡、扩缩容以及应用健康监控。</p>
+<p><strong>PaaS的Ecommerce例子</strong>：</p>
+<p>Magento Commerce Cloud (also known as Magento Enterprise Cloud Edition) 便是最常见的例子。</p>
+</li>
+</ul>
+<h4 id="saas-software-as-a-service">SaaS （Software as a Service）</h4>
+<p>SaaS平台让用户能够通过网络使用软件，收费方式通常为月度订阅计费。</p>
+<p>其优势为，使用SaaS意味着你不需要在自身的计算机中运行软件应用，只需要登录账户即可。只要有网络连接，你就能在任何设备上访问你的软件。例如你的员工能够有个人的登录账户，对应着不同的访问权限。</p>
+<p><code>You no longer need to engage an IT specialist to download the software onto multiple computers throughout your office or worry about keeping the software on every computer up-to-date.</code></p>
+<p>大部分订阅包含维护、编译以及安全服务，这些服务在on-premise中是非常费时费力的。</p>
+<p>SaaS平台的特征:</p>
+<ul>
+<li>
+<p>Available over the internet.</p>
+</li>
+<li>
+<p>Hosted on a remote server by a third-party provider.</p>
+</li>
+<li>
+<p>Scalable, with different tiers for small, medium, and enterprise-level businesses.</p>
+</li>
+<li>
+<p>Inclusive, offering security, compliance, and maintenance as part of the cost.</p>
+<p><strong>使用SaaS的时机</strong>：</p>
+<p><code>SaaS platforms are ideal for when you want an application to run smoothly and reliably with minimal input from you.</code></p>
+<p><strong>SaaS Ecommerce举例</strong>：</p>
+<p>BigCommerce是一个典型。</p>
+</li>
+</ul>
+<p><code>BigCommerce provides complete shopping cart software, as well as hosting infrastructure to the user, allowing businesses to create an online shop within minutes without worrying about coding, hosting, or software.</code></p>
+<h3 id="executive-summary">Executive Summary</h3>
+<p>基本上三种云计算服务模型的流行也削减了on-premise的部署形式，可以用pizza再去总结刚开始的图:</p>
+<p><img src="https://www.bigcommerce.com/blog/wp-content/uploads/2018/10/saas-vs-paas-vs-iaas-Pizza-example.jpg" alt="pizza"></p>
+<p>总结来看，具体的区别如下：</p>
+<ol>
+<li>IaaS is there to provide you with maximum flexibility when it comes to hosting custom-built apps, as well as a providing a general data center for data storage.</li>
+<li>PaaS is most often built on top of an IaaS platform to reduce the need for system administration. It allows you to focus on app development instead of infrastructure management.</li>
+<li>SaaS offers ready-to-use, out-of-the-box solutions that meet a particular business need (such as website or email). Most modern SaaS platforms are built on IaaS or PaaS platforms.</li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">CctoctoFX</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2021-02-16
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/programmer-career/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">(转)程序员如何把控自己的职业</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/do-not-wall/">
+            <span class="next-text nav-default">(转)别让自己墙了自己</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="derios1230@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/pillumina" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/fang-xian-20" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:2000/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>CctoctoFX</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

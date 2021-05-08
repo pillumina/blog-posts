@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Life of an HTTP request in a Go server - CctoctoFX</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="CctoctoFX" /><meta name="description" content="这篇文章的启发是我在阅读Go的http源码时获得的，之前对这块缺乏深入的了解，这篇文章会结合源码讨论包括典型http request的路由，还" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.4 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:2000/post/golang/lifecycle-of-http/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.b87e76cd589b185c91369316107a6cff8b59e96cf13a7e3b13b57dfb75b68d79.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Life of an HTTP request in a Go server" />
+<meta property="og:description" content="这篇文章的启发是我在阅读Go的http源码时获得的，之前对这块缺乏深入的了解，这篇文章会结合源码讨论包括典型http request的路由，还" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:2000/post/golang/lifecycle-of-http/" />
+<meta property="article:published_time" content="2021-02-20T11:22:18+08:00" />
+<meta property="article:modified_time" content="2021-02-20T11:22:18+08:00" />
+<meta itemprop="name" content="Life of an HTTP request in a Go server">
+<meta itemprop="description" content="这篇文章的启发是我在阅读Go的http源码时获得的，之前对这块缺乏深入的了解，这篇文章会结合源码讨论包括典型http request的路由，还">
+<meta itemprop="datePublished" content="2021-02-20T11:22:18+08:00" />
+<meta itemprop="dateModified" content="2021-02-20T11:22:18+08:00" />
+<meta itemprop="wordCount" content="4153">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Life of an HTTP request in a Go server"/>
+<meta name="twitter:description" content="这篇文章的启发是我在阅读Go的http源码时获得的，之前对这块缺乏深入的了解，这篇文章会结合源码讨论包括典型http request的路由，还"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CctoctoFX</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CctoctoFX</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Life of an HTTP request in a Go server</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-02-20 </span>
+        
+          <span class="more-meta"> 4153 words </span>
+          <span class="more-meta"> 9 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#默认handler">默认Handler</a></li>
+        <li><a href="#servemux只是一个handler">ServeMux只是一个Handler</a></li>
+        <li><a href="#httphandler-middleware"><code>http.Handler</code> Middleware</a></li>
+        <li><a href="#并发和panic处理">并发和panic处理</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>这篇文章的启发是我在阅读Go的http源码时获得的，之前对这块缺乏深入的了解，这篇文章会结合源码讨论包括典型http request的路由，还会涉及到一些并发和中间件的issue。</p>
+<p>我们先从一个简单的go server谈起，下面的代码从https://gobyexample.com/http-servers 截取：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+  <span class="s">&#34;fmt&#34;</span>
+  <span class="s">&#34;net/http&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">hello</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;hello\n&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">headers</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">headers</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">req</span><span class="p">.</span><span class="nx">Header</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">h</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">headers</span> <span class="p">{</span>
+      <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;%v: %v\n&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">h</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/hello&#34;</span><span class="p">,</span> <span class="nx">hello</span><span class="p">)</span>
+  <span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/headers&#34;</span><span class="p">,</span> <span class="nx">headers</span><span class="p">)</span>
+
+  <span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;:8090&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>追踪请求的生命周期我们从<code>http.ListenAndServe</code>这个方法开始，下面的图示说明了这一层的调用关系:</p>
+<p><img src="https://eli.thegreenplace.net/images/2021/http-request-listenandserve.png" alt="diagram"></p>
+<p>这里实际上<code>inlined</code>了一些代码，因为初始的代码有很多其他的细节不好追踪。</p>
+<p>主要的flow其实和我们预期的一致：<code>ListenAndServe</code>方法对你一个目标地址监听一个TCP端口，而后循环不断接受新的连接。每一个连接，它会起一个新的goroutine去serve，serve的具体操作是:</p>
+<ol>
+<li>从连接里解析HTTP请求： 产生<code>http.Request</code></li>
+<li>将<code>http.Request</code>传给用户自定义的handler</li>
+</ol>
+<p>一个handler实际上就是实现了<code>http.Handler</code>接口：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Handler</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="o">*</span><span class="nx">Request</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="默认handler">默认Handler</h2>
+<p>在我们上述的代码中，<code>ListenAndServe</code>方法的第二个参数为<code>nil</code>，实际上应该是用户自定义的handler, 这是为何？我们的图解中省去了很多细节，实际上当HTTP包serve一个请求的时候，它并没有直接调用用户的handlers而是使用一个adaptor：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">serverHandler</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">srv</span> <span class="o">*</span><span class="nx">Server</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">sh</span> <span class="nx">serverHandler</span><span class="p">)</span> <span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">rw</span> <span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">handler</span> <span class="o">:=</span> <span class="nx">sh</span><span class="p">.</span><span class="nx">srv</span><span class="p">.</span><span class="nx">Handler</span>
+  <span class="k">if</span> <span class="nx">handler</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">handler</span> <span class="p">=</span> <span class="nx">DefaultServeMux</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="nx">req</span><span class="p">.</span><span class="nx">RequestURI</span> <span class="o">==</span> <span class="s">&#34;*&#34;</span> <span class="o">&amp;&amp;</span> <span class="nx">req</span><span class="p">.</span><span class="nx">Method</span> <span class="o">==</span> <span class="s">&#34;OPTIONS&#34;</span> <span class="p">{</span>
+    <span class="nx">handler</span> <span class="p">=</span> <span class="nx">globalOptionsHandler</span><span class="p">{}</span>
+  <span class="p">}</span>
+  <span class="nx">handler</span><span class="p">.</span><span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">rw</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上述代码表示了，如果<code>handler == nil</code>, <code>http.DefaultServeMux</code>会作为默认的handler。这个<em>default server mux</em>是在<code>http</code>包中一个<code>http.ServeMux</code>类全局实例。而当我们的样例代码通过<code>http.HandleFunc</code>注册handlers的时候，同样会注册到default mux中。</p>
+<p>所以我们可以重写我们的样例代码如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">mux</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">NewServeMux</span><span class="p">()</span>
+  <span class="nx">mux</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/hello&#34;</span><span class="p">,</span> <span class="nx">hello</span><span class="p">)</span>
+  <span class="nx">mux</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/headers&#34;</span><span class="p">,</span> <span class="nx">headers</span><span class="p">)</span>
+
+  <span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;:8090&#34;</span><span class="p">,</span> <span class="nx">mux</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="servemux只是一个handler">ServeMux只是一个Handler</h2>
+<p>在看了很多Go的server例子以后，很容易会把<code>ListenAndServe</code>想象成把<code>mux</code>作为参数，但是这个明显是不准确的。从上面的例子看到，<code>ListenAndServe</code>实际传入的是实现了<code>http.Handler</code>接口的值，我们可以重写一下代码并且不用任何的muxes：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">PoliteServer</span> <span class="kd">struct</span> <span class="p">{</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">ms</span> <span class="o">*</span><span class="nx">PoliteServer</span><span class="p">)</span> <span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;Welcome! Thanks for visiting!\n&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">ps</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">PoliteServer</span><span class="p">{}</span>
+  <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;:8090&#34;</span><span class="p">,</span> <span class="nx">ps</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这个snippet里面没有路由，所有的HTTP请求直接传进<code>PoliteServer</code>的<code>ServeHTTP</code>参数里，并且所有的请求都有相同的响应。可以尝试用不同的路径和方法去<code>curl</code>一下这个server。</p>
+<p>然后我们再用<code>http.HandlerFunc</code>简化一下这个polite server:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">politeGreeting</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;Welcome! Thanks for visiting!\n&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;:8090&#34;</span><span class="p">,</span> <span class="nx">http</span><span class="p">.</span><span class="nf">HandlerFunc</span><span class="p">(</span><span class="nx">politeGreeting</span><span class="p">)))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>http.HadnlerFunc</code>是<code>http</code>包里的一个很好用的adaptor:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// The HandlerFunc type is an adapter to allow the use of
+</span><span class="c1">// ordinary functions as HTTP handlers. If f is a function
+</span><span class="c1">// with the appropriate signature, HandlerFunc(f) is a
+</span><span class="c1">// Handler that calls f.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">HandlerFunc</span> <span class="kd">func</span><span class="p">(</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="o">*</span><span class="nx">Request</span><span class="p">)</span>
+
+<span class="c1">// ServeHTTP calls f(w, r).
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">f</span> <span class="nx">HandlerFunc</span><span class="p">)</span> <span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">w</span> <span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nf">f</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">r</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在这篇文章最开始的例子里，用到了<code>http.HandleFunc</code>，注意和<code>http.HandlerFunc</code>很像，但是他们是完全不同的实体，也承担着不同的任务。</p>
+<p>如同<code>PoliteServer</code>表现的那样，<code>http.ServeMux</code>是实现<code>http.Handler</code>接口的一个类，<a href="https://go.googlesource.com/go/+/go1.15.8/src/net/http/server.go">这里查看源码</a></p>
+<ol>
+<li><code>ServeMux</code>维护了一个以长度排序的<code>{pattern, handler}</code>切片</li>
+<li><code>Handle</code>或者<code>HandleFunc</code>向这个切片添加新的handler</li>
+<li><code>ServeHTTP</code>:
+<ul>
+<li>通过查询这个排序好的切片，找到对应请求path的handler</li>
+<li>调用handler的<code>ServeHTTP</code>方法</li>
+</ul>
+</li>
+</ol>
+<p>至此，mux可以被看作为一个<code>forwarding handler</code>，这种编程模式在HTTP server中很常见，也就是<code>middleware</code>。</p>
+<h2 id="httphandler-middleware"><code>http.Handler</code> Middleware</h2>
+<p>如何去定义清楚middleware的含义是比较困难的，因为在不同的上下文、语言以及框架里它的概念都有一些不同。我们再看一下文章一开始的信息流图解，这里我们再简化一下，隐藏一些<code>http</code>包做的细节：</p>
+<p><img src="https://eli.thegreenplace.net/images/2021/http-request-simplified.png" alt="diagram2"></p>
+<p>下面是我们增加了middleware以后的图解:</p>
+<p><img src="https://eli.thegreenplace.net/images/2021/http-request-with-middleware.png" alt="diagram3"></p>
+<p>在Go中，middleware只是一个HTTP handler，而这个handler包了一个不同的handler。middleware handler通过调用<code>ListenAndServe</code>被注册，当这个middleware被调用到，他可以做任意的预处理，调用到被包的handler然后做任意的后处理。</p>
+<p>我们在上面了解了一个middleware的例子&ndash;<code>http.ServeMux</code>, 在那个例子中，预处理指的是基于特定的请求path去选择用户定义的handler，然后去调用。并且没有对应的后处理。</p>
+<p>举一个另外的例子，我们可以在<code>polite server</code>中加一个基本的<code>logging middleware</code>， 这个middleware能够对所有请求的的细节记录日志，包括了请求执行的时间等：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">LoggingMiddleware</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">handler</span> <span class="nx">http</span><span class="p">.</span><span class="nx">Handler</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">lm</span> <span class="o">*</span><span class="nx">LoggingMiddleware</span><span class="p">)</span> <span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">start</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
+  <span class="nx">lm</span><span class="p">.</span><span class="nx">handler</span><span class="p">.</span><span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span>
+  <span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%s %s %s&#34;</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">Method</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">RequestURI</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">start</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">PoliteServer</span> <span class="kd">struct</span> <span class="p">{</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">ms</span> <span class="o">*</span><span class="nx">PoliteServer</span><span class="p">)</span> <span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;Welcome! Thanks for visiting!\n&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">ps</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">PoliteServer</span><span class="p">{}</span>
+  <span class="nx">lm</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">LoggingMiddleware</span><span class="p">{</span><span class="nx">handler</span><span class="p">:</span> <span class="nx">ps</span><span class="p">}</span>
+  <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;:8090&#34;</span><span class="p">,</span> <span class="nx">lm</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>请注意<code>logging middleware</code>其本身就是一个<code>http.Handler</code>包含了用户定义的handler作为一个field。当<code>ListenAndServe</code>调用其<code>ServeHTTP</code>方法的时候，做了以下的事情:</p>
+<ol>
+<li>预处理： 在user handler被执行前打时间戳</li>
+<li>调用user handler，传入请求体和response writer</li>
+<li>后处理：日志记录请求细节，包括耗费的时间</li>
+</ol>
+<p>middleware一个巨大的优点是composable（组合性），被middleware包着的handler可以是另一个middleware等等。所以这个是一个相互包裹的<code>http.Handler</code>链。实际上，这个是在Go中的常见模式，这个例子也像我们展现一个经典的Go middleware是怎么样的。下面是一个<code>logging polite server</code>的详细例子，写法上更容易辨认：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">politeGreeting</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;Welcome! Thanks for visiting!\n&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">loggingMiddleware</span><span class="p">(</span><span class="nx">next</span> <span class="nx">http</span><span class="p">.</span><span class="nx">Handler</span><span class="p">)</span> <span class="nx">http</span><span class="p">.</span><span class="nx">Handler</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">http</span><span class="p">.</span><span class="nf">HandlerFunc</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">start</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
+    <span class="nx">next</span><span class="p">.</span><span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%s %s %s&#34;</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">Method</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">RequestURI</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">start</span><span class="p">))</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">lm</span> <span class="o">:=</span> <span class="nf">loggingMiddleware</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nf">HandlerFunc</span><span class="p">(</span><span class="nx">politeGreeting</span><span class="p">))</span>
+  <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;:8090&#34;</span><span class="p">,</span> <span class="nx">lm</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里省去了通过方法对结构体的创建，<code>loggingMiddleware</code>利用了<code>http.HandlerFunc</code>以及闭包让代码变得更为简洁，当然功能还是和前面代码相同。但是这个写法，彰显了一个middleware的标准特征：一个函数传入一个<code>http.Handler</code>以及其他状态，然后返回另一个<code>http.Handler</code>。被返回的handler可以视作传入middleware的handler的替代品，而且会<code>magically</code>执行middleware所拥有的功能。</p>
+<p>例如，标准库里有如下的middleware:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">TimeoutHandler</span><span class="p">(</span><span class="nx">h</span> <span class="nx">Handler</span><span class="p">,</span> <span class="nx">dt</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span><span class="p">,</span> <span class="nx">msg</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">Handler</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>所以我们可以这样玩:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">handler</span> <span class="p">=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">TimeoutHandler</span><span class="p">(</span><span class="nx">handler</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="s">&#34;timed out&#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这样就能创建一个2秒超时机制的handler了。</p>
+<p>而middleware的组合可以由如下所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">handler</span> <span class="p">=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">TimeoutHandler</span><span class="p">(</span><span class="nx">handler</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span> <span class="s">&#34;timed out&#34;</span><span class="p">)</span>
+<span class="nx">handler</span> <span class="p">=</span> <span class="nf">loggingMiddleware</span><span class="p">(</span><span class="nx">handler</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>仅仅两行，<code>handler</code>能够有超时和记录日志的功能，你或许会感觉middleware的链条写起来可能比较繁琐，不过Go有很多流行的包会解决这个问题，当然已经超出了这篇文章讨论的范围，后续我也会补充。</p>
+<p>除此之外，<code>http</code>包本身也在按照其需求使用middleware，比如之前<code>serverHandler</code>适应器的例子，它能够使用非常简洁的手段去默认处理<code>nil</code>handler的情况（通过把请求传给<code>default mux</code>）</p>
+<p>因此，middleware可以说是一种attractive design aid，我们能够聚焦在<code>业务逻辑</code>handler，同时利用一般性的middleware去增强handler的功能，更多的探讨会新开一些文章。</p>
+<h2 id="并发和panic处理">并发和panic处理</h2>
+<p>最后我们来研究额外的两个主题：并发和panic处理，作为我们探究Go HTTP  Server中HTTP请求路径问题的结尾。</p>
+<p>首先关于并发的问题，前面讨论了对于每一个连接，其都由<code>http.Server.Serve</code>去起一个新的gorountine去处理。这利用了Go强大的并发能力，因为goroutine非常cheap并且这种简洁的并发模型对于HTTP handlers的处理也很适宜。一个handler可以阻塞（例如读取数据库）且不会停止其他handlers。不过在处理一些共享数据的goroutine并发时，还是要注意一些东西，这点我会在另外的文章谈。</p>
+<p>最后，panic处理。HTTP Server一般来说是一个长期运行的程序。如果在一个用户定义的handler中发生了问题，例如一些导致runtime panic的bug，有可能会让整个server都挂掉。所以最好能够在<code>main</code>里用<code>recover</code>来保护你的server，不过这种方式还是有以下的问题:</p>
+<ol>
+<li>当控制返回到<code>main</code>中时，<code>ListenAndServe</code>已经结束了所以其他serving也结束了。</li>
+<li>因为每一个独立的goroutine处理一个connection，handlers里的panic甚至不会到达<code>main</code>而是挂掉整个进程。</li>
+</ol>
+<p>为了防止这些问题，<code>net/http</code>内置了对每个goroutine的recovery(在<code>conn.serve</code>方法中)，我们可以看一个例子:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">hello</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;hello\n&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">doPanic</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;oops&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/hello&#34;</span><span class="p">,</span> <span class="nx">hello</span><span class="p">)</span>
+  <span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/panic&#34;</span><span class="p">,</span> <span class="nx">doPanic</span><span class="p">)</span>
+
+  <span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;:8090&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果我们起这个server并且用<code>/panic</code>去curl:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ curl localhost:8090/panic
+curl: (52) Empty reply from server
+</code></pre></td></tr></table>
+</div>
+</div><p>server端会打下以下的日志:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">2021/02/16 09:44:31 http: panic serving 127.0.0.1:52908: oops
+goroutine 8 [running]:
+net/http.(*conn).serve.func1(0xc00010cbe0)
+  /usr/local/go/src/net/http/server.go:1801 +0x147
+panic(0x654840, 0x6f0b80)
+  /usr/local/go/src/runtime/panic.go:975 +0x47a
+main.doPanic(0x6fa060, 0xc0001401c0, 0xc000164200)
+[... rest of stack dump here ...]
+</code></pre></td></tr></table>
+</div>
+</div><p>当然server还在持续运行。</p>
+<p>虽然这种内置的方式比挂掉整个进程好，不过开发者还是觉得这样有很多限制。它能做的只有关闭连接然后记录下日志，但是一般的情形下，最好给client端返回一些错误信息（例如错误码500等）。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">CctoctoFX</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2021-02-20
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/golang/go-profiling/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Profiling a Go Service in Production</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/golang/websocket/">
+            <span class="next-text nav-default">A Million WebSocket and Go</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="derios1230@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/pillumina" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/fang-xian-20" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:2000/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>CctoctoFX</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

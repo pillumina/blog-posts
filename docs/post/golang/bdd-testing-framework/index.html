@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>BDD: Ginkgo测试框架 - CctoctoFX</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="CctoctoFX" /><meta name="description" content="Preface BDD和TDD都是test case first的实现，无非是把后者的test改成前者的behavior。在TDD中，关注的核心点是function" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.4 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:2000/post/golang/bdd-testing-framework/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.b87e76cd589b185c91369316107a6cff8b59e96cf13a7e3b13b57dfb75b68d79.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="BDD: Ginkgo测试框架" />
+<meta property="og:description" content="Preface BDD和TDD都是test case first的实现，无非是把后者的test改成前者的behavior。在TDD中，关注的核心点是function" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:2000/post/golang/bdd-testing-framework/" />
+<meta property="article:published_time" content="2020-12-04T11:22:18+08:00" />
+<meta property="article:modified_time" content="2020-12-04T11:22:18+08:00" />
+<meta itemprop="name" content="BDD: Ginkgo测试框架">
+<meta itemprop="description" content="Preface BDD和TDD都是test case first的实现，无非是把后者的test改成前者的behavior。在TDD中，关注的核心点是function">
+<meta itemprop="datePublished" content="2020-12-04T11:22:18+08:00" />
+<meta itemprop="dateModified" content="2020-12-04T11:22:18+08:00" />
+<meta itemprop="wordCount" content="2899">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="BDD: Ginkgo测试框架"/>
+<meta name="twitter:description" content="Preface BDD和TDD都是test case first的实现，无非是把后者的test改成前者的behavior。在TDD中，关注的核心点是function"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CctoctoFX</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CctoctoFX</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">BDD: Ginkgo测试框架</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-12-04 </span>
+        
+          <span class="more-meta"> 2899 words </span>
+          <span class="more-meta"> 6 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#preface">Preface</a></li>
+        <li><a href="#bdd-in-golang">BDD in golang</a></li>
+        <li><a href="#初始化">初始化</a></li>
+        <li><a href="#运行">运行</a></li>
+        <li><a href="#ginkgo-keyword">Ginkgo Keyword</a>
+          <ul>
+            <li><a href="#describe-context-when">Describe, Context, When</a></li>
+            <li><a href="#it">It</a></li>
+            <li><a href="#beforeeach-justbeforeeach">BeforeEach, JustBeforeEach</a></li>
+            <li><a href="#demo-code-示意">Demo code 示意</a></li>
+          </ul>
+        </li>
+        <li><a href="#it-与-matcher">It 与 Matcher</a></li>
+        <li><a href="#其他features">其他features</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="preface">Preface</h2>
+<p>BDD和TDD都是test case first的实现，无非是把后者的test改成前者的behavior。在TDD中，关注的核心点是function，即认为程序最基本单元是function，其test case可以认为是unit test，TDD和unit test的区别是TDD强调测试和开发结合而成的工作流: 写test case -&gt; 写代码 -&gt; 通过测试，继续写更多测试，写一次循环。</p>
+<p>而BDD比TDD更关注高层的行为，而不是函数级别的行为，也就是在BDD中，不会强调函数的功能正确，这是unit test应该做的事。BDD更关注user story，即用户在特定场景，与软件交互发生的行为，这个behavior指的就是高层模块的行为。</p>
+<p>如何区分BDD和TDD，简单理解，TDD是给programmer的，用来验证开发者的最基本模块的功能：在什么输入，应该产生什么输出，保证实现的边界，健全性。而BDD，其test case描述的是更高级的模块行为，脱离了具体的实现，容易用自然语言去描述，也就是BDD是给product manager的，告诉其系统的行为。</p>
+<h2 id="bdd-in-golang">BDD in golang</h2>
+<p>​	实现的时候，我们需要把Given-When-Then这种story格式组织test case翻译为测试代码，通过一系列的assertion来检查实现是否符合test case的预期，我们完全可以直接通过golang自带的testing模块来实现，不过testing的功能有时候比较简陋，本文记录了用Ginkgo+Gomega来组织test case，让我们的测试语言更加接近自然语言。</p>
+<p>二者结合的目的是，ginkgo实现了test case的组织，并加入了其他方便的功能: 初始化，后续处理，异步等等。而gomega设计的目的是与ginkgo一起工作，实现易读的assertion(ginkgo中称为match)功能。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Gomega is ginkgo&#39;s preferred matcher library
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="初始化">初始化</h2>
+<p>ginkgo依托golang原生testing框架，即可以用<code>go test ./..</code> 执行，也可以通过ginkgo binrary安装<code>go install github.com/onsi/ginkgo</code>，封装了ginkgo测试框架的各种feature。</p>
+<p>初始化首先进入待测试的package:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">cd /path/to/package
+</code></pre></td></tr></table>
+</div>
+</div><p>执行初始化:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">ginkgo bootstrap
+</code></pre></td></tr></table>
+</div>
+</div><p>生成以suite_test.go文件，接下来向suite添加测试specs，生成比如ginkgo_cart package测试文件。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">ginkgo generate ginkgo_cart
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="运行">运行</h2>
+<p>生成<code>ginkgo_cart_test.go</code>，注意测试文件在<code>ginkgo_cart_test</code>package， 需要import package <code>ginkgo_cart</code>，即BDD层级高于unit test, 不应该了解package内部的具体实现，测试package的外部接口即可。编写测试代码，运行<code>go test ./..</code>即可。</p>
+<h2 id="ginkgo-keyword">Ginkgo Keyword</h2>
+<p>Ginkgo测试代码骨架由一系列keyword关联的闭包组成，常用的有：</p>
+<ol>
+<li>Describe/Context/When: 测试逻辑块</li>
+<li>BeforeEach/AfterEach/JustBeforeEach/JustAfterEach: 初始化测试用例块</li>
+<li>It: 单一Spec，测试case</li>
+</ol>
+<p>keyword的声明均为传入Body参数，比如Describe:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nf">Describe</span><span class="p">(</span><span class="nx">text</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">body</span> <span class="kd">func</span><span class="p">())</span> <span class="kt">bool</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>一个样例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">_</span> <span class="p">=</span> <span class="nf">Describe</span><span class="p">(</span><span class="s">&#34;Nest Test Demo&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nf">Context</span><span class="p">(</span><span class="s">&#34;MyTest level1&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;beforeEach level 1&#34;</span><span class="p">)</span>
+		<span class="p">})</span>
+		<span class="nf">It</span><span class="p">(</span><span class="s">&#34;spec 3-1 in level1&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(){</span>
+			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;sepc on level 1&#34;</span><span class="p">)</span>
+		<span class="p">})</span>
+		<span class="nf">Context</span><span class="p">(</span><span class="s">&#34;MyTest level2&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+				<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;beforeEach level 2&#34;</span><span class="p">)</span>
+			<span class="p">})</span>
+			<span class="nf">Context</span><span class="p">(</span><span class="s">&#34;MyTest level3&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+				<span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+					<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;beforeEach level 3&#34;</span><span class="p">)</span>
+				<span class="p">})</span>
+				<span class="nf">It</span><span class="p">(</span><span class="s">&#34;spec 3-1 in level3&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+					<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;A simple spec in level 3&#34;</span><span class="p">)</span>
+				<span class="p">})</span>
+				<span class="nf">It</span><span class="p">(</span><span class="s">&#34;3-2 in level3&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+					<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;A simple spec in level 3&#34;</span><span class="p">)</span>
+				<span class="p">})</span>
+			<span class="p">})</span>
+		<span class="p">})</span>
+	<span class="p">})</span>
+<span class="p">})</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="describe-context-when">Describe, Context, When</h3>
+<p>这三种都称为Container，对于ginkgo属于同一类，只是名称不同</p>
+<p>一般Describe用于最顶层：描述完整的测试场景，包含Context/When，而Context/When本身可以嵌套包含下级的Context/When。</p>
+<p>三者组织成Tree结构：Describe是root, Context和When是普通的TreeNode。</p>
+<p>三者包含的节点，除了自身，还包括其他keyword节点：BeforeEach, JustBeforeEach, It。</p>
+<p>测试代码逻辑应该包含在BeforeEach, It等类别中，而不应该在container类别中体现。</p>
+<h3 id="it">It</h3>
+<p>Ginkgo执行以It为基本单元，以定义的顺序执行，It一般包含Assertion逻辑: Expect(&hellip;)，即最终的测试结果和预期的比较，测试执行逻辑实现于BeforeEach, JustBeforeEach中</p>
+<h3 id="beforeeach-justbeforeeach">BeforeEach, JustBeforeEach</h3>
+<p>BeforeEach声明于Container节点内部，container node每个child执行前都会执行BeforeEach，一般用来Setup test env：声明测试用例变量，初始化。</p>
+<p>JustBeforeEach类似，区别是永远执行于BeforeEach之后：等从root到lt node所有BeforeEach执行完: 才再从root到lt node执行所有JustBeforeEach；一般实现测试执行逻辑：如request http，以便It node与expect比较。</p>
+<h3 id="demo-code-示意">Demo code 示意</h3>
+<p>示例中各种节点的内部组成为如下tree：</p>
+<p><img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20200412194916.png" alt="demo tree"></p>
+<p>运行示例可以得到:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">beforeEach level 1
+sepc 1-1 on level 1
+•beforeEach level 1
+beforeEach level 2
+beforeEach level 3
+Spec 3-1 in level 3
+•beforeEach level 1
+beforeEach level 2
+beforeEach level 3
+Spec 3-2 in level 3
+
+</code></pre></td></tr></table>
+</div>
+</div><p>我么可以得到一些结论:</p>
+<ol>
+<li>执行是以It node定义顺序执行</li>
+<li>每个It执行前，走了从root到It的path，顺序执行各context node的BeforeEach函数</li>
+</ol>
+<h2 id="it-与-matcher">It 与 Matcher</h2>
+<p>购物车demo中，其中一个lt:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nf">Expect</span><span class="p">(</span><span class="nx">cart</span><span class="p">.</span><span class="nf">TotalItems</span><span class="p">()).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这种自然语言风格的assertion是由Ginkgo配套的Gomega实现的: expect返回封装了测试输出值的Assertion:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Expect</span><span class="p">(</span><span class="nx">actual</span> <span class="kd">interface</span><span class="p">{},</span> <span class="nx">extra</span> <span class="o">...</span><span class="kd">interface</span><span class="p">{})</span> <span class="nx">Assertion</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Assertion是interface, 简化版本(为语义通顺，还包含几个类似function):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Assertion</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">To</span><span class="p">(</span><span class="nx">matcher</span> <span class="nx">types</span><span class="p">.</span><span class="nx">GomegaMatcher</span><span class="p">,</span> <span class="nx">optionalDescription</span> <span class="o">...</span><span class="kd">interface</span><span class="p">{})</span> <span class="kt">bool</span>
+	<span class="nf">ToNot</span><span class="p">(</span><span class="nx">matcher</span> <span class="nx">types</span><span class="p">.</span><span class="nx">GomegaMatcher</span><span class="p">,</span> <span class="nx">optionalDescription</span> <span class="o">...</span><span class="kd">interface</span><span class="p">{})</span> <span class="kt">bool</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>To</code>接收<code>GomegaMatcher</code>, 其封装了Expect value: Equal调用了Ginkgo的EqualMatcher.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Equal</span><span class="p">(</span><span class="nx">expected</span> <span class="kd">interface</span><span class="p">{})</span> <span class="nx">types</span><span class="p">.</span><span class="nx">GomegaMatcher</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">matchers</span><span class="p">.</span><span class="nx">EqualMatcher</span><span class="p">{</span>
+		<span class="nx">Expected</span><span class="p">:</span> <span class="nx">expected</span><span class="p">,</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>加上Assertion封装了实际value, 两者的比较可得出结论.而<code>ToNot</code>是<code>To</code>的相反情况.</p>
+<p>如果想比较自定义的复杂类型: 可实现GomegaMatcher:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">加上Assertion封装了实际value</span><span class="p">,</span> <span class="nx">两者的比较可得出结论</span><span class="p">.</span><span class="nx">而ToNot是To的相反情况</span><span class="p">.</span>
+
+<span class="nx">如果想比较自定义的复杂类型</span><span class="p">:</span> <span class="nx">可实现GomegaMatcher</span><span class="p">:</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="其他features">其他features</h2>
+<p>Focus:</p>
+<p>仅执行特定Node及之下的It: 在keyword之前加<code>F</code>: <code>FContext</code>, <code>FIt</code>, 但会使<code>go test</code>fail(返回 1), CI集成Ginkgo需注意.</p>
+<p>Pending</p>
+<p>与Focus相反: 不执行特定Node及之下的It. 在keyword之前加<code>X</code>.但默认不会使<code>go test</code> fail(若想让其fail, 加 —failOnPending)</p>
+<p>Skip:</p>
+<p>根据代码runtime结果决定是否跳过某It(Pending是编译时):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nf">It</span><span class="p">(</span><span class="s">&#34;spec 1-1 in level1&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(){</span>
+    <span class="k">if</span> <span class="nx">somecondition</span> <span class="p">{</span>
+        <span class="nf">Skip</span><span class="p">(</span><span class="s">&#34;special condition wasn&#39;t met&#34;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;sepc 1-1 on level 1&#34;</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Skip仅能置于It之下，否则会Panic.</p>
+<p>Eventually</p>
+<p>测试异步逻辑: 如发送请求到队列, 需持续polling. 在Gomega实现:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nf">Eventually</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">[]</span><span class="kt">int</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">thing</span><span class="p">.</span><span class="nx">SliceImMonitoring</span>
+<span class="p">},</span> <span class="nx">TIMEOUT</span><span class="p">,</span> <span class="nx">POLLING_INTERVAL</span><span class="p">).</span><span class="nf">Should</span><span class="p">(</span><span class="nf">HaveLen</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>TIMTOUT为总超时时间, 默认１s;POLLING_INTERVAL为每次polling间隔, 默认10ms.</p>
+<p>Ginkgo还支持benchmark及run in parallel, 可参考<a href="https://onsi.github.io/ginkgo/#parallel-specs">Ginkgo doc</a></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">CctoctoFX</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-12-04
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/golang/schedualing/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Golang并发调度</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/golang/memory-management/">
+            <span class="next-text nav-default">Golang内存管理</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="derios1230@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/pillumina" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.zhihu.com/people/fang-xian-20" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:2000/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>CctoctoFX</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
