@@ -2,6 +2,9 @@
 title: "Kubernetes Handbook (Start & Pod)"
 date: 2021-03-31T11:22:18+08:00
 hero: /images/posts/k8s-docker.jpg
+keywords: ["kubernetes", "fundamentals"]
+tags: ["kubernetes", "cloud-computing"]
+categories: ["kubernetes", "cloud-computing"]
 menu:
   sidebar:
     name: Kubernetes Handbook (Start & Pod)

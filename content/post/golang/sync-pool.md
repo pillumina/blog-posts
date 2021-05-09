@@ -2,6 +2,9 @@
 title: "[源码分析]sync pool"
 date: 2021-01-01T11:22:18+08:00
 hero: /images/posts/golang2.jpg
+keywords: ["go"]
+tags: ["go"]
+categories: ["go"]
 menu:
   sidebar:
     name: Sync Pool源码分析

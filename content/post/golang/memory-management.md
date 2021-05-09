@@ -2,6 +2,9 @@
 title: "Golang内存管理"
 date: 2020-12-02T11:22:18+08:00
 hero: /images/posts/golang2.jpg
+keywords: ["go"]
+tags: ["go"]
+categories: ["go"]
 menu:
   sidebar:
     name: Golang内存管理

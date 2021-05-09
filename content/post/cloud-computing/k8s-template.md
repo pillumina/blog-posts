@@ -2,6 +2,9 @@
 title: "Kubernetes Developement"
 date: 2021-04-21T11:22:18+08:00
 hero: /images/posts/k8s-docker.jpg
+keywords: ["kubernetes", "practical development"]
+tags: ["kubernetes", "cloud-computing"]
+categories: ["kubernetes", "cloud-computing"]
 menu:
   sidebar:
     name: Kubernetes Development

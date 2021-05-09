@@ -2,6 +2,9 @@
 title: "Profiling a Go Service in Production"
 date: 2021-04-07T11:25:18+08:00
 hero: /images/posts/golang2.jpg
+keywords: ["go"]
+tags: ["go"]
+categories: ["go"]
 menu:
   sidebar:
     name: Profling Go Service

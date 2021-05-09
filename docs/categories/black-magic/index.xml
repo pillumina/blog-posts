@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>black-magic on CctoctoFX</title>
+    <link>http://localhost:2000/categories/black-magic/</link>
+    <description>Recent content in black-magic on CctoctoFX</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 20 Dec 2020 12:40:29 +0800</lastBuildDate><atom:link href="http://localhost:2000/categories/black-magic/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Black Magic</title>
+      <link>http://localhost:2000/post/black-magic/</link>
+      <pubDate>Sun, 20 Dec 2020 12:40:29 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/black-magic/</guid>
+      <description>阅读到的一些方便、有趣的技巧或者ideas的随手记录，后续考虑对相关话题专门开坑 一行代码画出专业的论文图 SciencePlots 计算机专业向来不缺少专业的绘图软件</description>
+    </item>
+    
+  </channel>
+</rss>

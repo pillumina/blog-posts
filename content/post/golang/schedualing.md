@@ -3,6 +3,9 @@
 title: "Golang并发调度"
 date: 2020-12-17T11:22:18+08:00
 hero: /images/posts/golang2.jpg
+keywords: ["go"]
+tags: ["go"]
+categories: ["go"]
 menu:
   sidebar:
     name: Golang并发调度

@@ -2,6 +2,9 @@
 title: "Kubernetes Handbook (Schedule)"
 date: 2021-04-09T10:22:18+08:00
 hero: /images/posts/k8s-docker.jpg
+keywords: ["kubernetes", "scheduler"]
+tags: ["kubernetes", "cloud-computing"]
+categories: ["kubernetes", "cloud-computing"]
 menu:
   sidebar:
     name: Kubernetes Handbook (Schedule)

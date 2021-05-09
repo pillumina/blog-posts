@@ -5,6 +5,97 @@
     <link>http://localhost:2000/tags/</link>
     <description>Recent content in Tags on CctoctoFX</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language><atom:link href="http://localhost:2000/tags/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language>
+    <lastBuildDate>Thu, 29 Apr 2021 11:22:18 +0800</lastBuildDate><atom:link href="http://localhost:2000/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>cloud-computing</title>
+      <link>http://localhost:2000/tags/cloud-computing/</link>
+      <pubDate>Thu, 29 Apr 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/tags/cloud-computing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubernetes</title>
+      <link>http://localhost:2000/tags/kubernetes/</link>
+      <pubDate>Thu, 29 Apr 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>rust</title>
+      <link>http://localhost:2000/tags/rust/</link>
+      <pubDate>Wed, 28 Apr 2021 09:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/tags/rust/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>algorithm</title>
+      <link>http://localhost:2000/tags/algorithm/</link>
+      <pubDate>Thu, 08 Apr 2021 18:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/tags/algorithm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>go</title>
+      <link>http://localhost:2000/tags/go/</link>
+      <pubDate>Wed, 07 Apr 2021 11:25:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/tags/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>docker</title>
+      <link>http://localhost:2000/tags/docker/</link>
+      <pubDate>Tue, 06 Apr 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/tags/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>design-pattern</title>
+      <link>http://localhost:2000/tags/design-pattern/</link>
+      <pubDate>Wed, 31 Mar 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/tags/design-pattern/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>black-magic</title>
+      <link>http://localhost:2000/tags/black-magic/</link>
+      <pubDate>Sun, 20 Dec 2020 12:40:29 +0800</pubDate>
+      
+      <guid>http://localhost:2000/tags/black-magic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>python</title>
+      <link>http://localhost:2000/tags/python/</link>
+      <pubDate>Mon, 14 Dec 2020 16:20:29 +0800</pubDate>
+      
+      <guid>http://localhost:2000/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>java</title>
+      <link>http://localhost:2000/tags/java/</link>
+      <pubDate>Mon, 26 Oct 2020 12:40:29 +0800</pubDate>
+      
+      <guid>http://localhost:2000/tags/java/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>

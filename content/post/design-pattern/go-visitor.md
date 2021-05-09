@@ -2,6 +2,9 @@
 title: "Go编程模式：Visitor（k8s）"
 date: 2021-03-31T11:22:18+08:00
 hero: /images/posts/golang-banner-2.png
+keywords: ["go", "design-pattern"]
+tags: ["go", "design-pattern"]
+categories: ["go", "design-pattern"]
 menu:
   sidebar:
     name: Go Visitor Pattern (k8s)

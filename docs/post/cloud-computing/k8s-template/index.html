@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="CctoctoFX" /><meta name="description" content="资源模板 statefulset举例 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 apiVersion:apps/v1beta1kind:StatefulSetmetadata:name:kubiaspec:serviceName:kubiareplicas:2template:metadata:labels:app:kubiaspec:containers:- name:kubiaimage:derios/kubiaports:- name:httpcontainerPort:8080volumeMounts:- name:datamountPath:/var/datavolumeClaimTemplates:- metadata:name:dataspec:resources:requests:storage:1MiaccessModes:- ReadWriteOnce headless service举例 1 2 3 4 5 6" /><meta name="keywords" content="Hugo, theme, even" />
+<meta name="author" content="CctoctoFX" /><meta name="description" content="资源模板 statefulset举例 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 apiVersion:apps/v1beta1kind:StatefulSetmetadata:name:kubiaspec:serviceName:kubiareplicas:2template:metadata:labels:app:kubiaspec:containers:- name:kubiaimage:derios/kubiaports:- name:httpcontainerPort:8080volumeMounts:- name:datamountPath:/var/datavolumeClaimTemplates:- metadata:name:dataspec:resources:requests:storage:1MiaccessModes:- ReadWriteOnce headless service举例 1 2 3 4 5 6" /><meta name="keywords" content="kubernetes, practical development" />
 
 
 
@@ -53,7 +53,7 @@
 
 
 
-<meta itemprop="keywords" content="" />
+<meta itemprop="keywords" content="kubernetes,cloud-computing," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Kubernetes Developement"/>
 <meta name="twitter:description" content="资源模板 statefulset举例 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 apiVersion:apps/v1beta1kind:StatefulSetmetadata:name:kubiaspec:serviceName:kubiareplicas:2template:metadata:labels:app:kubiaspec:containers:- name:kubiaimage:derios/kubiaports:- name:httpcontainerPort:8080volumeMounts:- name:datamountPath:/var/datavolumeClaimTemplates:- metadata:name:dataspec:resources:requests:storage:1MiaccessModes:- ReadWriteOnce headless service举例 1 2 3 4 5 6"/>
@@ -133,7 +133,10 @@
 
       <div class="post-meta">
         <span class="post-time"> 2021-04-21 </span>
-        
+        <div class="post-category">
+            <a href="/categories/kubernetes/"> kubernetes </a>
+            <a href="/categories/cloud-computing/"> cloud-computing </a>
+            </div>
           <span class="more-meta"> 2366 words </span>
           <span class="more-meta"> 5 mins read </span>
         
@@ -1275,7 +1278,10 @@ kubectl -n tidb-cluster apply -f https://raw.githubusercontent.com/pingcap/tidb-
   
 </div>
 <footer class="post-footer">
-      
+      <div class="post-tags">
+          <a href="/tags/kubernetes/">kubernetes</a>
+          <a href="/tags/cloud-computing/">cloud-computing</a>
+          </div>
       <nav class="post-nav">
         <a class="prev" href="/post/cloud-computing/k8s-config-update/">
             <i class="iconfont icon-left"></i>

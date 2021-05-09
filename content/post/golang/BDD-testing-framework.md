@@ -2,6 +2,9 @@
 title: "BDD: Ginkgo测试框架"
 date: 2020-12-04T11:22:18+08:00
 hero: /images/posts/golang2.jpg
+keywords: ["go"]
+tags: ["go"]
+categories: ["go"]
 menu:
   sidebar:
     name: Ginkgo 测试框架

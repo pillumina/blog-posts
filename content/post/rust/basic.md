@@ -2,6 +2,9 @@
 title: "Rust阅读索引"
 date: 2021-04-28T09:22:18+08:00
 hero: /images/posts/rust.png
+keywords: ["rust", "learning"]
+tags: ["rust"]
+categories: ["rust"]
 menu:
   sidebar:
     name: Rust阅读索引集

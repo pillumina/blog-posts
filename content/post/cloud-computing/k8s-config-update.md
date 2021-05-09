@@ -2,6 +2,9 @@
 title: "Kubernetes ConfigMap 热更新"
 date: 2021-04-24T11:22:18+08:00
 hero: /images/posts/k8s-docker.jpg
+keywords: ["kubernetes", "configmap"]
+tags: ["kubernetes", "cloud-computing"]
+categories: ["kubernetes", "cloud-computing"]
 menu:
   sidebar:
     name: Kubernetes ConfigMap Hot Update

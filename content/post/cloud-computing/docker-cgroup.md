@@ -2,6 +2,9 @@
 title: "Docker Fundamentals: Cgroup"
 date: 2021-04-05T11:22:18+08:00
 hero: /images/posts/k8s-docker.jpg
+keywords: ["docker", "cloud-computing"]
+tags: ["docker", "cloud-computing"]
+categories: ["docker", "cloud-computing"]
 menu:
   sidebar:
     name: Docker Fundamentals (Cgroup)

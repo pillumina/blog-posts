@@ -2,6 +2,9 @@
 title: "Kubernetes Operator Development History"
 date: 2021-04-29T11:22:18+08:00
 hero: /images/posts/k8s-docker.jpg
+keywords: ["kubernetes", "operator"]
+tags: ["kubernetes", "cloud-computing"]
+categories: ["kubernetes", "cloud-computing"]
 menu:
   sidebar:
     name: Kubernetes Operator Development History

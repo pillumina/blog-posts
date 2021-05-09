@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>docker on CctoctoFX</title>
+    <link>http://localhost:2000/tags/docker/</link>
+    <description>Recent content in docker on CctoctoFX</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 06 Apr 2021 11:22:18 +0800</lastBuildDate><atom:link href="http://localhost:2000/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Docker Fundamentals: AUFS</title>
+      <link>http://localhost:2000/post/cloud-computing/docker-aufs/</link>
+      <pubDate>Tue, 06 Apr 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/cloud-computing/docker-aufs/</guid>
+      <description>AUFS是一种Union File System，所谓的UnionFS实际上就是把不同物理位置的目录合并mount到同一个目录当中。一种典型的Unio</description>
+    </item>
+    
+    <item>
+      <title>Docker Fundamentals: Cgroup</title>
+      <link>http://localhost:2000/post/cloud-computing/docker-cgroup/</link>
+      <pubDate>Mon, 05 Apr 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/cloud-computing/docker-cgroup/</guid>
+      <description>Linux Namespace的技术解决了环境隔离的问题，不过这是虚拟化最基本的一步，我们另外需要解决对计算机资源使用上的隔离。说人话，就是虽然Nam</description>
+    </item>
+    
+    <item>
+      <title>Docker Fundamentals: Namespace</title>
+      <link>http://localhost:2000/post/cloud-computing/docker-namespace/</link>
+      <pubDate>Thu, 01 Apr 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/cloud-computing/docker-namespace/</guid>
+      <description>容器技术出现已经很久，只不过Docker容器平台的出现它变火了。Docker是第一个让容器能在不同机器之间移植的系统，它简化了打包应用的流程</description>
+    </item>
+    
+    <item>
+      <title>Docker Cheat Sheet</title>
+      <link>http://localhost:2000/post/cloud-computing/docker-basic/</link>
+      <pubDate>Tue, 30 Mar 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/cloud-computing/docker-basic/</guid>
+      <description>Books Docker in Action (English ver.) Docker入门到实践(中文) 速查 Docker Cheat Sheet 全量CLI 容器管理CLI 查看容器CLI 容器交互CLI 镜像管理CLI 镜像传输CLI DOCK</description>
+    </item>
+    
+  </channel>
+</rss>

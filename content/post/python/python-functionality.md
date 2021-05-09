@@ -2,6 +2,9 @@
 title: "Python类自定义"
 date: 2020-12-14T16:20:29+08:00
 hero: /images/posts/python-coder.jpg
+keywords: ["python"]
+tags: ["python"]
+categories: ["python"]
 menu:
   sidebar:
     name: Python类自定义

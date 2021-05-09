@@ -2,6 +2,9 @@
 title: "Life of an HTTP request in a Go server"
 date: 2021-02-20T11:22:18+08:00
 hero: /images/posts/golang2.jpg
+keywords: ["go"]
+tags: ["go"]
+categories: ["go"]
 menu:
   sidebar:
     name: Go server中http请求的生命周期

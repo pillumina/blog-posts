@@ -2,6 +2,9 @@
 title: "Docker Cheat Sheet"
 date: 2021-03-30T11:22:18+08:00
 hero: /images/posts/k8s-docker.jpg
+keywords: ["docker", "cloud-computing"]
+tags: ["docker", "cloud-computing"]
+categories: ["docker", "cloud-computing"]
 menu:
   sidebar:
     name: Docker Cheat Sheet

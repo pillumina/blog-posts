@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>algorithm on CctoctoFX</title>
+    <link>http://localhost:2000/categories/algorithm/</link>
+    <description>Recent content in algorithm on CctoctoFX</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 08 Apr 2021 18:22:18 +0800</lastBuildDate><atom:link href="http://localhost:2000/categories/algorithm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>LC刷题: 字符串专题</title>
+      <link>http://localhost:2000/post/algo/string/</link>
+      <pubDate>Thu, 08 Apr 2021 18:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/algo/string/</guid>
+      <description>14. Longest Common Prefix 返回最长公共前缀子串。原题 1 2 Input: [&amp;#34;flower&amp;#34;,&amp;#34;flow&amp;#34;,&amp;#34;flight&amp;#34;] Output: &amp;#34;fl&amp;#34; 水平扫描： 从头开始遍历整个数组，并且两两比较LCP。如果第i次比较的结果是空，则停止迭代返回空</description>
+    </item>
+    
+  </channel>
+</rss>

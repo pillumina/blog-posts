@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>design-pattern on CctoctoFX</title>
+    <link>http://localhost:2000/tags/design-pattern/</link>
+    <description>Recent content in design-pattern on CctoctoFX</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 31 Mar 2021 11:22:18 +0800</lastBuildDate><atom:link href="http://localhost:2000/tags/design-pattern/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go编程模式：Visitor（k8s）</title>
+      <link>http://localhost:2000/post/design-pattern/go-visitor/</link>
+      <pubDate>Wed, 31 Mar 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/design-pattern/go-visitor/</guid>
+      <description>概述 最近在看kubernetes的kubectl部分源码，记录一下其中用到的visitor编程模式(实际上kubectl主要用到了build</description>
+    </item>
+    
+    <item>
+      <title>Go编程模式：Pipeline</title>
+      <link>http://localhost:2000/post/design-pattern/go-pipeline/</link>
+      <pubDate>Wed, 03 Feb 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/design-pattern/go-pipeline/</guid>
+      <description>概述 这篇文章介绍Go编程里的Pipeline模式。如果是对Unix/Linux命令行熟悉的人会知道，Pipeline其实就是把每个命令拼接起</description>
+    </item>
+    
+    <item>
+      <title>Design Pattern: Overview</title>
+      <link>http://localhost:2000/post/design-pattern/design-pattern/</link>
+      <pubDate>Wed, 11 Nov 2020 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/design-pattern/design-pattern/</guid>
+      <description>Design pattern Builder Pattern scenario：build complicated object 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50</description>
+    </item>
+    
+  </channel>
+</rss>

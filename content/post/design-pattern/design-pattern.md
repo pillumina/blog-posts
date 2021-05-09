@@ -2,6 +2,9 @@
 title: "Design Pattern: Overview"
 date: 2020-11-11T11:22:18+08:00
 hero: /images/posts/golang-banner-2.png
+keywords: ["go", "design-pattern"]
+tags: ["go", "design-pattern"]
+categories: ["go", "design-pattern"]
 menu:
   sidebar:
     name: Design Pattern Overview

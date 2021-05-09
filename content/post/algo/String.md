@@ -2,6 +2,9 @@
 title: "LC刷题: 字符串专题"
 date: 2021-04-08T18:22:18+08:00
 hero: /images/posts/leetcode.png
+keywords: ["algorithm", "coding"]
+tags: ["algorithm"]
+categories: ["algorithm"]
 menu:
   sidebar:
     name: 字符串专题

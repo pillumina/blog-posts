@@ -2,6 +2,9 @@
 title: "Black Magic"
 date: 2020-12-20T12:40:29+08:00
 hero: /images/posts/hero-google.svg
+keywords: ["black-magic"]
+tags: ["black-magic"]
+categories: ["black-magic"]
 menu:
   sidebar:
     name: Black Magic

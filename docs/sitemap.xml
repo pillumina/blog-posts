@@ -2,7 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://localhost:2000/categories/</loc>
+    <lastmod>2021-04-29T11:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>http://localhost:2000/</loc>
+    <lastmod>2021-04-29T11:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/tags/cloud-computing/</loc>
+    <lastmod>2021-04-29T11:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/categories/cloud-computing/</loc>
+    <lastmod>2021-04-29T11:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/tags/kubernetes/</loc>
+    <lastmod>2021-04-29T11:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/categories/kubernetes/</loc>
     <lastmod>2021-04-29T11:22:18+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -11,6 +46,27 @@
   <url>
     <loc>http://localhost:2000/post/cloud-computing/k8s-operator-dev/</loc>
     <lastmod>2021-04-29T11:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/tags/</loc>
+    <lastmod>2021-04-29T11:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/tags/rust/</loc>
+    <lastmod>2021-04-28T09:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/categories/rust/</loc>
+    <lastmod>2021-04-28T09:22:18+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -51,6 +107,20 @@
   </url>
   
   <url>
+    <loc>http://localhost:2000/tags/algorithm/</loc>
+    <lastmod>2021-04-08T18:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/categories/algorithm/</loc>
+    <lastmod>2021-04-08T18:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>http://localhost:2000/post/algo/string/</loc>
     <lastmod>2021-04-08T18:22:18+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -58,8 +128,36 @@
   </url>
   
   <url>
+    <loc>http://localhost:2000/tags/go/</loc>
+    <lastmod>2021-04-07T11:25:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/categories/go/</loc>
+    <lastmod>2021-04-07T11:25:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>http://localhost:2000/post/golang/go-profiling/</loc>
     <lastmod>2021-04-07T11:25:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/tags/docker/</loc>
+    <lastmod>2021-04-06T11:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/categories/docker/</loc>
+    <lastmod>2021-04-06T11:22:18+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -88,6 +186,20 @@
   <url>
     <loc>http://localhost:2000/post/cloud-computing/docker-namespace/</loc>
     <lastmod>2021-04-01T11:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/tags/design-pattern/</loc>
+    <lastmod>2021-03-31T11:22:18+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/categories/design-pattern/</loc>
+    <lastmod>2021-03-31T11:22:18+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -219,6 +331,20 @@
   </url>
   
   <url>
+    <loc>http://localhost:2000/tags/black-magic/</loc>
+    <lastmod>2020-12-20T12:40:29+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/categories/black-magic/</loc>
+    <lastmod>2020-12-20T12:40:29+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>http://localhost:2000/post/links/</loc>
     <lastmod>2020-12-19T12:40:29+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -242,6 +368,20 @@
   <url>
     <loc>http://localhost:2000/post/algo/</loc>
     <lastmod>2020-12-17T10:52:50+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/tags/python/</loc>
+    <lastmod>2020-12-14T16:20:29+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:2000/categories/python/</loc>
+    <lastmod>2020-12-14T16:20:29+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -310,20 +450,22 @@
   </url>
   
   <url>
-    <loc>http://localhost:2000/post/java/java-fundamentals/</loc>
+    <loc>http://localhost:2000/tags/java/</loc>
     <lastmod>2020-10-26T12:40:29+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://localhost:2000/categories/</loc>
+    <loc>http://localhost:2000/categories/java/</loc>
+    <lastmod>2020-10-26T12:40:29+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://localhost:2000/tags/</loc>
+    <loc>http://localhost:2000/post/java/java-fundamentals/</loc>
+    <lastmod>2020-10-26T12:40:29+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

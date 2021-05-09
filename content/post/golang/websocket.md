@@ -2,6 +2,9 @@
 title: "A Million WebSocket and Go"
 date: 2021-01-16T11:22:18+08:00
 hero: /images/posts/golang2.jpg
+keywords: ["go"]
+tags: ["go"]
+categories: ["go"]
 menu:
   sidebar:
     name: Million WebSocket
