@@ -6,11 +6,20 @@
     <description>Recent content in Tags on CctoctoFX</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 29 Apr 2021 11:22:18 +0800</lastBuildDate><atom:link href="http://localhost:2000/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 26 May 2021 14:22:18 +0800</lastBuildDate><atom:link href="http://localhost:2000/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>microservice</title>
+      <link>http://localhost:2000/tags/microservice/</link>
+      <pubDate>Wed, 26 May 2021 14:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/tags/microservice/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>cloud-computing</title>
       <link>http://localhost:2000/tags/cloud-computing/</link>
-      <pubDate>Thu, 29 Apr 2021 11:22:18 +0800</pubDate>
+      <pubDate>Fri, 21 May 2021 11:22:18 +0800</pubDate>
       
       <guid>http://localhost:2000/tags/cloud-computing/</guid>
       <description></description>
@@ -19,9 +28,18 @@
     <item>
       <title>kubernetes</title>
       <link>http://localhost:2000/tags/kubernetes/</link>
-      <pubDate>Thu, 29 Apr 2021 11:22:18 +0800</pubDate>
+      <pubDate>Fri, 21 May 2021 11:22:18 +0800</pubDate>
       
       <guid>http://localhost:2000/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>rfc</title>
+      <link>http://localhost:2000/tags/rfc/</link>
+      <pubDate>Fri, 21 May 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/tags/rfc/</guid>
       <description></description>
     </item>
     

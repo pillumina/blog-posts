@@ -8,6 +8,15 @@
     <language>en</language>
     <lastBuildDate>Tue, 30 Mar 2021 10:52:50 +0800</lastBuildDate><atom:link href="http://localhost:2000/post/cloud-computing/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Kubernetes CSI Spec</title>
+      <link>http://localhost:2000/post/cloud-computing/k8s-csi-interprete/</link>
+      <pubDate>Fri, 21 May 2021 11:22:18 +0800</pubDate>
+      
+      <guid>http://localhost:2000/post/cloud-computing/k8s-csi-interprete/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Kubernetes Operator Development History</title>
       <link>http://localhost:2000/post/cloud-computing/k8s-operator-dev/</link>
       <pubDate>Thu, 29 Apr 2021 11:22:18 +0800</pubDate>

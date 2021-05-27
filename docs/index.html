@@ -45,7 +45,7 @@
 <meta property="og:description" content="Hugo theme even example site." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://localhost:2000/" />
-<meta property="og:updated_time" content="2021-04-29T11:22:18+08:00" />
+<meta property="og:updated_time" content="2021-05-26T14:22:18+08:00" />
 <meta itemprop="name" content="CctoctoFX">
 <meta itemprop="description" content="Hugo theme even example site.">
 <meta name="twitter:card" content="summary"/>
@@ -123,6 +123,53 @@
           <section id="posts" class="posts">
     <article class="post">
   <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/modern-arch/distributed-lock/">微服务：分布式锁方案</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2021-05-26 </span>
+      <div class="post-category">
+          <a href="/categories/microservice/"> microservice </a>
+          </div>
+        <span class="more-meta"> 5774 words </span>
+        <span class="more-meta"> 12 mins read </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      为什么需要分布式锁？ 在分布式系统中，常常需要协调他们的动作。如果不同的系统或是同一个系统的不同主机之间共享了一个或一组资源，那么访问这些资源
+    </div>
+    <div class="read-more">
+      <a href="/post/modern-arch/distributed-lock/" class="read-more-link">Read more...</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/cloud-computing/k8s-csi-interprete/">Kubernetes CSI Spec</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2021-05-21 </span>
+      <div class="post-category">
+          <a href="/categories/kubernetes/"> kubernetes </a>
+          <a href="/categories/cloud-computing/"> cloud-computing </a>
+          </div>
+        <span class="more-meta"> 0 words </span>
+        <span class="more-meta"> 0 mins read </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      
+    </div>
+    <div class="read-more">
+      <a href="/post/cloud-computing/k8s-csi-interprete/" class="read-more-link">Read more...</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/cloud-computing/k8s-operator-dev/">Kubernetes Operator Development History</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2021-04-29 </span>
@@ -188,54 +235,6 @@
     </div>
     <div class="read-more">
       <a href="/post/cloud-computing/k8s-config-update/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/cloud-computing/k8s-template/">Kubernetes Developement</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2021-04-21 </span>
-      <div class="post-category">
-          <a href="/categories/kubernetes/"> kubernetes </a>
-          <a href="/categories/cloud-computing/"> cloud-computing </a>
-          </div>
-        <span class="more-meta"> 2366 words </span>
-        <span class="more-meta"> 5 mins read </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      资源模板 statefulset举例 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 apiVersion:apps/v1beta1kind:StatefulSetmetadata:name:kubiaspec:serviceName:kubiareplicas:2template:metadata:labels:app:kubiaspec:containers:- name:kubiaimage:derios/kubiaports:- name:httpcontainerPort:8080volumeMounts:- name:datamountPath:/var/datavolumeClaimTemplates:- metadata:name:dataspec:resources:requests:storage:1MiaccessModes:- ReadWriteOnce headless service举例 1 2 3 4 5 6
-    </div>
-    <div class="read-more">
-      <a href="/post/cloud-computing/k8s-template/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/cloud-computing/k8s-advance-schedule/">Kubernetes Handbook (Schedule)</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2021-04-09 </span>
-      <div class="post-category">
-          <a href="/categories/kubernetes/"> kubernetes </a>
-          <a href="/categories/cloud-computing/"> cloud-computing </a>
-          </div>
-        <span class="more-meta"> 3958 words </span>
-        <span class="more-meta"> 8 mins read </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      内容涵盖 使用节点污点和pod容忍度阻止pod调度到特定节点 将节点亲缘性规则作为节点选择器的一种替代 使用节点亲缘性进行多个pod的共同调度 使用
-    </div>
-    <div class="read-more">
-      <a href="/post/cloud-computing/k8s-advance-schedule/" class="read-more-link">Read more...</a>
     </div>
   </div>
 </article>

@@ -87,7 +87,7 @@ Input: "((("
 Output: 3
 ```
 
-题目很简单，注意`)`不能被`(`关闭，所有有两个pointer:
+题目很简单，注意`)`不能被`(`关闭，所有有两个pointer，这里的right只会增加，值得注意:
 
 ```rust
 var minAddToMakeValid = function(str) {
